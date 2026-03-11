@@ -12,7 +12,7 @@ for i in $(seq 1 30); do
 done
 
 echo "Running Prisma migrations..."
-npx prisma migrate deploy
+./node_modules/.bin/prisma migrate deploy
 
 echo "Starting Next.js..."
 exec node server.js
