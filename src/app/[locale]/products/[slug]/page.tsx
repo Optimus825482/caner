@@ -50,7 +50,7 @@ export default async function ProductPage({ params }: Props) {
   const description = product.translations[0]?.description || "";
   const catName =
     product.category.translations[0]?.name || product.category.slug;
-  const images = product.images.map((img) => ({
+  const images = product.images.map((img: (typeof product.images)[number]) => ({
     url: img.url,
     alt: img.alt || title,
   }));
@@ -133,7 +133,7 @@ export default async function ProductPage({ params }: Props) {
               {t("relatedProducts")}
             </h2>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((item) => {
+              {related.map((item: (typeof related)[number]) => {
                 const rTitle = item.translations[0]?.title || item.slug;
                 const rImage = item.images[0]?.url || "";
                 return (
