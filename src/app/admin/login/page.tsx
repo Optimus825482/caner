@@ -19,30 +19,50 @@ import { LogIn } from "lucide-react";
 
 const t = frMessages.adminLogin;
 
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+const demoUsername = process.env.NEXT_PUBLIC_DEMO_USERNAME ?? "admin";
+const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? "";
+
 export default function AdminLoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function loginWithCredentials(inputUsername: string, inputPassword: string) {
     setLoading(true);
     setError("");
 
-    const fd = new FormData(e.currentTarget);
-
     const res = await signIn("credentials", {
-      username: fd.get("username") as string,
-      password: fd.get("password") as string,
+      username: inputUsername,
+      password: inputPassword,
       redirect: false,
     });
 
     if (res?.error) {
       setError(t.invalidCredentials);
       setLoading(false);
-    } else {
-      router.push("/admin");
+      return;
     }
+
+    router.push("/admin");
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    await loginWithCredentials(username, password);
+  }
+
+  async function handleDemoLogin() {
+    if (!demoPassword) {
+      setError("Demo şifresi tanımlı değil (NEXT_PUBLIC_DEMO_PASSWORD).");
+      return;
+    }
+
+    setUsername(demoUsername);
+    setPassword(demoPassword);
+    await loginWithCredentials(demoUsername, demoPassword);
   }
 
   return (
@@ -76,6 +96,8 @@ export default function AdminLoginPage() {
                 id="username"
                 name="username"
                 type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder={t.usernamePlaceholder}
                 required
                 className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white h-11"
@@ -92,6 +114,8 @@ export default function AdminLoginPage() {
                 id="password"
                 name="password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
                 className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white h-11"
@@ -108,6 +132,18 @@ export default function AdminLoginPage() {
               <LogIn className="w-4 h-4 mr-2" />
               {loading ? t.loading : t.submit}
             </Button>
+
+            {isDemoMode && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={loading}
+                onClick={handleDemoLogin}
+                className="w-full h-11 border-white/20 text-white hover:bg-white/10"
+              >
+                Demo giriş yap
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>
