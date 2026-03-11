@@ -26,8 +26,8 @@ services:
       NEXTAUTH_URL: ${NEXTAUTH_URL}
     volumes:
       - uploads:/app/public/uploads
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
 
 volumes:
   postgres_data:
