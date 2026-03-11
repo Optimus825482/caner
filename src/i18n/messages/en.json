@@ -1,0 +1,158 @@
+{
+  "nav": {
+    "collections": "Collections",
+    "savoirfaire": "Craftsmanship",
+    "export": "Export",
+    "contact": "Contact",
+    "about": "About",
+    "quote": "Free Quote"
+  },
+  "hero": {
+    "cta1": "Discover Excellence",
+    "cta2": "Our Showroom"
+  },
+  "showcase": {
+    "tag": "DIGITAL SHOWROOM",
+    "title": "Interactive Showcase",
+    "desc": "Explore our creations with an immersive experience. Each piece tells a story of craftsmanship."
+  },
+  "filter": {
+    "all": "All",
+    "kitchen": "Kitchens",
+    "bathroom": "Bathrooms",
+    "wardrobe": "Wardrobes",
+    "living": "Living Spaces"
+  },
+  "btn": {
+    "explore": "Explore"
+  },
+  "sf": {
+    "tag": "CRAFTSMANSHIP",
+    "title": "Our Collections",
+    "desc": "Bespoke solutions, refined material choices, and impeccable finishes that elevate every living space.",
+    "explore": "Explore collection →"
+  },
+  "export": {
+    "tag": "GLOBAL REACH",
+    "title": "Export & Precision Quality",
+    "desc": "Blending French design aesthetics with the robust manufacturing heritage of Aksaray. Every piece meets international standards of luxury.",
+    "network": "European Network",
+    "networkDesc": "Direct delivery to France, Belgium and beyond",
+    "quality": "Certified Excellence",
+    "qualityDesc": "Collections delivered on time. Premium finishes.",
+    "from": "From Aksaray to the",
+    "to": "Heart of Europe"
+  },
+  "contact": {
+    "tag": "LET'S TALK PROJECT",
+    "title": "Ready to start your project?",
+    "desc": "Whether for a private residence or a commercial project, our consultants are ready to assist you.",
+    "office": "Paris Office",
+    "call": "Call Us",
+    "name": "Full name",
+    "email": "Email address",
+    "select": "Project type",
+    "optKitchen": "Residential Kitchen",
+    "optBathroom": "Bathroom",
+    "optWardrobe": "Wardrobe / Closet",
+    "optCommercial": "Commercial Project",
+    "optCustom": "Custom Project",
+    "desc_field": "Project description",
+    "submit": "Send Inquiry",
+    "success": "Message sent successfully!"
+  },
+  "footer": {
+    "tagline": "Furniture of excellence, crafted with passion.",
+    "collections": "Collections",
+    "company": "Company",
+    "rights": "All rights reserved.",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy"
+  },
+  "about": {
+    "title": "About Arvesta",
+    "desc": "Premium furniture manufacturer based in Aksaray, Turkey.",
+    "heroTag": "OUR STORY",
+    "heroTitle": "Wood never lies.",
+    "heroDesc": "From our workshops in Aksaray, we craft pieces that last generations. No mass production. No compromises. Every piece of furniture carries the signature of hands that understand wood.",
+    "storyTag": "FROM AKSARAY TO PARIS",
+    "storyTitle": "Two cultures, one standard.",
+    "storyP1": "Arvesta was born from a simple belief: exceptional furniture shouldn't be reserved for the few. Our roots run deep in the artisan tradition of Aksaray, where woodworking is a heritage passed from father to son.",
+    "storyP2": "Today, we marry this ancestral craftsmanship with the elegance of French design. Each piece is conceived in Paris and shaped in Turkey, in workshops where precision isn't a goal — it's a habit.",
+    "numbersTag": "BY THE NUMBERS",
+    "num1": "12+",
+    "num1Label": "Years of experience",
+    "num2": "2,500+",
+    "num2Label": "Projects delivered",
+    "num3": "8",
+    "num3Label": "Countries served",
+    "num4": "100%",
+    "num4Label": "Bespoke",
+    "craftTag": "OUR APPROACH",
+    "craftTitle": "What sets us apart.",
+    "craft1Title": "Noble materials",
+    "craft1Desc": "Solid wood, natural veneers, European hardware. We select every component as if it were for our own home.",
+    "craft2Title": "Millimetric precision",
+    "craft2Desc": "Latest-generation CNC machines guided by experienced artisans. Technology in service of the hand.",
+    "craft3Title": "Turnkey delivery",
+    "craft3Desc": "From design to installation, one point of contact. We deliver and assemble across Europe.",
+    "ctaTitle": "Ready to create something unique?",
+    "ctaDesc": "Every project starts with a conversation. Tell us about your vision.",
+    "ctaBtn": "Start a project"
+  },
+  "common": {
+    "readMore": "Read more",
+    "backToHome": "Back to home",
+    "backToCollection": "Back to collection",
+    "allCollections": "All collections",
+    "relatedProducts": "Related products",
+    "noProducts": "No products in this collection.",
+    "viewProduct": "View product"
+  },
+  "adminLogin": {
+    "title": "Admin Login",
+    "description": "Sign in to access the administration panel.",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "passwordLabel": "Password",
+    "invalidCredentials": "Invalid username or password.",
+    "loading": "Signing in...",
+    "submit": "Sign In"
+  },
+  "adminDashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your store activity.",
+    "stats": {
+      "products": "Products",
+      "categories": "Categories",
+      "submissions": "Submissions",
+      "newBadge": "new",
+      "heroSlides": "Hero Slides"
+    },
+    "recentSubmissionsTitle": "Recent Submissions",
+    "noSubmissions": "No submissions yet."
+  },
+  "adminProducts": {
+    "title": "Products",
+    "countLabel": "products",
+    "newProduct": "New Product",
+    "table": {
+      "image": "Image",
+      "name": "Name",
+      "category": "Category",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "featured": "Featured",
+    "editAriaLabel": "Edit product",
+    "deleteAriaLabel": "Delete product",
+    "deleteDialog": {
+      "title": "Delete product?",
+      "descriptionPrefix": "You are about to delete",
+      "descriptionSuffix": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  }
+}

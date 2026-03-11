@@ -1,0 +1,21 @@
+{
+  "name": "Arvesta Menuiserie France",
+  "short_name": "Arvesta",
+  "description": "Mobilier sur mesure de haute qualité. Cuisines, salles de bains, dressings.",
+  "start_url": "/fr",
+  "display": "standalone",
+  "background_color": "#070d1a",
+  "theme_color": "#d4af6a",
+  "icons": [
+    {
+      "src": "/uploads/products/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/uploads/products/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

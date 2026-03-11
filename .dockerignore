@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.local
+Dnpm-cache
+.vscode
+.pi
+.ant-colony
+scripts
+ROADMAP.md
+README.md

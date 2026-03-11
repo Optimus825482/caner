@@ -1,0 +1,177 @@
+import { createHash } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+
+type RateLimitState = {
+  count: number;
+  resetAt: number;
+};
+
+export type RateLimitAdapter = {
+  get: (key: string) => Promise<RateLimitState | null>;
+  set: (key: string, state: RateLimitState) => Promise<void>;
+};
+
+export function enforceSameOrigin(req: NextRequest): NextResponse | null {
+  const allowedOrigin = req.nextUrl.origin;
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+
+  if (origin) {
+    if (origin !== allowedOrigin) {
+      return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
+    }
+    return null;
+  }
+
+  if (!referer || !referer.startsWith(allowedOrigin)) {
+    return NextResponse.json(
+      { error: "Origin or referer header is required" },
+      { status: 403 },
+    );
+  }
+
+  return null;
+}
+
+export function getClientIp(req: NextRequest): string {
+  const cfConnectingIp = req.headers.get("cf-connecting-ip")?.trim();
+  if (cfConnectingIp) return cfConnectingIp;
+
+  const xForwardedFor = req.headers.get("x-forwarded-for");
+  if (xForwardedFor) {
+    const first = xForwardedFor.split(",")[0]?.trim();
+    if (first) return first;
+  }
+
+  const xRealIp = req.headers.get("x-real-ip")?.trim();
+  if (xRealIp) return xRealIp;
+
+  return "unknown";
+}
+
+export function buildClientKey(req: NextRequest, scope: string): string {
+  const ip = getClientIp(req);
+  const userAgent = req.headers.get("user-agent")?.trim() || "unknown";
+  const acceptLanguage = req.headers.get("accept-language")?.trim() || "unknown";
+
+  const digest = createHash("sha256")
+    .update(`${scope}|${ip}|${userAgent}|${acceptLanguage}`)
+    .digest("base64url");
+
+  return `${scope}:${digest}`;
+}
+
+function parseRateLimitState(value: string): RateLimitState | null {
+  try {
+    const parsed = JSON.parse(value) as { count?: unknown; resetAt?: unknown };
+    if (
+      typeof parsed.count !== "number" ||
+      !Number.isFinite(parsed.count) ||
+      parsed.count < 0 ||
+      typeof parsed.resetAt !== "number" ||
+      !Number.isFinite(parsed.resetAt)
+    ) {
+      return null;
+    }
+
+    return {
+      count: Math.floor(parsed.count),
+      resetAt: Math.floor(parsed.resetAt),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function createMemoryRateLimitAdapter(): RateLimitAdapter {
+  const store = new Map<string, RateLimitState>();
+
+  return {
+    async get(key: string) {
+      return store.get(key) ?? null;
+    },
+    async set(key: string, state: RateLimitState) {
+      store.set(key, state);
+    },
+  };
+}
+
+type SiteSettingDelegate = {
+  findUnique: (args: { where: { key: string } }) => Promise<{ value: string } | null>;
+  upsert: (args: {
+    where: { key: string };
+    create: { key: string; value: string };
+    update: { value: string };
+  }) => Promise<unknown>;
+};
+
+export function createSiteSettingRateLimitAdapter(
+  siteSetting: SiteSettingDelegate,
+): RateLimitAdapter {
+  return {
+    async get(key: string) {
+      const existing = await siteSetting.findUnique({ where: { key } });
+      if (!existing) return null;
+      return parseRateLimitState(existing.value);
+    },
+    async set(key: string, state: RateLimitState) {
+      await siteSetting.upsert({
+        where: { key },
+        create: { key, value: JSON.stringify(state) },
+        update: { value: JSON.stringify(state) },
+      });
+    },
+  };
+}
+
+export async function enforceRateLimit({
+  adapter,
+  keyPrefix,
+  clientKey,
+  windowMs,
+  maxRequests,
+  errorMessage,
+}: {
+  adapter: RateLimitAdapter;
+  keyPrefix: string;
+  clientKey: string;
+  windowMs: number;
+  maxRequests: number;
+  errorMessage: string;
+}): Promise<NextResponse | null> {
+  const now = Date.now();
+  const storageKey = `${keyPrefix}:${clientKey}`;
+
+  const existing = await adapter.get(storageKey);
+
+  if (!existing || now > existing.resetAt) {
+    await adapter.set(storageKey, {
+      count: 1,
+      resetAt: now + windowMs,
+    });
+    return null;
+  }
+
+  if (existing.count >= maxRequests) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((existing.resetAt - now) / 1000));
+
+    return NextResponse.json(
+      {
+        error: errorMessage,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(retryAfterSeconds),
+        },
+      },
+    );
+  }
+
+  await adapter.set(storageKey, {
+    count: existing.count + 1,
+    resetAt: existing.resetAt,
+  });
+
+  return null;
+}

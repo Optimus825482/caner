@@ -29,6 +29,35 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Upload compression (Sharp + TinyPNG CLI)
+
+Admin panel image uploads are handled by `src/app/api/upload/route.ts`.
+
+Current flow:
+1. Validate extension + magic bytes + MIME.
+2. Re-encode with `sharp` (sanitization + baseline compression).
+3. Optionally run `tinypng-cli` for additional JPG/PNG optimization.
+
+### Environment variables
+
+Add these to your `.env.local`:
+
+```bash
+# Existing behavior (default true)
+UPLOAD_FORCE_REENCODE=true
+
+# TinyPNG integration toggle
+UPLOAD_ENABLE_TINYPNG=true
+
+# TinyPNG API key (from https://tinypng.com/developers)
+TINYPNG_API_KEY=your_real_api_key_here
+```
+
+Notes:
+- If TinyPNG is disabled or key is missing, upload still works with Sharp compression.
+- TinyPNG step is applied to `.jpg/.jpeg/.png` uploads.
+- `.webp` is kept on Sharp-only path for compatibility.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

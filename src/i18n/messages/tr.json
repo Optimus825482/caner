@@ -1,0 +1,158 @@
+{
+  "nav": {
+    "collections": "Koleksiyonlar",
+    "savoirfaire": "Ustalık",
+    "export": "İhracat",
+    "contact": "İletişim",
+    "about": "Hakkımızda",
+    "quote": "Ücretsiz Teklif"
+  },
+  "hero": {
+    "cta1": "Mükemmelliği Keşfet",
+    "cta2": "Showroom"
+  },
+  "showcase": {
+    "tag": "DİJİTAL SHOWROOM",
+    "title": "İnteraktif Vitrin",
+    "desc": "Yaratımlarımızı sürükleyici bir deneyimle keşfedin. Her parça bir ustalık hikayesi anlatır."
+  },
+  "filter": {
+    "all": "Tümü",
+    "kitchen": "Mutfaklar",
+    "bathroom": "Banyolar",
+    "wardrobe": "Gardıroplar",
+    "living": "Yaşam Alanları"
+  },
+  "btn": {
+    "explore": "Keşfet"
+  },
+  "sf": {
+    "tag": "ÜSTÜN USTA İŞİ",
+    "title": "Koleksiyonlarımız",
+    "desc": "Ölçüye özel çözümler, rafine malzeme seçimi ve kusursuz işçilikle yaşam alanlarınıza prestij kazandırıyoruz.",
+    "explore": "Koleksiyonu keşfet →"
+  },
+  "export": {
+    "tag": "KÜRESEL ERİŞİM",
+    "title": "İhracat & Hassas Kalite",
+    "desc": "Fransız tasarım estetiği ile Aksaray'ın sağlam üretim mirasını birleştiriyoruz. Her parça uluslararası lüks standartlarını karşılar.",
+    "network": "Avrupa Ağı",
+    "networkDesc": "Fransa, Belçika ve ötesine doğrudan teslimat",
+    "quality": "Sertifikalı Mükemmellik",
+    "qualityDesc": "Zamanında teslim koleksiyonlar. Premium finisajlar.",
+    "from": "Aksaray'dan",
+    "to": "Avrupa'nın Kalbine"
+  },
+  "contact": {
+    "tag": "PROJENİZİ KONUŞALIM",
+    "title": "Projenize başlamaya hazır mısınız?",
+    "desc": "İster özel konut, ister ticari proje olsun, danışmanlarımız size yardımcı olmaya hazır.",
+    "office": "Paris Ofisi",
+    "call": "Bizi Arayın",
+    "name": "Ad Soyad",
+    "email": "E-posta adresi",
+    "select": "Proje türü",
+    "optKitchen": "Konut Mutfağı",
+    "optBathroom": "Banyo",
+    "optWardrobe": "Gardırop / Dolap",
+    "optCommercial": "Ticari Proje",
+    "optCustom": "Özel Proje",
+    "desc_field": "Proje açıklaması",
+    "submit": "Talep Gönder",
+    "success": "Mesajınız başarıyla gönderildi!"
+  },
+  "footer": {
+    "tagline": "Tutkuyla üretilen mükemmel mobilyalar.",
+    "collections": "Koleksiyonlar",
+    "company": "Kurumsal",
+    "rights": "Tüm hakları saklıdır.",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "privacy": "Gizlilik"
+  },
+  "about": {
+    "title": "Arvesta Hakkında",
+    "desc": "Aksaray, Türkiye merkezli premium mobilya üreticisi.",
+    "heroTag": "HİKAYEMİZ",
+    "heroTitle": "Ahşap asla yalan söylemez.",
+    "heroDesc": "Aksaray'daki atölyelerimizden nesiller boyu yaşayacak parçalar üretiyoruz. Seri üretim yok. Taviz yok. Her mobilya, ahşabı anlayan ellerin imzasını taşır.",
+    "storyTag": "AKSARAY'DAN PARİS'E",
+    "storyTitle": "İki kültür, tek standart.",
+    "storyP1": "Arvesta basit bir inançtan doğdu: olağanüstü mobilya birkaç kişiye özel olmamalı. Köklerimiz, ahşap işçiliğinin babadan oğula aktarılan bir miras olduğu Aksaray'ın zanaat geleneğine dayanıyor.",
+    "storyP2": "Bugün bu kadim ustalığı Fransız tasarım zarafetiyle birleştiriyoruz. Her parça Paris'te tasarlanıp Türkiye'de şekilleniyor — hassasiyetin bir hedef değil, bir alışkanlık olduğu atölyelerde.",
+    "numbersTag": "RAKAMLARLA",
+    "num1": "12+",
+    "num1Label": "Yıllık deneyim",
+    "num2": "2.500+",
+    "num2Label": "Teslim edilen proje",
+    "num3": "8",
+    "num3Label": "Hizmet verilen ülke",
+    "num4": "%100",
+    "num4Label": "Kişiye özel üretim",
+    "craftTag": "YAKLAŞIMIMIZ",
+    "craftTitle": "Bizi farklı kılan ne?",
+    "craft1Title": "Seçkin malzemeler",
+    "craft1Desc": "Masif ahşap, doğal kaplamalar, Avrupa aksesuar. Her bileşeni kendi evimiz içinmiş gibi seçiyoruz.",
+    "craft2Title": "Milimetrik hassasiyet",
+    "craft2Desc": "Son nesil CNC makineleri, deneyimli ustaların rehberliğinde. Teknoloji elin hizmetinde.",
+    "craft3Title": "Anahtar teslim",
+    "craft3Desc": "Tasarımdan montaja tek muhatap. Tüm Avrupa'ya teslim ve kurulum yapıyoruz.",
+    "ctaTitle": "Benzersiz bir şey yaratmaya hazır mısınız?",
+    "ctaDesc": "Her proje bir sohbetle başlar. Vizyonunuzu bize anlatın.",
+    "ctaBtn": "Proje başlat"
+  },
+  "common": {
+    "readMore": "Devamını oku",
+    "backToHome": "Ana sayfaya dön",
+    "backToCollection": "Koleksiyona dön",
+    "allCollections": "Tüm koleksiyonlar",
+    "relatedProducts": "Benzer ürünler",
+    "noProducts": "Bu koleksiyonda ürün bulunmuyor.",
+    "viewProduct": "Ürünü görüntüle"
+  },
+  "adminLogin": {
+    "title": "Yönetici Girişi",
+    "description": "Yönetim paneline erişmek için giriş yapın.",
+    "usernameLabel": "Kullanıcı Adı",
+    "usernamePlaceholder": "Kullanıcı adınızı girin",
+    "passwordLabel": "Şifre",
+    "invalidCredentials": "Kullanıcı adı veya şifre hatalı.",
+    "loading": "Giriş yapılıyor...",
+    "submit": "Giriş Yap"
+  },
+  "adminDashboard": {
+    "title": "Kontrol Paneli",
+    "subtitle": "Mağaza aktivitenizin genel görünümü.",
+    "stats": {
+      "products": "Ürünler",
+      "categories": "Kategoriler",
+      "submissions": "Talepler",
+      "newBadge": "yeni",
+      "heroSlides": "Hero Slaytları"
+    },
+    "recentSubmissionsTitle": "Son Talepler",
+    "noSubmissions": "Henüz talep yok."
+  },
+  "adminProducts": {
+    "title": "Ürünler",
+    "countLabel": "ürün",
+    "newProduct": "Yeni Ürün",
+    "table": {
+      "image": "Görsel",
+      "name": "Ad",
+      "category": "Kategori",
+      "status": "Durum",
+      "actions": "İşlemler"
+    },
+    "featured": "Öne Çıkan",
+    "editAriaLabel": "Ürünü düzenle",
+    "deleteAriaLabel": "Ürünü sil",
+    "deleteDialog": {
+      "title": "Ürün silinsin mi?",
+      "descriptionPrefix": "Şu ürünü silmek üzeresiniz",
+      "descriptionSuffix": "Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "confirm": "Sil"
+    }
+  }
+}

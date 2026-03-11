@@ -1,0 +1,158 @@
+{
+  "nav": {
+    "collections": "Collections",
+    "savoirfaire": "Savoir-Faire",
+    "export": "Export",
+    "contact": "Contact",
+    "about": "À Propos",
+    "quote": "Devis Gratuit"
+  },
+  "hero": {
+    "cta1": "Découvrir l'Excellence",
+    "cta2": "Notre Showroom"
+  },
+  "showcase": {
+    "tag": "SHOWROOM DIGITAL",
+    "title": "Vitrine Interactive",
+    "desc": "Explorez nos créations avec une expérience immersive. Chaque pièce raconte une histoire de savoir-faire."
+  },
+  "filter": {
+    "all": "Tout",
+    "kitchen": "Cuisines",
+    "bathroom": "Salles de Bains",
+    "wardrobe": "Dressings",
+    "living": "Espaces de Vie"
+  },
+  "btn": {
+    "explore": "Explorer"
+  },
+  "sf": {
+    "tag": "SAVOIR-FAIRE",
+    "title": "Nos Collections",
+    "desc": "Des solutions sur mesure, une sélection de matériaux raffinés et une finition impeccable pour sublimer vos intérieurs.",
+    "explore": "Explorer la collection →"
+  },
+  "export": {
+    "tag": "RAYONNEMENT GLOBAL",
+    "title": "Export & Qualité de Précision",
+    "desc": "Alliant l'esthétique du design français au patrimoine manufacturier d'Aksaray. Chaque pièce répond aux normes internationales de luxe.",
+    "network": "Réseau Européen",
+    "networkDesc": "Livraison directe en France, Belgique et au-delà",
+    "quality": "Excellence Certifiée",
+    "qualityDesc": "Collections livrées dans les délais. Finitions premium.",
+    "from": "D'Aksaray à la",
+    "to": "Cœur de l'Europe"
+  },
+  "contact": {
+    "tag": "PARLONS PROJET",
+    "title": "Prêt à démarrer votre projet ?",
+    "desc": "Que ce soit pour une résidence privée ou un projet commercial, nos consultants sont prêts à vous accompagner.",
+    "office": "Bureau Paris",
+    "call": "Appelez-nous",
+    "name": "Nom complet",
+    "email": "Adresse email",
+    "select": "Type de projet",
+    "optKitchen": "Cuisine Résidentielle",
+    "optBathroom": "Salle de Bain",
+    "optWardrobe": "Dressing / Armoire",
+    "optCommercial": "Projet Commercial",
+    "optCustom": "Projet Sur Mesure",
+    "desc_field": "Description du projet",
+    "submit": "Envoyer la Demande",
+    "success": "Message envoyé avec succès !"
+  },
+  "footer": {
+    "tagline": "Mobilier d'excellence, fabriqué avec passion.",
+    "collections": "Collections",
+    "company": "Entreprise",
+    "rights": "Tous droits réservés.",
+    "about": "À Propos",
+    "contact": "Contact",
+    "privacy": "Confidentialité"
+  },
+  "about": {
+    "title": "À Propos d'Arvesta",
+    "desc": "Fabricant de mobilier premium basé à Aksaray, Turquie.",
+    "heroTag": "NOTRE HISTOIRE",
+    "heroTitle": "Le bois ne ment jamais.",
+    "heroDesc": "Depuis nos ateliers d'Aksaray, nous façonnons des pièces qui traversent les générations. Pas de production de masse. Pas de compromis. Chaque meuble porte la signature de mains qui comprennent le bois.",
+    "storyTag": "D'AKSARAY À PARIS",
+    "storyTitle": "Deux cultures, une exigence.",
+    "storyP1": "Arvesta est née d'une conviction simple : le mobilier d'exception ne devrait pas être réservé à quelques-uns. Nos racines plongent dans la tradition artisanale d'Aksaray, où le travail du bois est un héritage transmis de père en fils.",
+    "storyP2": "Aujourd'hui, nous marions ce savoir-faire ancestral à l'élégance du design français. Chaque pièce est pensée à Paris et façonnée en Turquie, dans des ateliers où la précision n'est pas un objectif — c'est une habitude.",
+    "numbersTag": "EN CHIFFRES",
+    "num1": "12+",
+    "num1Label": "Années d'expérience",
+    "num2": "2 500+",
+    "num2Label": "Projets livrés",
+    "num3": "8",
+    "num3Label": "Pays desservis",
+    "num4": "100%",
+    "num4Label": "Sur mesure",
+    "craftTag": "NOTRE APPROCHE",
+    "craftTitle": "Ce qui nous rend différents.",
+    "craft1Title": "Matériaux nobles",
+    "craft1Desc": "Bois massif, placages naturels, quincaillerie européenne. Nous sélectionnons chaque composant comme si c'était pour notre propre maison.",
+    "craft2Title": "Précision millimétrique",
+    "craft2Desc": "Machines CNC de dernière génération guidées par des artisans expérimentés. La technologie au service de la main.",
+    "craft3Title": "Livraison clé en main",
+    "craft3Desc": "De la conception à l'installation, un seul interlocuteur. Nous livrons et montons dans toute l'Europe.",
+    "ctaTitle": "Prêt à créer quelque chose d'unique ?",
+    "ctaDesc": "Chaque projet commence par une conversation. Parlez-nous de votre vision.",
+    "ctaBtn": "Démarrer un projet"
+  },
+  "common": {
+    "readMore": "En savoir plus",
+    "backToHome": "Retour à l'accueil",
+    "backToCollection": "Retour à la collection",
+    "allCollections": "Toutes les collections",
+    "relatedProducts": "Produits similaires",
+    "noProducts": "Aucun produit dans cette collection.",
+    "viewProduct": "Voir le produit"
+  },
+  "adminLogin": {
+    "title": "Connexion Admin",
+    "description": "Connectez-vous pour accéder au panneau d'administration.",
+    "usernameLabel": "Nom d’utilisateur",
+    "usernamePlaceholder": "Entrez votre nom d’utilisateur",
+    "passwordLabel": "Mot de passe",
+    "invalidCredentials": "Nom d’utilisateur ou mot de passe invalide.",
+    "loading": "Connexion...",
+    "submit": "Se connecter"
+  },
+  "adminDashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Aperçu de l’activité de votre boutique.",
+    "stats": {
+      "products": "Produits",
+      "categories": "Catégories",
+      "submissions": "Demandes",
+      "newBadge": "nouveau",
+      "heroSlides": "Slides Hero"
+    },
+    "recentSubmissionsTitle": "Demandes récentes",
+    "noSubmissions": "Aucune demande pour le moment."
+  },
+  "adminProducts": {
+    "title": "Produits",
+    "countLabel": "produits",
+    "newProduct": "Nouveau produit",
+    "table": {
+      "image": "Image",
+      "name": "Nom",
+      "category": "Catégorie",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "featured": "Mis en avant",
+    "editAriaLabel": "Modifier le produit",
+    "deleteAriaLabel": "Supprimer le produit",
+    "deleteDialog": {
+      "title": "Supprimer le produit ?",
+      "descriptionPrefix": "Vous êtes sur le point de supprimer",
+      "descriptionSuffix": "Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    }
+  }
+}
