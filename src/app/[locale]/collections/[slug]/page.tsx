@@ -85,7 +85,7 @@ export default async function CollectionPage({ params }: Props) {
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => {
+            {products.map((product: (typeof products)[number]) => {
               const title = product.translations[0]?.title || product.slug;
               const image = product.images[0]?.url || "";
               return (
