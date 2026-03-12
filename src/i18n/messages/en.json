@@ -101,6 +101,11 @@
     "ctaDesc": "Every project starts with a conversation. Tell us about your vision.",
     "ctaBtn": "Start a project"
   },
+  "cookie": {
+    "message": "This site uses cookies to improve your experience. By continuing, you accept our privacy policy.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
   "common": {
     "readMore": "Read more",
     "backToHome": "Back to home",
@@ -108,7 +113,8 @@
     "allCollections": "All collections",
     "relatedProducts": "Related products",
     "noProducts": "No products in this collection.",
-    "viewProduct": "View product"
+    "viewProduct": "View product",
+    "requestQuote": "Request a Quote"
   },
   "adminLogin": {
     "title": "Admin Login",

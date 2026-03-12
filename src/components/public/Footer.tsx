@@ -6,6 +6,7 @@ import FooterReveal from "./FooterReveal";
 
 export default async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "footer" });
+  const tf = await getTranslations({ locale, namespace: "filter" });
 
   return (
     <footer className="relative overflow-hidden border-t border-[var(--arvesta-gold)]/25 bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-6 pt-16">
@@ -35,19 +36,19 @@ export default async function Footer({ locale }: { locale: string }) {
                 href={`/${locale}#collections`}
                 className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
               >
-                Cuisines
+                {tf("kitchen")}
               </Link>
               <Link
                 href={`/${locale}#collections`}
                 className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
               >
-                Dressings
+                {tf("wardrobe")}
               </Link>
               <Link
                 href={`/${locale}#collections`}
                 className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
               >
-                Salles de Bains
+                {tf("bathroom")}
               </Link>
             </div>
             <div>

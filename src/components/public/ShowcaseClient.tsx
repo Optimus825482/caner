@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import ImageShimmer from "@/components/public/ImageShimmer";
 import { useTranslations } from "next-intl";
@@ -69,6 +69,18 @@ export default function ShowcaseClient({
     () => setLightbox((i) => (i !== null ? (i + 1) % filtered.length : null)),
     [filtered.length],
   );
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (lightbox === null) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowLeft") prevItem();
+      else if (e.key === "ArrowRight") nextItem();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightbox, closeLightbox, prevItem, nextItem]);
 
   return (
     <>

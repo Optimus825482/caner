@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Pencil, Trash2, Grid3X3, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, Grid3X3, Save, Upload } from "lucide-react";
 import Image from "next/image";
+import { MediaEditorDialog } from "@/components/admin/MediaEditorDialog";
 
 interface Cat {
   id: string;
@@ -29,10 +30,19 @@ const localeLabels: Record<string, string> = {
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState<Cat[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Cat | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [slug, setSlug] = useState("");
   const [order, setOrder] = useState(0);
+  const [image, setImage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [pendingTempId, setPendingTempId] = useState<string | null>(null);
+  const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(
+    null,
+  );
   const [translations, setTranslations] = useState<
     Record<string, { name: string; description: string }>
   >(Object.fromEntries(locales.map((l) => [l, { name: "", description: "" }])));
@@ -40,7 +50,10 @@ export default function AdminCategories() {
   const load = () =>
     fetch("/api/categories")
       .then((r) => r.json())
-      .then(setCategories);
+      .then((data) => {
+        setCategories(data);
+        setLoading(false);
+      });
   useEffect(() => {
     load();
   }, []);
@@ -50,6 +63,7 @@ export default function AdminCategories() {
     setIsNew(false);
     setSlug(cat.slug);
     setOrder(cat.order);
+    setImage(cat.image || "");
     const t: Record<string, { name: string; description: string }> = {};
     locales.forEach((l) => {
       const tr = cat.translations.find((x) => x.locale === l);
@@ -63,6 +77,7 @@ export default function AdminCategories() {
     setIsNew(true);
     setSlug("");
     setOrder(0);
+    setImage("");
     setTranslations(
       Object.fromEntries(
         locales.map((l) => [l, { name: "", description: "" }]),
@@ -70,10 +85,52 @@ export default function AdminCategories() {
     );
   }
 
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+
+    if (data.tempId && data.previewUrl) {
+      setPendingTempId(data.tempId);
+      setPendingPreviewUrl(data.previewUrl);
+      setEditorOpen(true);
+    }
+
+    setUploading(false);
+  }
+
+  async function openEditorForExistingImage() {
+    if (!image) return;
+
+    setPreparing(true);
+    try {
+      const res = await fetch("/api/media/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceUrl: image }),
+      });
+      const data = await res.json();
+      if (data?.tempId && data?.previewUrl) {
+        setPendingTempId(data.tempId);
+        setPendingPreviewUrl(data.previewUrl);
+        setEditorOpen(true);
+      }
+    } finally {
+      setPreparing(false);
+    }
+  }
+
   async function handleSave() {
     const body = {
       slug,
       order,
+      image: image.trim() ? image : undefined,
       translations: locales.map((l) => ({ locale: l, ...translations[l] })),
     };
     if (isNew) {
@@ -123,56 +180,75 @@ export default function AdminCategories() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* List */}
         <div className="space-y-3">
-          {categories.map((cat) => (
-            <Card
-              key={cat.id}
-              className="border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all"
-            >
-              <CardContent className="p-4 flex items-center gap-4">
-                <div className="w-16 h-12 rounded-lg overflow-hidden bg-white/5 relative shrink-0">
-                  {cat.image && (
-                    <Image
-                      src={cat.image}
-                      alt={cat.slug}
-                      fill
-                      className="object-cover"
-                      sizes="64px"
-                    />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <span className="text-sm font-semibold text-white block">
-                    {cat.translations.find((t) => t.locale === "fr")?.name ||
-                      cat.slug}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="border-white/10 text-[var(--arvesta-text-muted)] text-xs font-ui mt-1"
-                  >
-                    {cat._count?.products || 0} ürün
-                  </Badge>
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openEdit(cat)}
-                    className="text-[var(--arvesta-text-muted)] hover:text-white"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(cat.id)}
-                    className="text-[var(--arvesta-text-muted)] hover:text-red-400"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {loading
+            ? [...Array(3)].map((_, i) => (
+                <Card
+                  key={i}
+                  className="border-white/5 bg-[var(--arvesta-bg-card)]"
+                >
+                  <CardContent className="p-4 flex items-center gap-4 animate-pulse">
+                    <div className="w-16 h-12 rounded-lg bg-white/5 shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-1/3 rounded bg-white/5" />
+                      <div className="h-3 w-1/5 rounded bg-white/5" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            : categories.map((cat) => (
+                <Card
+                  key={cat.id}
+                  className="border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all"
+                >
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="w-16 h-12 rounded-lg overflow-hidden bg-white/5 relative shrink-0 flex items-center justify-center">
+                      {cat.image ? (
+                        <Image
+                          src={cat.image}
+                          alt={cat.slug}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      ) : (
+                        <span className="text-[10px] text-[var(--arvesta-text-muted)] font-ui">
+                          No image
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-sm font-semibold text-white block">
+                        {cat.translations.find((t) => t.locale === "fr")
+                          ?.name || cat.slug}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="border-white/10 text-[var(--arvesta-text-muted)] text-xs font-ui mt-1"
+                      >
+                        {cat._count?.products || 0} ürün
+                      </Badge>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEdit(cat)}
+                        className="text-[var(--arvesta-text-muted)] hover:text-white"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(cat.id)}
+                        className="text-[var(--arvesta-text-muted)] hover:text-red-400"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
 
         {/* Edit Form */}
@@ -205,6 +281,52 @@ export default function AdminCategories() {
                   onChange={(e) => setOrder(Number(e.target.value))}
                   className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[var(--arvesta-text-secondary)]">
+                  Kategori Görseli
+                </Label>
+                <div className="flex items-center gap-3">
+                  <label className="inline-flex">
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={handleUpload}
+                      className="hidden"
+                    />
+                    <span className="inline-flex h-10 px-3 items-center rounded-md border border-white/10 bg-[var(--arvesta-bg-elevated)] text-[var(--arvesta-text-secondary)] text-sm cursor-pointer hover:text-white transition-colors">
+                      <Upload className="w-4 h-4 mr-2" />
+                      {uploading ? "Yükleniyor..." : "Görsel Seç"}
+                    </span>
+                  </label>
+
+                  {image ? (
+                    <div className="relative w-16 h-12 rounded-md overflow-hidden border border-white/10 bg-black/20">
+                      <Image
+                        src={image}
+                        alt="Kategori görseli"
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
+                    </div>
+                  ) : (
+                    <span className="text-xs text-[var(--arvesta-text-muted)]">
+                      Henüz görsel seçilmedi
+                    </span>
+                  )}
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!image || preparing}
+                  onClick={openEditorForExistingImage}
+                  className="w-full border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
+                >
+                  {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
+                </Button>
               </div>
 
               <Separator className="bg-white/5" />
@@ -282,6 +404,22 @@ export default function AdminCategories() {
           </Card>
         )}
       </div>
+
+      <MediaEditorDialog
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        tempId={pendingTempId}
+        previewUrl={pendingPreviewUrl}
+        onPublished={(url) => {
+          setImage(url);
+          setPendingTempId(null);
+          setPendingPreviewUrl(null);
+        }}
+        onClose={() => {
+          setPendingTempId(null);
+          setPendingPreviewUrl(null);
+        }}
+      />
     </div>
   );
 }

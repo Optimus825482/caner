@@ -17,7 +17,7 @@ export default function Preloader() {
     sessionStorage.setItem("arvesta-preloader-shown", "1");
 
     // 3 second preloader
-    const timer = setTimeout(() => setLoaded(true), 3000);
+    const timer = setTimeout(() => setLoaded(true), 1500);
     return () => clearTimeout(timer);
   }, []);
 

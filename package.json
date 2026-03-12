@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "prisma generate",
     "dev": "next dev -p 3018",
+    "prebuild": "prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx tsx prisma/seed.ts"
+    "test": "vitest run",
+    "seed": "npx tsx prisma/seed.ts",
+    "admin:password": "npx tsx scripts/update-admin-password.ts",
+    "download:depth-model": "npx tsx scripts/download-depth-model.ts",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -23,9 +29,11 @@
     "next-auth": "^5.0.0-beta.30",
     "next-intl": "^4.8.3",
     "nodemailer": "^7.0.7",
+    "onnxruntime-node": "^1.24.3",
     "prisma": "6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-image-crop": "^11.0.10",
     "shadcn": "^4.0.2",
     "sharp": "^0.34.5",
     "tailwind-merge": "^3.5.0",
@@ -41,9 +49,12 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.4",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "fast-check": "^4.6.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   }
 }

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { MediaEditorDialog } from "@/components/admin/MediaEditorDialog";
 
 interface Category {
   id: string;
@@ -53,6 +54,10 @@ export default function ProductFormPage({
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [pendingTempId, setPendingTempId] = useState<string | null>(null);
+  const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(null);
 
   const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -107,8 +112,33 @@ export default function ProductFormPage({
     fd.append("file", file);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     const data = await res.json();
-    if (data.url) setImageUrl(data.url);
+    if (data.tempId && data.previewUrl) {
+      setPendingTempId(data.tempId);
+      setPendingPreviewUrl(data.previewUrl);
+      setEditorOpen(true);
+    }
     setUploading(false);
+  }
+
+  async function openEditorForExistingImage() {
+    if (!imageUrl) return;
+
+    setPreparing(true);
+    try {
+      const res = await fetch("/api/media/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceUrl: imageUrl }),
+      });
+      const data = await res.json();
+      if (data?.tempId && data?.previewUrl) {
+        setPendingTempId(data.tempId);
+        setPendingPreviewUrl(data.previewUrl);
+        setEditorOpen(true);
+      }
+    } finally {
+      setPreparing(false);
+    }
   }
 
   async function handleSave() {
@@ -253,21 +283,28 @@ export default function ProductFormPage({
                   <Upload className="w-8 h-8 text-[var(--arvesta-text-muted)]" />
                 </div>
               )}
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleUpload}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
-                  type="button"
-                >
-                  {uploading ? "Yükleniyor..." : "Görsel Yükle"}
-                </Button>
+              <input
+                id="product-image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="product-image-upload"
+                className="inline-flex w-full h-8 items-center justify-center rounded-lg border border-white/10 bg-[var(--arvesta-bg)] text-sm font-medium text-[var(--arvesta-text-secondary)] cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
+              >
+                {uploading ? "Yükleniyor..." : "Görsel Yükle"}
               </label>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!imageUrl || preparing}
+                onClick={openEditorForExistingImage}
+                className="mt-2 w-full border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
+              >
+                {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
+              </Button>
             </CardContent>
           </Card>
 
@@ -347,6 +384,22 @@ export default function ProductFormPage({
           </Button>
         </div>
       </div>
+
+      <MediaEditorDialog
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        tempId={pendingTempId}
+        previewUrl={pendingPreviewUrl}
+        onPublished={(url) => {
+          setImageUrl(url);
+          setPendingTempId(null);
+          setPendingPreviewUrl(null);
+        }}
+        onClose={() => {
+          setPendingTempId(null);
+          setPendingPreviewUrl(null);
+        }}
+      />
     </div>
   );
 }

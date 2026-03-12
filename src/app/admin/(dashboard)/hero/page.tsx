@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, Save, Upload, Eye, EyeOff } from "lucide-react";
+import { MediaEditorDialog } from "@/components/admin/MediaEditorDialog";
 
 interface Slide {
   id: string;
@@ -30,9 +31,16 @@ const localeLabels: Record<string, string> = { fr: "FR", en: "EN", tr: "TR" };
 
 export default function AdminHero() {
   const [slides, setSlides] = useState<Slide[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Slide | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [pendingTempId, setPendingTempId] = useState<string | null>(null);
+  const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(
+    null,
+  );
 
   const [image, setImage] = useState("");
   const [order, setOrder] = useState(0);
@@ -48,7 +56,10 @@ export default function AdminHero() {
   const load = () =>
     fetch("/api/hero")
       .then((r) => r.json())
-      .then(setSlides);
+      .then((data) => {
+        setSlides(data);
+        setLoading(false);
+      });
   useEffect(() => {
     load();
   }, []);
@@ -95,8 +106,33 @@ export default function AdminHero() {
     fd.append("file", file);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     const data = await res.json();
-    if (data.url) setImage(data.url);
+    if (data.tempId && data.previewUrl) {
+      setPendingTempId(data.tempId);
+      setPendingPreviewUrl(data.previewUrl);
+      setEditorOpen(true);
+    }
     setUploading(false);
+  }
+
+  async function openEditorForExistingImage() {
+    if (!image) return;
+
+    setPreparing(true);
+    try {
+      const res = await fetch("/api/media/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceUrl: image }),
+      });
+      const data = await res.json();
+      if (data?.tempId && data?.previewUrl) {
+        setPendingTempId(data.tempId);
+        setPendingPreviewUrl(data.previewUrl);
+        setEditorOpen(true);
+      }
+    } finally {
+      setPreparing(false);
+    }
   }
 
   async function handleSave() {
@@ -154,53 +190,70 @@ export default function AdminHero() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Slides List */}
         <div className="space-y-3">
-          {slides.map((s) => (
-            <Card
-              key={s.id}
-              className={`border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all cursor-pointer ${editing?.id === s.id ? "border-[var(--arvesta-accent)]/30" : ""}`}
-              onClick={() => openEdit(s)}
-            >
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className="w-24 h-14 rounded-lg overflow-hidden bg-white/5 relative shrink-0">
-                  <Image
-                    src={s.image}
-                    alt="Slide"
-                    fill
-                    className="object-cover"
-                    sizes="96px"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-white block truncate">
-                    {s.translations.find((t) => t.locale === "fr")?.title ||
-                      "Başlıksız"}
-                  </span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge
-                      variant="outline"
-                      className={`text-xs font-ui ${s.active ? "border-green-500/30 text-green-400" : "border-red-500/30 text-red-400"}`}
-                    >
-                      {s.active ? "Aktif" : "Pasif"}
-                    </Badge>
-                    <span className="text-xs text-[var(--arvesta-text-muted)]">
-                      Sıra: {s.order}
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(s.id);
-                  }}
-                  className="text-[var(--arvesta-text-muted)] hover:text-red-400 shrink-0"
+          {loading
+            ? [...Array(3)].map((_, i) => (
+                <Card
+                  key={i}
+                  className="border-white/5 bg-[var(--arvesta-bg-card)]"
                 >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <CardContent className="p-3 flex items-center gap-3 animate-pulse">
+                    <div className="w-24 h-14 rounded-lg bg-white/5 shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-1/3 rounded bg-white/5" />
+                      <div className="h-3 w-1/5 rounded bg-white/5" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            : null}
+          {!loading &&
+            slides.map((s) => (
+              <Card
+                key={s.id}
+                className={`border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all cursor-pointer ${editing?.id === s.id ? "border-[var(--arvesta-accent)]/30" : ""}`}
+                onClick={() => openEdit(s)}
+              >
+                <CardContent className="p-3 flex items-center gap-3">
+                  <div className="w-24 h-14 rounded-lg overflow-hidden bg-white/5 relative shrink-0">
+                    <Image
+                      src={s.image}
+                      alt="Slide"
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-white block truncate">
+                      {s.translations.find((t) => t.locale === "fr")?.title ||
+                        "Başlıksız"}
+                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs font-ui ${s.active ? "border-green-500/30 text-green-400" : "border-red-500/30 text-red-400"}`}
+                      >
+                        {s.active ? "Aktif" : "Pasif"}
+                      </Badge>
+                      <span className="text-xs text-[var(--arvesta-text-muted)]">
+                        Sıra: {s.order}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(s.id);
+                    }}
+                    className="text-[var(--arvesta-text-muted)] hover:text-red-400 shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
         </div>
 
         {/* Edit Form */}
@@ -243,6 +296,15 @@ export default function AdminHero() {
                   {uploading ? "Yükleniyor..." : "Görsel Yükle"}
                 </Button>
               </label>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!image || preparing}
+                onClick={openEditorForExistingImage}
+                className="w-full mt-2 border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
+              >
+                {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
+              </Button>
 
               <div className="flex gap-3">
                 <div className="flex-1 space-y-1.5">
@@ -356,6 +418,22 @@ export default function AdminHero() {
           </Card>
         )}
       </div>
+
+      <MediaEditorDialog
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        tempId={pendingTempId}
+        previewUrl={pendingPreviewUrl}
+        onPublished={(url) => {
+          setImage(url);
+          setPendingTempId(null);
+          setPendingPreviewUrl(null);
+        }}
+        onClose={() => {
+          setPendingTempId(null);
+          setPendingPreviewUrl(null);
+        }}
+      />
     </div>
   );
 }

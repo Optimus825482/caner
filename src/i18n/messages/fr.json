@@ -101,6 +101,11 @@
     "ctaDesc": "Chaque projet commence par une conversation. Parlez-nous de votre vision.",
     "ctaBtn": "Démarrer un projet"
   },
+  "cookie": {
+    "message": "Ce site utilise des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité.",
+    "accept": "Accepter",
+    "decline": "Refuser"
+  },
   "common": {
     "readMore": "En savoir plus",
     "backToHome": "Retour à l'accueil",
@@ -108,7 +113,8 @@
     "allCollections": "Toutes les collections",
     "relatedProducts": "Produits similaires",
     "noProducts": "Aucun produit dans cette collection.",
-    "viewProduct": "Voir le produit"
+    "viewProduct": "Voir le produit",
+    "requestQuote": "Demander un Devis"
   },
   "adminLogin": {
     "title": "Connexion Admin",

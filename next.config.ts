@@ -6,10 +6,11 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig: NextConfig = {
   output: "standalone",
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
+  serverExternalPackages: ["@prisma/client"],
   turbopack: {
-    root: ".",
+    root: process.cwd(),
   },
   images: {
     remotePatterns: [],

@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: Props) {
             href={`/${locale}`}
             className="transition-colors hover:text-[var(--arvesta-gold)]"
           >
-            Home
+            {t("backToHome")}
           </Link>
           <span>/</span>
           <Link
@@ -120,7 +120,7 @@ export default async function ProductPage({ params }: Props) {
             href={`/${locale}#contact`}
             className="inline-flex w-fit rounded-full border border-[#ffd8a6]/40 bg-gradient-to-b from-[#f6c583] to-[var(--arvesta-accent)] px-10 py-4 font-ui text-base font-bold text-[#2b160a] shadow-[0_14px_34px_rgba(232,98,44,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110"
           >
-            Demander un Devis
+            {t("requestQuote")}
           </a>
         </div>
       </section>

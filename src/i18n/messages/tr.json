@@ -101,6 +101,11 @@
     "ctaDesc": "Her proje bir sohbetle başlar. Vizyonunuzu bize anlatın.",
     "ctaBtn": "Proje başlat"
   },
+  "cookie": {
+    "message": "Bu site deneyiminizi iyileştirmek için çerezler kullanır. Devam ederek gizlilik politikamızı kabul etmiş olursunuz.",
+    "accept": "Kabul Et",
+    "decline": "Reddet"
+  },
   "common": {
     "readMore": "Devamını oku",
     "backToHome": "Ana sayfaya dön",
@@ -108,7 +113,8 @@
     "allCollections": "Tüm koleksiyonlar",
     "relatedProducts": "Benzer ürünler",
     "noProducts": "Bu koleksiyonda ürün bulunmuyor.",
-    "viewProduct": "Ürünü görüntüle"
+    "viewProduct": "Ürünü görüntüle",
+    "requestQuote": "Teklif İste"
   },
   "adminLogin": {
     "title": "Yönetici Girişi",

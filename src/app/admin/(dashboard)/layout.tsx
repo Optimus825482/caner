@@ -25,7 +25,9 @@ export default async function AdminDashboardLayout({
       <TooltipProvider>
         <div className="min-h-screen bg-[var(--arvesta-bg)]">
           <AdminSidebar />
-          <main className="ml-[260px] p-8">{children}</main>
+          <main className="p-4 pt-16 lg:ml-[260px] lg:p-8 lg:pt-8">
+            {children}
+          </main>
         </div>
       </TooltipProvider>
     </SessionProvider>

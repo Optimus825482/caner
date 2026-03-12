@@ -41,6 +41,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# ONNX models (downloaded via scripts/download-depth-model.ts)
+/models/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
