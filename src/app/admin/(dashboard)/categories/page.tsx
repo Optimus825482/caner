@@ -163,10 +163,10 @@ export default function AdminCategories() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            Kategoriler
+            Catégories
           </h1>
           <p className="text-[var(--arvesta-text-muted)] font-ui text-sm">
-            {categories.length} kategori
+            {categories.length} catégories
           </p>
         </div>
         <Button

@@ -6,356 +6,450 @@ interface DepthParallaxViewerProps {
   imageUrl: string;
   depthMapUrl: string | null;
   intensity: number; // 0-100
+  zoom?: number; // 0.5-3.0, default 1.0
+  focusPoint?: { x: number; y: number }; // 0-100 percentage, default {x:50,y:50}
+  fogEnabled?: boolean; // default false
+  fogDensity?: number; // 0-100, default 0
+  fogColor?: string; // hex, default "#1a1a2e"
+  rotationEnabled?: boolean; // default false
+  rotationX?: number; // -30 to 30, default 0
+  rotationY?: number; // -30 to 30, default 0
+  depthColorize?: boolean; // default false
+  depthColorFrom?: string; // hex, default "#000033"
+  depthColorTo?: string; // hex, default "#ffcc00"
   className?: string;
+  watermarkOverlay?: React.ReactNode;
 }
 
-const VERTEX_SHADER_SRC = `#version 300 es
+// ── Vertex Shader (GLSL 300 es) ──
+const VERT = `#version 300 es
 in vec2 a_position;
 in vec2 a_texCoord;
 out vec2 v_texCoord;
-
+uniform float u_zoom;
+uniform vec2 u_focusPoint;
+uniform float u_rotX;
+uniform float u_rotY;
 void main() {
-  gl_Position = vec4(a_position, 0.0, 1.0);
-  v_texCoord = a_texCoord;
-}
-`;
+  float rx = u_rotX * 0.0174533;
+  float ry = u_rotY * 0.0174533;
+  vec2 pos = a_position;
+  pos.x *= 1.0 + pos.y * sin(ry) * 0.15;
+  pos.y *= 1.0 + pos.x * sin(rx) * 0.15;
+  gl_Position = vec4(pos, 0.0, 1.0);
+  vec2 tc = a_texCoord;
+  tc = (tc - u_focusPoint) / u_zoom + u_focusPoint;
+  v_texCoord = tc;
+}`;
 
-const FRAGMENT_SHADER_SRC = `#version 300 es
+// ── Fragment Shader (GLSL 300 es) ──
+const FRAG = `#version 300 es
 precision highp float;
-
 in vec2 v_texCoord;
 out vec4 fragColor;
-
 uniform sampler2D u_image;
 uniform sampler2D u_depthMap;
 uniform vec2 u_mouse;
 uniform float u_intensity;
-
+uniform float u_fogEnabled;
+uniform float u_fogDensity;
+uniform vec3 u_fogColor;
+uniform float u_depthColorize;
+uniform vec3 u_depthColorFrom;
+uniform vec3 u_depthColorTo;
 void main() {
-  float depth = texture(u_depthMap, v_texCoord).r;
-  float maxDisplacement = u_intensity * 0.03;
-  vec2 displacement = u_mouse * depth * maxDisplacement;
-  vec2 displacedCoord = v_texCoord - displacement;
-  displacedCoord = clamp(displacedCoord, 0.0, 1.0);
-  fragColor = texture(u_image, displacedCoord);
-}
-`;
+  vec2 tc = v_texCoord;
+  if (tc.x < 0.0 || tc.x > 1.0 || tc.y < 0.0 || tc.y > 1.0) {
+    fragColor = vec4(0, 0, 0, 1);
+    return;
+  }
+  float depth = texture(u_depthMap, tc).r;
+  vec2 disp = u_mouse * depth * u_intensity * 0.03;
+  vec4 color = texture(u_image, clamp(tc - disp, 0.0, 1.0));
+  if (u_depthColorize > 0.5) {
+    color.rgb = mix(color.rgb, mix(u_depthColorFrom, u_depthColorTo, depth), 0.3);
+  }
+  if (u_fogEnabled > 0.5) {
+    color.rgb = mix(color.rgb, u_fogColor, (1.0 - depth) * u_fogDensity);
+  }
+  fragColor = color;
+}`;
 
-function compileShader(
-  gl: WebGL2RenderingContext,
-  type: number,
-  source: string,
-): WebGLShader | null {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error("Shader compile error:", gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
+// ── WebGL Helpers ──
+
+function mkShader(gl: WebGL2RenderingContext, type: number, src: string) {
+  const s = gl.createShader(type);
+  if (!s) return null;
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(s));
+    gl.deleteShader(s);
     return null;
   }
-  return shader;
+  return s;
 }
 
-function createProgram(
+function mkProgram(
   gl: WebGL2RenderingContext,
-  vertexShader: WebGLShader,
-  fragmentShader: WebGLShader,
-): WebGLProgram | null {
-  const program = gl.createProgram();
-  if (!program) return null;
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error("Program link error:", gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
+  vs: WebGLShader,
+  fs: WebGLShader,
+) {
+  const p = gl.createProgram();
+  if (!p) return null;
+  gl.attachShader(p, vs);
+  gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(p));
+    gl.deleteProgram(p);
     return null;
   }
-  return program;
+  return p;
 }
 
-function loadTexture(
+function loadTex(
   gl: WebGL2RenderingContext,
   url: string,
-): Promise<{ texture: WebGLTexture; width: number; height: number }> {
-  return new Promise((resolve, reject) => {
+): Promise<{ tex: WebGLTexture; w: number; h: number }> {
+  return new Promise((res, rej) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      const texture = gl.createTexture();
-      if (!texture) {
-        reject(new Error("Failed to create texture"));
+      const t = gl.createTexture();
+      if (!t) {
+        rej(new Error("texture alloc failed"));
         return;
       }
-      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.bindTexture(gl.TEXTURE_2D, t);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      resolve({ texture, width: img.naturalWidth, height: img.naturalHeight });
+      res({ tex: t, w: img.naturalWidth, h: img.naturalHeight });
     };
-    img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+    img.onerror = () => rej(new Error("img load failed: " + url));
     img.src = url;
   });
 }
+
+function hex2rgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  return [
+    parseInt(h.slice(0, 2), 16) / 255,
+    parseInt(h.slice(2, 4), 16) / 255,
+    parseInt(h.slice(4, 6), 16) / 255,
+  ];
+}
+
+// ── Component ──
 
 export function DepthParallaxViewer({
   imageUrl,
   depthMapUrl,
   intensity,
+  zoom = 1.0,
+  focusPoint = { x: 50, y: 50 },
+  fogEnabled = false,
+  fogDensity = 0,
+  fogColor = "#1a1a2e",
+  rotationEnabled = false,
+  rotationX = 0,
+  rotationY = 0,
+  depthColorize = false,
+  depthColorFrom = "#000033",
+  depthColorTo = "#ffcc00",
   className,
+  watermarkOverlay,
 }: DepthParallaxViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const glRef = useRef<WebGL2RenderingContext | null>(null);
-  const programRef = useRef<WebGLProgram | null>(null);
+  const progRef = useRef<WebGLProgram | null>(null);
   const rafRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const texturesRef = useRef<{
-    image: WebGLTexture | null;
-    depth: WebGLTexture | null;
-  }>({ image: null, depth: null });
-  const uniformsRef = useRef<{
-    u_image: WebGLUniformLocation | null;
-    u_depthMap: WebGLUniformLocation | null;
-    u_mouse: WebGLUniformLocation | null;
-    u_intensity: WebGLUniformLocation | null;
-  }>({ u_image: null, u_depthMap: null, u_mouse: null, u_intensity: null });
-  const [webglSupported, setWebglSupported] = useState(true);
+  const texRef = useRef<{ img: WebGLTexture | null; dep: WebGLTexture | null }>(
+    {
+      img: null,
+      dep: null,
+    },
+  );
+  const uniRef = useRef<Record<string, WebGLUniformLocation | null>>({});
+  const [webglOk, setWebglOk] = useState(true);
 
-  // 1. Initialize WebGL context + compile shaders (once)
+  // Keep props in a ref so the render loop always reads latest values
+  const pRef = useRef({
+    intensity,
+    zoom,
+    focusPoint,
+    fogEnabled,
+    fogDensity,
+    fogColor,
+    rotationEnabled,
+    rotationX,
+    rotationY,
+    depthColorize,
+    depthColorFrom,
+    depthColorTo,
+  });
+  pRef.current = {
+    intensity,
+    zoom,
+    focusPoint,
+    fogEnabled,
+    fogDensity,
+    fogColor,
+    rotationEnabled,
+    rotationX,
+    rotationY,
+    depthColorize,
+    depthColorFrom,
+    depthColorTo,
+  };
+
+  // ── Init WebGL context and shaders ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const gl = canvas.getContext("webgl2");
     if (!gl) {
-      setWebglSupported(false);
+      setWebglOk(false);
       return;
     }
     glRef.current = gl;
 
-    const vs = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
-    const fs = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
+    const vs = mkShader(gl, gl.VERTEX_SHADER, VERT);
+    const fs = mkShader(gl, gl.FRAGMENT_SHADER, FRAG);
     if (!vs || !fs) return;
-
-    const program = createProgram(gl, vs, fs);
-    if (!program) return;
-    programRef.current = program;
-
-    // Clean up individual shaders after linking
+    const prog = mkProgram(gl, vs, fs);
+    if (!prog) return;
+    progRef.current = prog;
     gl.deleteShader(vs);
     gl.deleteShader(fs);
 
-    // Get uniform locations
-    uniformsRef.current = {
-      u_image: gl.getUniformLocation(program, "u_image"),
-      u_depthMap: gl.getUniformLocation(program, "u_depthMap"),
-      u_mouse: gl.getUniformLocation(program, "u_mouse"),
-      u_intensity: gl.getUniformLocation(program, "u_intensity"),
-    };
+    // Cache uniform locations
+    const names = [
+      "u_image",
+      "u_depthMap",
+      "u_mouse",
+      "u_intensity",
+      "u_zoom",
+      "u_focusPoint",
+      "u_rotX",
+      "u_rotY",
+      "u_fogEnabled",
+      "u_fogDensity",
+      "u_fogColor",
+      "u_depthColorize",
+      "u_depthColorFrom",
+      "u_depthColorTo",
+    ];
+    for (const n of names) uniRef.current[n] = gl.getUniformLocation(prog, n);
 
-    // Create fullscreen quad
-    // positions: 2 triangles covering [-1, 1]
-    // texCoords: [0, 1] with Y flipped for WebGL
-    const vertices = new Float32Array([
-      // pos (x,y)    texCoord (s,t)
+    // Fullscreen quad: [posX, posY, texU, texV] × 4 vertices
+    const verts = new Float32Array([
       -1, -1, 0, 1, 1, -1, 1, 1, -1, 1, 0, 0, 1, 1, 1, 0,
     ]);
-
     const vao = gl.createVertexArray();
     gl.bindVertexArray(vao);
-
     const vbo = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
 
-    const aPosition = gl.getAttribLocation(program, "a_position");
-    gl.enableVertexAttribArray(aPosition);
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 16, 0);
+    const aP = gl.getAttribLocation(prog, "a_position");
+    gl.enableVertexAttribArray(aP);
+    gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 16, 0);
 
-    const aTexCoord = gl.getAttribLocation(program, "a_texCoord");
-    gl.enableVertexAttribArray(aTexCoord);
-    gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, false, 16, 8);
+    const aT = gl.getAttribLocation(prog, "a_texCoord");
+    gl.enableVertexAttribArray(aT);
+    gl.vertexAttribPointer(aT, 2, gl.FLOAT, false, 16, 8);
 
     return () => {
-      // Cleanup on unmount
-      if (texturesRef.current.image)
-        gl.deleteTexture(texturesRef.current.image);
-      if (texturesRef.current.depth)
-        gl.deleteTexture(texturesRef.current.depth);
-      if (programRef.current) gl.deleteProgram(programRef.current);
+      if (texRef.current.img) gl.deleteTexture(texRef.current.img);
+      if (texRef.current.dep) gl.deleteTexture(texRef.current.dep);
+      if (progRef.current) gl.deleteProgram(progRef.current);
       if (vbo) gl.deleteBuffer(vbo);
       if (vao) gl.deleteVertexArray(vao);
       glRef.current = null;
-      programRef.current = null;
+      progRef.current = null;
     };
   }, []);
 
-  // 2. Load textures when URLs change
+  // ── Load textures when URLs change ──
   useEffect(() => {
     const gl = glRef.current;
     if (!gl) return;
+    let dead = false;
 
-    let cancelled = false;
-
-    async function load() {
+    (async () => {
       // Load main image texture
       try {
-        if (texturesRef.current.image) {
-          gl!.deleteTexture(texturesRef.current.image);
-          texturesRef.current.image = null;
+        if (texRef.current.img) {
+          gl.deleteTexture(texRef.current.img);
+          texRef.current.img = null;
         }
-        const result = await loadTexture(gl!, imageUrl);
-        if (cancelled) {
-          gl!.deleteTexture(result.texture);
+        const r = await loadTex(gl, imageUrl);
+        if (dead) {
+          gl.deleteTexture(r.tex);
           return;
         }
-        texturesRef.current.image = result.texture;
-
-        // Resize canvas to match image aspect ratio
-        const canvas = canvasRef.current;
-        if (canvas) {
-          canvas.width = result.width;
-          canvas.height = result.height;
-          gl!.viewport(0, 0, result.width, result.height);
+        texRef.current.img = r.tex;
+        const c = canvasRef.current;
+        if (c) {
+          c.width = r.w;
+          c.height = r.h;
+          gl.viewport(0, 0, r.w, r.h);
         }
-      } catch (err) {
-        console.error("Failed to load image texture:", err);
+      } catch (e) {
+        console.error("img tex:", e);
       }
 
-      // Load depth map texture
+      // Load depth map texture (or create black 1×1 fallback)
       if (depthMapUrl) {
         try {
-          if (texturesRef.current.depth) {
-            gl!.deleteTexture(texturesRef.current.depth);
-            texturesRef.current.depth = null;
+          if (texRef.current.dep) {
+            gl.deleteTexture(texRef.current.dep);
+            texRef.current.dep = null;
           }
-          const result = await loadTexture(gl!, depthMapUrl);
-          if (cancelled) {
-            gl!.deleteTexture(result.texture);
+          const r = await loadTex(gl, depthMapUrl);
+          if (dead) {
+            gl.deleteTexture(r.tex);
             return;
           }
-          texturesRef.current.depth = result.texture;
-        } catch (err) {
-          console.error("Failed to load depth map texture:", err);
+          texRef.current.dep = r.tex;
+        } catch (e) {
+          console.error("depth tex:", e);
         }
       } else {
-        if (texturesRef.current.depth) {
-          gl!.deleteTexture(texturesRef.current.depth);
-          texturesRef.current.depth = null;
+        if (texRef.current.dep) {
+          gl.deleteTexture(texRef.current.dep);
+          texRef.current.dep = null;
         }
+        const t = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          1,
+          1,
+          0,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          new Uint8Array([0, 0, 0, 255]),
+        );
+        texRef.current.dep = t;
       }
-    }
-
-    load();
+    })();
 
     return () => {
-      cancelled = true;
+      dead = true;
     };
   }, [imageUrl, depthMapUrl]);
 
-  // 3. Pointer handlers
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    mouseRef.current = {
-      x: Math.max(-1, Math.min(1, (e.clientX - cx) / (rect.width / 2))),
-      y: Math.max(-1, Math.min(1, (e.clientY - cy) / (rect.height / 2))),
-    };
-  }, []);
-
-  const handlePointerLeave = useCallback(() => {
-    mouseRef.current = { x: 0, y: 0 };
-  }, []);
-
-  // 4. Render loop
+  // ── Render loop ──
   useEffect(() => {
     const gl = glRef.current;
-    const program = programRef.current;
-    if (!gl || !program) return;
+    const prog = progRef.current;
+    if (!gl || !prog) return;
+    let on = true;
 
-    function render() {
-      const gl = glRef.current;
-      const program = programRef.current;
-      if (!gl || !program) return;
-
-      const { image, depth } = texturesRef.current;
-      if (!image || !depth) {
-        rafRef.current = requestAnimationFrame(render);
+    function draw() {
+      if (!on || !gl || !prog) return;
+      const { img, dep } = texRef.current;
+      if (!img) {
+        rafRef.current = requestAnimationFrame(draw);
         return;
       }
 
-      gl.useProgram(program);
+      gl.useProgram(prog);
+      const u = uniRef.current;
+      const p = pRef.current;
+      const m = mouseRef.current;
 
       // Set uniforms
-      const u = uniformsRef.current;
-      gl.uniform2f(u.u_mouse, mouseRef.current.x, mouseRef.current.y);
-      gl.uniform1f(u.u_intensity, intensity / 100);
+      gl.uniform2f(u.u_mouse, m.x, m.y);
+      gl.uniform1f(u.u_intensity, Math.max(0, Math.min(100, p.intensity)));
+      gl.uniform1f(u.u_zoom, Math.max(0.5, Math.min(3.0, p.zoom)));
+      gl.uniform2f(u.u_focusPoint, p.focusPoint.x / 100, p.focusPoint.y / 100);
+      gl.uniform1f(u.u_rotX, p.rotationEnabled ? p.rotationX : 0);
+      gl.uniform1f(u.u_rotY, p.rotationEnabled ? p.rotationY : 0);
+      gl.uniform1f(u.u_fogEnabled, p.fogEnabled ? 1 : 0);
+      gl.uniform1f(u.u_fogDensity, p.fogDensity / 100);
+      const fc = hex2rgb(p.fogColor);
+      gl.uniform3f(u.u_fogColor, fc[0], fc[1], fc[2]);
+      gl.uniform1f(u.u_depthColorize, p.depthColorize ? 1 : 0);
+      const cf = hex2rgb(p.depthColorFrom);
+      gl.uniform3f(u.u_depthColorFrom, cf[0], cf[1], cf[2]);
+      const ct = hex2rgb(p.depthColorTo);
+      gl.uniform3f(u.u_depthColorTo, ct[0], ct[1], ct[2]);
 
-      // Bind image texture to unit 0
+      // Bind textures and draw
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, image);
+      gl.bindTexture(gl.TEXTURE_2D, img);
       gl.uniform1i(u.u_image, 0);
-
-      // Bind depth map texture to unit 1
       gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, depth);
+      gl.bindTexture(gl.TEXTURE_2D, dep);
       gl.uniform1i(u.u_depthMap, 1);
-
-      // Draw fullscreen quad (triangle strip, 4 vertices)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-      rafRef.current = requestAnimationFrame(render);
+      rafRef.current = requestAnimationFrame(draw);
     }
 
-    render();
-
+    rafRef.current = requestAnimationFrame(draw);
     return () => {
+      on = false;
       cancelAnimationFrame(rafRef.current);
     };
-  }, [intensity]);
+  }, []);
 
-  // Fallback: no WebGL
-  if (!webglSupported) {
+  // ── Pointer handlers ──
+  const onMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseRef.current = {
+      x: Math.max(
+        -1,
+        Math.min(1, ((e.clientX - rect.left) / rect.width) * 2 - 1),
+      ),
+      y: Math.max(
+        -1,
+        Math.min(1, -(((e.clientY - rect.top) / rect.height) * 2 - 1)),
+      ),
+    };
+  }, []);
+
+  const onLeave = useCallback(() => {
+    mouseRef.current = { x: 0, y: 0 };
+  }, []);
+
+  // ── Fallback for no WebGL ──
+  if (!webglOk) {
     return (
       <div className={className}>
         <img
           src={imageUrl}
           alt="Preview"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
         />
-        <p className="text-xs text-amber-400 mt-1">
-          WebGL 2.0 gerekli — parallax efekti kullanılamıyor
+        <p className="text-xs text-center text-[var(--arvesta-text-muted)] mt-1">
+          WebGL desteklenmiyor
         </p>
       </div>
     );
   }
 
-  // Fallback: no depth map
-  if (!depthMapUrl) {
-    return (
-      <div className={className}>
-        <img
-          src={imageUrl}
-          alt="Preview"
-          className="w-full h-full object-contain"
-        />
-      </div>
-    );
-  }
-
+  // ── Render ──
   return (
-    <canvas
-      ref={canvasRef}
-      className={className}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-      style={{ touchAction: "none" }}
-    />
+    <div className={`relative ${className || ""}`}>
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full object-cover"
+        onPointerMove={onMove}
+        onPointerLeave={onLeave}
+        style={{ touchAction: "none" }}
+      />
+      {watermarkOverlay}
+    </div>
   );
 }

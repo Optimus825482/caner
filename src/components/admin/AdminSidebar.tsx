@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
   Package,
@@ -14,23 +15,23 @@ import {
   Settings,
   LogOut,
   Menu,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-const menuItems = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/products", icon: Package, label: "Ürünler" },
-  { href: "/admin/categories", icon: Grid3X3, label: "Kategoriler" },
-  { href: "/admin/hero", icon: ImageIcon, label: "Hero Slider" },
-  { href: "/admin/submissions", icon: MessageSquare, label: "Talepler" },
-  { href: "/admin/settings", icon: Settings, label: "Ayarlar" },
-];
+const menuKeys = [
+  { href: "/admin", icon: LayoutDashboard, key: "dashboard" },
+  { href: "/admin/products", icon: Package, key: "products" },
+  { href: "/admin/categories", icon: Grid3X3, key: "categories" },
+  { href: "/admin/hero", icon: ImageIcon, key: "heroSlider" },
+  { href: "/admin/submissions", icon: MessageSquare, key: "submissions" },
+  { href: "/admin/settings", icon: Settings, key: "settings" },
+] as const;
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const t = useTranslations("adminSidebar");
 
   const sidebarContent = (
     <>
@@ -57,7 +58,7 @@ export default function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
+        {menuKeys.map((item) => {
           const active =
             pathname === item.href ||
             (item.href !== "/admin" && pathname.startsWith(item.href));
@@ -73,7 +74,7 @@ export default function AdminSidebar() {
               }`}
             >
               <item.icon className="w-[18px] h-[18px]" />
-              {item.label}
+              {t(item.key)}
             </Link>
           );
         })}
@@ -89,7 +90,7 @@ export default function AdminSidebar() {
           className="w-full justify-start gap-3 text-[var(--arvesta-text-muted)] hover:text-red-400 hover:bg-red-500/5 font-ui text-[0.85rem]"
         >
           <LogOut className="w-[18px] h-[18px]" />
-          Çıkış Yap
+          {t("logout")}
         </Button>
       </div>
     </>

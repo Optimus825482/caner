@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ export default function AdminHero() {
   const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(
     null,
   );
+  const t = useTranslations("adminHero");
 
   const [image, setImage] = useState("");
   const [order, setOrder] = useState(0);
@@ -70,19 +72,19 @@ export default function AdminHero() {
     setImage(s.image);
     setOrder(s.order);
     setActive(s.active);
-    const t: Record<
+    const trans: Record<
       string,
       { badge: string; title: string; subtitle: string }
     > = {};
     locales.forEach((l) => {
       const tr = s.translations.find((x) => x.locale === l);
-      t[l] = {
+      trans[l] = {
         badge: tr?.badge || "",
         title: tr?.title || "",
         subtitle: tr?.subtitle || "",
       };
     });
-    setTranslations(t);
+    setTranslations(trans);
   }
 
   function openNew() {
@@ -173,17 +175,17 @@ export default function AdminHero() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            Hero Slider
+            {t("title")}
           </h1>
           <p className="text-[var(--arvesta-text-muted)] font-ui text-sm">
-            {slides.length} slide
+            {slides.length} {t("slideCount")}
           </p>
         </div>
         <Button
           onClick={openNew}
           className="bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui"
         >
-          <Plus className="w-4 h-4 mr-2" /> Yeni Slide
+          <Plus className="w-4 h-4 mr-2" /> {t("newSlide")}
         </Button>
       </div>
 
@@ -226,17 +228,17 @@ export default function AdminHero() {
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-white block truncate">
                       {s.translations.find((t) => t.locale === "fr")?.title ||
-                        "Başlıksız"}
+                        t("untitled")}
                     </span>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
                         variant="outline"
                         className={`text-xs font-ui ${s.active ? "border-green-500/30 text-green-400" : "border-red-500/30 text-red-400"}`}
                       >
-                        {s.active ? "Aktif" : "Pasif"}
+                        {s.active ? "Actif" : "Inactif"}
                       </Badge>
                       <span className="text-xs text-[var(--arvesta-text-muted)]">
-                        Sıra: {s.order}
+                        Ordre: {s.order}
                       </span>
                     </div>
                   </div>
@@ -261,7 +263,7 @@ export default function AdminHero() {
           <Card className="border-white/5 bg-[var(--arvesta-bg-card)] h-fit">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white">
-                {isNew ? "Yeni Slide" : "Slide Düzenle"}
+                {isNew ? "Nouveau Slide" : "Modifier le Slide"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -281,20 +283,16 @@ export default function AdminHero() {
                   <Upload className="w-8 h-8 text-[var(--arvesta-text-muted)]" />
                 </div>
               )}
-              <label className="cursor-pointer">
+              <label className="cursor-pointer block">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleUpload}
                   className="hidden"
                 />
-                <Button
-                  variant="outline"
-                  className="w-full border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
-                  type="button"
-                >
-                  {uploading ? "Yükleniyor..." : "Görsel Yükle"}
-                </Button>
+                <span className="inline-flex items-center justify-center w-full h-10 px-4 rounded-md border border-white/10 bg-transparent text-[var(--arvesta-text-secondary)] font-ui text-sm hover:bg-white/5 transition-colors">
+                  {uploading ? "Chargement..." : "Charger une image"}
+                </span>
               </label>
               <Button
                 type="button"
@@ -303,13 +301,13 @@ export default function AdminHero() {
                 onClick={openEditorForExistingImage}
                 className="w-full mt-2 border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
               >
-                {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
+                {preparing ? "Préparation..." : "Modifier l'image existante"}
               </Button>
 
               <div className="flex gap-3">
                 <div className="flex-1 space-y-1.5">
                   <Label className="text-[var(--arvesta-text-secondary)] text-xs">
-                    Sıra
+                    Ordre
                   </Label>
                   <Input
                     type="number"
@@ -333,7 +331,7 @@ export default function AdminHero() {
                     ) : (
                       <EyeOff className="w-4 h-4 mr-1" />
                     )}
-                    {active ? "Aktif" : "Pasif"}
+                    {active ? "Actif" : "Inactif"}
                   </Button>
                 </div>
               </div>
@@ -372,7 +370,7 @@ export default function AdminHero() {
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[var(--arvesta-text-secondary)] text-xs">
-                        Başlık
+                        Titre
                       </Label>
                       <Input
                         value={translations[l]?.title || ""}
@@ -387,7 +385,7 @@ export default function AdminHero() {
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[var(--arvesta-text-secondary)] text-xs">
-                        Alt Başlık
+                        Sous-titre
                       </Label>
                       <Textarea
                         value={translations[l]?.subtitle || ""}
@@ -412,7 +410,7 @@ export default function AdminHero() {
                 onClick={handleSave}
                 className="w-full bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui font-semibold"
               >
-                <Save className="w-4 h-4 mr-2" /> Kaydet
+                <Save className="w-4 h-4 mr-2" /> Enregistrer
               </Button>
             </CardContent>
           </Card>

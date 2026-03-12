@@ -20,6 +20,17 @@ export interface DepthParallaxConfig {
   depthMapTempId: string;
   depthMapUrl?: string;
   intensity: number; // 0-100
+  zoom?: number; // 0.5-3.0
+  focusPoint?: { x: number; y: number }; // 0-100
+  fogEnabled?: boolean;
+  fogDensity?: number; // 0-100
+  fogColor?: string; // hex
+  rotationEnabled?: boolean;
+  rotationX?: number; // -30..30
+  rotationY?: number; // -30..30
+  depthColorize?: boolean;
+  depthColorFrom?: string; // hex
+  depthColorTo?: string; // hex
 }
 
 export interface MediaEditRecipe {

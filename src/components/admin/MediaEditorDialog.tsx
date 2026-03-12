@@ -100,6 +100,20 @@ export function MediaEditorDialog({
   const [depthLoading, setDepthLoading] = useState(false);
   const [depthError, setDepthError] = useState<string | null>(null);
 
+  // 3D depth controls
+  const [depthZoom, setDepthZoom] = useState(1.0);
+  const [depthFocusX, setDepthFocusX] = useState(50);
+  const [depthFocusY, setDepthFocusY] = useState(50);
+  const [depthFogEnabled, setDepthFogEnabled] = useState(false);
+  const [depthFogDensity, setDepthFogDensity] = useState(0);
+  const [depthFogColor, setDepthFogColor] = useState("#1a1a2e");
+  const [depthRotationEnabled, setDepthRotationEnabled] = useState(false);
+  const [depthRotationX, setDepthRotationX] = useState(0);
+  const [depthRotationY, setDepthRotationY] = useState(0);
+  const [depthColorize, setDepthColorize] = useState(false);
+  const [depthColorFrom, setDepthColorFrom] = useState("#000033");
+  const [depthColorTo, setDepthColorTo] = useState("#ffcc00");
+
   const previewFilter = useMemo(() => {
     const b = 100 + brightness;
     const c = 100 + contrast;
@@ -142,6 +156,18 @@ export function MediaEditorDialog({
     setDepthIntensity(50);
     setDepthLoading(false);
     setDepthError(null);
+    setDepthZoom(1.0);
+    setDepthFocusX(50);
+    setDepthFocusY(50);
+    setDepthFogEnabled(false);
+    setDepthFogDensity(0);
+    setDepthFogColor("#1a1a2e");
+    setDepthRotationEnabled(false);
+    setDepthRotationX(0);
+    setDepthRotationY(0);
+    setDepthColorize(false);
+    setDepthColorFrom("#000033");
+    setDepthColorTo("#ffcc00");
   }
 
   function resetStyleToDefaults() {
@@ -248,9 +274,9 @@ export function MediaEditorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] sm:max-w-[95vw] xl:max-w-[1400px] h-[90vh] bg-[var(--arvesta-bg-card)] border border-white/10 text-white p-0 overflow-hidden flex flex-col">
         <DialogHeader className="px-5 pt-5 pb-2 shrink-0">
-          <DialogTitle className="font-ui">Görsel Ön İşleme</DialogTitle>
+          <DialogTitle className="font-ui">Traitement d&apos;image</DialogTitle>
           <DialogDescription className="text-[var(--arvesta-text-muted)]">
-            Düzenlemeleri uygula, ardından Kaydet ile anında yayınla.
+            Appliquez les modifications, puis enregistrez pour publier.
           </DialogDescription>
         </DialogHeader>
 
@@ -264,7 +290,75 @@ export function MediaEditorDialog({
                     imageUrl={previewUrl}
                     depthMapUrl={depthMapUrl}
                     intensity={depthIntensity}
+                    zoom={depthZoom}
+                    focusPoint={{ x: depthFocusX, y: depthFocusY }}
+                    fogEnabled={depthFogEnabled}
+                    fogDensity={depthFogDensity}
+                    fogColor={depthFogColor}
+                    rotationEnabled={depthRotationEnabled}
+                    rotationX={depthRotationX}
+                    rotationY={depthRotationY}
+                    depthColorize={depthColorize}
+                    depthColorFrom={depthColorFrom}
+                    depthColorTo={depthColorTo}
                     className="max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl"
+                    watermarkOverlay={
+                      watermarkEnabled ? (
+                        <div
+                          className="absolute pointer-events-none"
+                          style={{
+                            inset: 0,
+                            display: "flex",
+                            padding: "3%",
+                            alignItems: watermarkPosition.includes("top")
+                              ? "flex-start"
+                              : watermarkPosition.includes("bottom")
+                                ? "flex-end"
+                                : "center",
+                            justifyContent: watermarkPosition.includes("left")
+                              ? "flex-start"
+                              : watermarkPosition.includes("right")
+                                ? "flex-end"
+                                : "center",
+                          }}
+                        >
+                          {watermarkType === "logo" ? (
+                            <div
+                              className="flex items-center justify-center rounded-full flex-col shadow-xl"
+                              style={{
+                                width: `${Math.max(10, watermarkScale * 28)}%`,
+                                aspectRatio: "1/1",
+                                backgroundColor: `rgba(0,0,0,${watermarkOpacity * 0.45})`,
+                              }}
+                            >
+                              <Image
+                                src="/logo.png"
+                                alt="Filigrane logo"
+                                width={220}
+                                height={220}
+                                className="h-auto w-[70%] object-contain"
+                                style={{ opacity: watermarkOpacity }}
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              className="text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center"
+                              style={{
+                                backgroundColor: `rgba(0,0,0,${watermarkOpacity * 0.45})`,
+                                opacity: watermarkOpacity,
+                                fontSize: `${Math.max(12, watermarkScale * 42)}px`,
+                                maxWidth: "85%",
+                                whiteSpace: "normal",
+                                wordBreak: "break-word",
+                                letterSpacing: "2px",
+                              }}
+                            >
+                              {watermarkText || "ARVESTA"}
+                            </div>
+                          )}
+                        </div>
+                      ) : undefined
+                    }
                   />
                 ) : (
                   <>
@@ -307,7 +401,7 @@ export function MediaEditorDialog({
                     >
                       <img
                         src={previewUrl}
-                        alt="Önizleme"
+                        alt="Aperçu"
                         className="max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl"
                         style={{
                           filter: previewFilter,
@@ -359,7 +453,7 @@ export function MediaEditorDialog({
                           >
                             <Image
                               src="/logo.png"
-                              alt="Arvesta logo filigran önizlemesi"
+                              alt="Aperçu du filigrane logo Arvesta"
                               width={220}
                               height={220}
                               className="h-auto w-[70%] object-contain"
@@ -389,7 +483,7 @@ export function MediaEditorDialog({
               </div>
             ) : (
               <div className="h-full w-full flex items-center justify-center text-[var(--arvesta-text-muted)]">
-                Önizleme bulunamadı
+                Aperçu non disponible
               </div>
             )}
           </div>
@@ -406,31 +500,31 @@ export function MediaEditorDialog({
                   value="basic"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Temel
+                  Base
                 </TabsTrigger>
                 <TabsTrigger
                   value="crop"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Kes
+                  Recadrer
                 </TabsTrigger>
                 <TabsTrigger
                   value="style"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Stil
+                  Style
                 </TabsTrigger>
                 <TabsTrigger
                   value="overlay"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Katman
+                  Calque
                 </TabsTrigger>
                 <TabsTrigger
                   value="depth"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Derinlik
+                  Profondeur
                 </TabsTrigger>
               </TabsList>
 
@@ -438,7 +532,7 @@ export function MediaEditorDialog({
               <TabsContent value="basic" className="space-y-3 mt-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs text-[var(--arvesta-text-secondary)]">
-                    Döndür
+                    Rotation
                   </Label>
                   <div className="flex gap-2">
                     {([0, 90, 180, 270] as const).map((value) => (
@@ -472,7 +566,7 @@ export function MediaEditorDialog({
                     }
                     onClick={() => setFlip(!flip)}
                   >
-                    ↕ Dikey Ayna
+                    ↕ Miroir V
                   </Button>
                   <Button
                     type="button"
@@ -485,7 +579,7 @@ export function MediaEditorDialog({
                     }
                     onClick={() => setFlop(!flop)}
                   >
-                    ↔ Yatay Ayna
+                    ↔ Miroir H
                   </Button>
                 </div>
 
@@ -494,7 +588,7 @@ export function MediaEditorDialog({
                     htmlFor="quality-range"
                     className="text-xs text-[var(--arvesta-text-secondary)]"
                   >
-                    Kalite ({quality})
+                    Qualité ({quality})
                   </Label>
                   <Input
                     id="quality-range"
@@ -510,8 +604,8 @@ export function MediaEditorDialog({
                   <input
                     id="autoEnhance"
                     type="checkbox"
-                    aria-label="Otomatik iyileştirmeyi etkinleştir"
-                    title="Otomatik iyileştirmeyi etkinleştir"
+                    aria-label="Activer l'amélioration automatique"
+                    title="Activer l'amélioration automatique"
                     checked={autoEnhance}
                     onChange={(e) => setAutoEnhance(e.target.checked)}
                     className="accent-[var(--arvesta-accent)]"
@@ -520,7 +614,7 @@ export function MediaEditorDialog({
                     htmlFor="autoEnhance"
                     className="text-sm text-[var(--arvesta-text-secondary)]"
                   >
-                    Otomatik İyileştirme
+                    Amélioration auto
                   </Label>
                 </div>
               </TabsContent>
@@ -528,8 +622,8 @@ export function MediaEditorDialog({
               {/* === CROP TAB === */}
               <TabsContent value="crop" className="space-y-3 mt-3">
                 <div className="text-xs text-[var(--arvesta-text-muted)] mb-2">
-                  Görsel üzerindeki çerçeveyi sürükleyerek de kesme
-                  yapabilirsiniz.
+                  Vous pouvez aussi glisser le cadre directement sur
+                  l&apos;image.
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1.5">
@@ -552,13 +646,13 @@ export function MediaEditorDialog({
                           100,
                         );
                         setCropX(next);
-                        setCropObj(
-                          (prev) =>
-                            ({
-                              ...(prev || ({ unit: "%" } as Crop)),
-                              x: next,
-                            }) as Crop,
-                        );
+                        setCropObj({
+                          unit: "%",
+                          x: next,
+                          y: cropY,
+                          width: cropW,
+                          height: cropH,
+                        });
                       }}
                     />
                   </div>
@@ -582,13 +676,13 @@ export function MediaEditorDialog({
                           100,
                         );
                         setCropY(next);
-                        setCropObj(
-                          (prev) =>
-                            ({
-                              ...(prev || ({ unit: "%" } as Crop)),
-                              y: next,
-                            }) as Crop,
-                        );
+                        setCropObj({
+                          unit: "%",
+                          x: cropX,
+                          y: next,
+                          width: cropW,
+                          height: cropH,
+                        });
                       }}
                     />
                   </div>
@@ -597,7 +691,7 @@ export function MediaEditorDialog({
                       htmlFor="crop-width"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Genişlik (%)
+                      Largeur (%)
                     </Label>
                     <Input
                       id="crop-width"
@@ -612,13 +706,13 @@ export function MediaEditorDialog({
                           100,
                         );
                         setCropW(next);
-                        setCropObj(
-                          (prev) =>
-                            ({
-                              ...(prev || ({ unit: "%" } as Crop)),
-                              width: next,
-                            }) as Crop,
-                        );
+                        setCropObj({
+                          unit: "%",
+                          x: cropX,
+                          y: cropY,
+                          width: next,
+                          height: cropH,
+                        });
                       }}
                     />
                   </div>
@@ -627,7 +721,7 @@ export function MediaEditorDialog({
                       htmlFor="crop-height"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Yükseklik (%)
+                      Hauteur (%)
                     </Label>
                     <Input
                       id="crop-height"
@@ -642,13 +736,13 @@ export function MediaEditorDialog({
                           100,
                         );
                         setCropH(next);
-                        setCropObj(
-                          (prev) =>
-                            ({
-                              ...(prev || ({ unit: "%" } as Crop)),
-                              height: next,
-                            }) as Crop,
-                        );
+                        setCropObj({
+                          unit: "%",
+                          x: cropX,
+                          y: cropY,
+                          width: cropW,
+                          height: next,
+                        });
                       }}
                     />
                   </div>
@@ -664,15 +758,16 @@ export function MediaEditorDialog({
                       height: clampPercent(cropH, 1, 100),
                     });
                     setCropApplied(true);
-                    setActiveTab("style");
                   }}
                 >
-                  Kesim Alanını Onayla
+                  {cropApplied
+                    ? "✓ Recadrage confirmé"
+                    : "Confirmer le recadrage"}
                 </Button>
                 {cropApplied && (
                   <p className="text-xs text-emerald-300">
-                    Kesim alanı uygulandı. Kaydet ve Yayınla ile çıktıya
-                    işlenecek.
+                    Recadrage appliqué. Il sera traité lors de
+                    l&apos;enregistrement.
                   </p>
                 )}
               </TabsContent>
@@ -687,7 +782,7 @@ export function MediaEditorDialog({
                     className="text-xs text-[var(--arvesta-text-muted)] hover:text-white"
                     onClick={resetStyleToDefaults}
                   >
-                    Sıfırla
+                    Réinitialiser
                   </Button>
                 </div>
 
@@ -696,7 +791,7 @@ export function MediaEditorDialog({
                     htmlFor="brightness-range"
                     className="text-xs text-[var(--arvesta-text-secondary)]"
                   >
-                    Parlaklık ({brightness})
+                    Luminosité ({brightness})
                   </Label>
                   <Input
                     id="brightness-range"
@@ -712,7 +807,7 @@ export function MediaEditorDialog({
                     htmlFor="contrast-range"
                     className="text-xs text-[var(--arvesta-text-secondary)]"
                   >
-                    Kontrast ({contrast})
+                    Contraste ({contrast})
                   </Label>
                   <Input
                     id="contrast-range"
@@ -728,7 +823,7 @@ export function MediaEditorDialog({
                     htmlFor="saturation-range"
                     className="text-xs text-[var(--arvesta-text-secondary)]"
                   >
-                    Doygunluk ({saturation})
+                    Saturation ({saturation})
                   </Label>
                   <Input
                     id="saturation-range"
@@ -746,7 +841,7 @@ export function MediaEditorDialog({
                       htmlFor="sharpen-range"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Keskinlik ({sharpen})
+                      Netteté ({sharpen})
                     </Label>
                     <Input
                       id="sharpen-range"
@@ -762,7 +857,7 @@ export function MediaEditorDialog({
                       htmlFor="blur-range"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Bulanıklık ({blur.toFixed(1)})
+                      Flou ({blur.toFixed(1)})
                     </Label>
                     <Input
                       id="blur-range"
@@ -779,7 +874,7 @@ export function MediaEditorDialog({
                       htmlFor="vignette-range"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Vinyet ({vignette})
+                      Vignette ({vignette})
                     </Label>
                     <Input
                       id="vignette-range"
@@ -798,12 +893,12 @@ export function MediaEditorDialog({
                       htmlFor="temperature-range"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Renk Sıcaklığı (
+                      Température (
                       {temperature > 0
-                        ? `+${temperature} Sıcak`
+                        ? `+${temperature} Chaud`
                         : temperature < 0
-                          ? `${temperature} Soğuk`
-                          : "Nötr"}
+                          ? `${temperature} Froid`
+                          : "Neutre"}
                       )
                     </Label>
                     <Input
@@ -841,8 +936,8 @@ export function MediaEditorDialog({
                   <input
                     id="watermarkEnabled"
                     type="checkbox"
-                    aria-label="Filigranı etkinleştir"
-                    title="Filigranı etkinleştir"
+                    aria-label="Activer le filigrane"
+                    title="Activer le filigrane"
                     checked={watermarkEnabled}
                     onChange={(e) => setWatermarkEnabled(e.target.checked)}
                     className="accent-[var(--arvesta-accent)]"
@@ -851,7 +946,7 @@ export function MediaEditorDialog({
                     htmlFor="watermarkEnabled"
                     className="text-sm text-[var(--arvesta-text-secondary)]"
                   >
-                    Filigran (Watermark)
+                    Filigrane (Watermark)
                   </Label>
                 </div>
 
@@ -864,8 +959,8 @@ export function MediaEditorDialog({
                           id="wm-text"
                           name="wmType"
                           value="text"
-                          aria-label="Yazı filigranı"
-                          title="Yazı filigranı"
+                          aria-label="Filigrane texte"
+                          title="Filigrane texte"
                           checked={watermarkType === "text"}
                           onChange={() => setWatermarkType("text")}
                           className="accent-[var(--arvesta-accent)]"
@@ -874,7 +969,7 @@ export function MediaEditorDialog({
                           htmlFor="wm-text"
                           className="text-xs text-white cursor-pointer"
                         >
-                          Yazı
+                          Texte
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2 bg-black/20 p-2 rounded-md border border-white/5">
@@ -883,8 +978,8 @@ export function MediaEditorDialog({
                           id="wm-logo"
                           name="wmType"
                           value="logo"
-                          aria-label="Logo filigranı"
-                          title="Logo filigranı"
+                          aria-label="Filigrane logo"
+                          title="Filigrane logo"
                           checked={watermarkType === "logo"}
                           onChange={() => setWatermarkType("logo")}
                           className="accent-[var(--arvesta-accent)]"
@@ -901,7 +996,7 @@ export function MediaEditorDialog({
                     {watermarkType === "text" && (
                       <div className="space-y-1.5">
                         <Label className="text-xs text-[var(--arvesta-text-secondary)]">
-                          Filigran Metni
+                          Texte du filigrane
                         </Label>
                         <Input
                           value={watermarkText}
@@ -915,12 +1010,12 @@ export function MediaEditorDialog({
                       htmlFor="watermark-position"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Filigran Konumu
+                      Position du filigrane
                     </Label>
                     <select
                       id="watermark-position"
-                      aria-label="Filigran konumu"
-                      title="Filigran konumu"
+                      aria-label="Position du filigrane"
+                      title="Position du filigrane"
                       value={watermarkPosition}
                       onChange={(e) =>
                         setWatermarkPosition(
@@ -934,11 +1029,11 @@ export function MediaEditorDialog({
                       }
                       className="w-full h-10 px-3 bg-[var(--arvesta-bg-elevated)] border border-white/10 rounded-md text-sm"
                     >
-                      <option value="top-left">Sol Üst</option>
-                      <option value="top-right">Sağ Üst</option>
-                      <option value="bottom-left">Sol Alt</option>
-                      <option value="bottom-right">Sağ Alt</option>
-                      <option value="center">Orta</option>
+                      <option value="top-left">Haut gauche</option>
+                      <option value="top-right">Haut droit</option>
+                      <option value="bottom-left">Bas gauche</option>
+                      <option value="bottom-right">Bas droit</option>
+                      <option value="center">Centre</option>
                     </select>
 
                     <div className="space-y-1">
@@ -946,7 +1041,7 @@ export function MediaEditorDialog({
                         htmlFor="watermark-opacity"
                         className="text-xs text-[var(--arvesta-text-secondary)]"
                       >
-                        Filigran Opaklığı ({watermarkOpacity.toFixed(2)})
+                        Opacité du filigrane ({watermarkOpacity.toFixed(2)})
                       </Label>
                       <Input
                         id="watermark-opacity"
@@ -966,7 +1061,7 @@ export function MediaEditorDialog({
                         htmlFor="watermark-scale"
                         className="text-xs text-[var(--arvesta-text-secondary)]"
                       >
-                        Filigran Boyutu ({watermarkScale.toFixed(2)})
+                        Taille du filigrane ({watermarkScale.toFixed(2)})
                       </Label>
                       <Input
                         id="watermark-scale"
@@ -986,7 +1081,7 @@ export function MediaEditorDialog({
                 <div className="pt-2 border-t border-white/10">
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm text-[var(--arvesta-text-secondary)]">
-                      Metin Ekle
+                      Ajouter du texte
                     </Label>
                     <Button
                       type="button"
@@ -996,7 +1091,7 @@ export function MediaEditorDialog({
                         setTextOverlays((p) => [...p, defaultOverlay()])
                       }
                     >
-                      Ekle
+                      Ajouter
                     </Button>
                   </div>
 
@@ -1059,7 +1154,7 @@ export function MediaEditorDialog({
                               ),
                             )
                           }
-                          placeholder="Boyut"
+                          placeholder="Taille"
                         />
                         <Input
                           type="color"
@@ -1086,7 +1181,7 @@ export function MediaEditorDialog({
                           )
                         }
                       >
-                        Kaldır
+                        Supprimer
                       </Button>
                     </div>
                   ))}
@@ -1102,8 +1197,8 @@ export function MediaEditorDialog({
                   disabled={depthLoading || !tempId}
                 >
                   {depthLoading
-                    ? "Oluşturuluyor..."
-                    : "Derinlik Haritası Oluştur"}
+                    ? "Génération..."
+                    : "Générer la carte de profondeur"}
                 </Button>
                 {depthError && (
                   <p className="text-xs text-red-400">{depthError}</p>
@@ -1114,7 +1209,7 @@ export function MediaEditorDialog({
                       htmlFor="depth-intensity"
                       className="text-xs text-[var(--arvesta-text-secondary)]"
                     >
-                      Parallax Yoğunluğu ({depthIntensity})
+                      Intensité parallax ({depthIntensity})
                     </Label>
                     <Input
                       id="depth-intensity"
@@ -1126,6 +1221,248 @@ export function MediaEditorDialog({
                         setDepthIntensity(Number(e.target.value))
                       }
                     />
+                  </div>
+                )}
+
+                {/* 3D Controls — visible only when depth map exists */}
+                {depthMapUrl && (
+                  <div className="space-y-3 border-t border-white/10 pt-3">
+                    {/* Zoom */}
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="depth-zoom"
+                        className="text-xs text-[var(--arvesta-text-secondary)]"
+                      >
+                        Zoom ({depthZoom.toFixed(1)}×)
+                      </Label>
+                      <Input
+                        id="depth-zoom"
+                        type="range"
+                        min={0.5}
+                        max={3.0}
+                        step={0.1}
+                        value={depthZoom}
+                        onChange={(e) => setDepthZoom(Number(e.target.value))}
+                      />
+                    </div>
+
+                    {/* Focus Point */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="depth-focus-x"
+                          className="text-xs text-[var(--arvesta-text-secondary)]"
+                        >
+                          Point focal X ({depthFocusX}%)
+                        </Label>
+                        <Input
+                          id="depth-focus-x"
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={depthFocusX}
+                          onChange={(e) =>
+                            setDepthFocusX(Number(e.target.value))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="depth-focus-y"
+                          className="text-xs text-[var(--arvesta-text-secondary)]"
+                        >
+                          Point focal Y ({depthFocusY}%)
+                        </Label>
+                        <Input
+                          id="depth-focus-y"
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={depthFocusY}
+                          onChange={(e) =>
+                            setDepthFocusY(Number(e.target.value))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* Rotation */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="depth-rotation-toggle"
+                          type="checkbox"
+                          aria-label="Activer la rotation 3D"
+                          title="Activer la rotation 3D"
+                          checked={depthRotationEnabled}
+                          onChange={(e) =>
+                            setDepthRotationEnabled(e.target.checked)
+                          }
+                          className="accent-[var(--arvesta-accent)]"
+                        />
+                        <Label
+                          htmlFor="depth-rotation-toggle"
+                          className="text-sm text-[var(--arvesta-text-secondary)]"
+                        >
+                          Rotation 3D
+                        </Label>
+                      </div>
+                      {depthRotationEnabled && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="depth-rot-x"
+                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                            >
+                              Rotation X ({depthRotationX}°)
+                            </Label>
+                            <Input
+                              id="depth-rot-x"
+                              type="range"
+                              min={-30}
+                              max={30}
+                              value={depthRotationX}
+                              onChange={(e) =>
+                                setDepthRotationX(Number(e.target.value))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="depth-rot-y"
+                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                            >
+                              Rotation Y ({depthRotationY}°)
+                            </Label>
+                            <Input
+                              id="depth-rot-y"
+                              type="range"
+                              min={-30}
+                              max={30}
+                              value={depthRotationY}
+                              onChange={(e) =>
+                                setDepthRotationY(Number(e.target.value))
+                              }
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Fog */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="depth-fog-toggle"
+                          type="checkbox"
+                          aria-label="Activer le brouillard"
+                          title="Activer le brouillard"
+                          checked={depthFogEnabled}
+                          onChange={(e) => setDepthFogEnabled(e.target.checked)}
+                          className="accent-[var(--arvesta-accent)]"
+                        />
+                        <Label
+                          htmlFor="depth-fog-toggle"
+                          className="text-sm text-[var(--arvesta-text-secondary)]"
+                        >
+                          Brouillard
+                        </Label>
+                      </div>
+                      {depthFogEnabled && (
+                        <div className="space-y-2">
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="depth-fog-density"
+                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                            >
+                              Densité ({depthFogDensity})
+                            </Label>
+                            <Input
+                              id="depth-fog-density"
+                              type="range"
+                              min={0}
+                              max={100}
+                              value={depthFogDensity}
+                              onChange={(e) =>
+                                setDepthFogDensity(Number(e.target.value))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="depth-fog-color"
+                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                            >
+                              Couleur du brouillard
+                            </Label>
+                            <Input
+                              id="depth-fog-color"
+                              type="color"
+                              value={depthFogColor}
+                              onChange={(e) => setDepthFogColor(e.target.value)}
+                              className="h-9 w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Depth Colorize */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="depth-colorize-toggle"
+                          type="checkbox"
+                          aria-label="Activer la colorisation de profondeur"
+                          title="Activer la colorisation de profondeur"
+                          checked={depthColorize}
+                          onChange={(e) => setDepthColorize(e.target.checked)}
+                          className="accent-[var(--arvesta-accent)]"
+                        />
+                        <Label
+                          htmlFor="depth-colorize-toggle"
+                          className="text-sm text-[var(--arvesta-text-secondary)]"
+                        >
+                          Colorisation profondeur
+                        </Label>
+                      </div>
+                      {depthColorize && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="depth-color-from"
+                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                            >
+                              Couleur proche
+                            </Label>
+                            <Input
+                              id="depth-color-from"
+                              type="color"
+                              value={depthColorFrom}
+                              onChange={(e) =>
+                                setDepthColorFrom(e.target.value)
+                              }
+                              className="h-9 w-full"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="depth-color-to"
+                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                            >
+                              Couleur lointaine
+                            </Label>
+                            <Input
+                              id="depth-color-to"
+                              type="color"
+                              value={depthColorTo}
+                              onChange={(e) => setDepthColorTo(e.target.value)}
+                              className="h-9 w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </TabsContent>
@@ -1144,7 +1481,7 @@ export function MediaEditorDialog({
               onClose?.();
             }}
           >
-            İptal
+            Annuler
           </Button>
           <Button
             type="button"
@@ -1152,7 +1489,7 @@ export function MediaEditorDialog({
             onClick={handlePublish}
             disabled={saving || !tempId}
           >
-            {saving ? "Kaydediliyor..." : "Kaydet ve Yayınla"}
+            {saving ? "Enregistrement..." : "Enregistrer et publier"}
           </Button>
         </DialogFooter>
       </DialogContent>
