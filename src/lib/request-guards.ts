@@ -12,18 +12,31 @@ export type RateLimitAdapter = {
 };
 
 export function enforceSameOrigin(req: NextRequest): NextResponse | null {
-  const allowedOrigin = req.nextUrl.origin;
   const origin = req.headers.get("origin");
   const referer = req.headers.get("referer");
 
+  // Build the expected origin from the request URL.
+  // Behind a reverse proxy (Coolify / Docker) the forwarded host + proto
+  // reflect the real public origin, while nextUrl.origin may be localhost.
+  const forwardedHost =
+    req.headers.get("x-forwarded-host") || req.headers.get("host");
+  const forwardedProto = req.headers.get("x-forwarded-proto") || "https";
+  const expectedOrigin = forwardedHost
+    ? `${forwardedProto}://${forwardedHost.split(",")[0].trim()}`
+    : req.nextUrl.origin;
+
   if (origin) {
-    if (origin !== allowedOrigin) {
+    if (origin !== expectedOrigin && origin !== req.nextUrl.origin) {
       return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
     }
     return null;
   }
 
-  if (!referer || !referer.startsWith(allowedOrigin)) {
+  if (
+    !referer ||
+    (!referer.startsWith(expectedOrigin) &&
+      !referer.startsWith(req.nextUrl.origin))
+  ) {
     return NextResponse.json(
       { error: "Origin or referer header is required" },
       { status: 403 },
@@ -52,7 +65,8 @@ export function getClientIp(req: NextRequest): string {
 export function buildClientKey(req: NextRequest, scope: string): string {
   const ip = getClientIp(req);
   const userAgent = req.headers.get("user-agent")?.trim() || "unknown";
-  const acceptLanguage = req.headers.get("accept-language")?.trim() || "unknown";
+  const acceptLanguage =
+    req.headers.get("accept-language")?.trim() || "unknown";
 
   const digest = createHash("sha256")
     .update(`${scope}|${ip}|${userAgent}|${acceptLanguage}`)
@@ -97,7 +111,9 @@ export function createMemoryRateLimitAdapter(): RateLimitAdapter {
 }
 
 type SiteSettingDelegate = {
-  findUnique: (args: { where: { key: string } }) => Promise<{ value: string } | null>;
+  findUnique: (args: {
+    where: { key: string };
+  }) => Promise<{ value: string } | null>;
   upsert: (args: {
     where: { key: string };
     create: { key: string; value: string };
@@ -153,7 +169,10 @@ export async function enforceRateLimit({
   }
 
   if (existing.count >= maxRequests) {
-    const retryAfterSeconds = Math.max(1, Math.ceil((existing.resetAt - now) / 1000));
+    const retryAfterSeconds = Math.max(
+      1,
+      Math.ceil((existing.resetAt - now) / 1000),
+    );
 
     return NextResponse.json(
       {
