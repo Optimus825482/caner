@@ -25,7 +25,9 @@ export function enforceSameOrigin(req: NextRequest): NextResponse | null {
   // reflect the real public origin, while nextUrl.origin may be localhost.
   const forwardedHost =
     req.headers.get("x-forwarded-host") || req.headers.get("host");
-  const forwardedProto = req.headers.get("x-forwarded-proto") || "https";
+  const forwardedProto =
+    req.headers.get("x-forwarded-proto") ||
+    req.nextUrl.protocol.replace(":", "");
   const expectedOrigin = forwardedHost
     ? `${forwardedProto}://${forwardedHost.split(",")[0].trim()}`
     : req.nextUrl.origin;
