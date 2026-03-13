@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,6 @@ import {
   Mail,
   MapPin,
   Globe,
-  Instagram,
   Send,
   Shield,
   CheckCircle2,
@@ -41,42 +41,42 @@ type SettingField = {
 const generalSettingKeys: SettingField[] = [
   {
     key: "site_name",
-    label: "Site Adı",
+    label: "siteName",
     icon: Globe,
     placeholder: "Arvesta Menuiserie France",
     type: "text",
   },
   {
     key: "phone",
-    label: "Telefon",
+    label: "phone",
     icon: Phone,
     placeholder: "+33 (0) 1 43 67 88",
     type: "text",
   },
   {
     key: "email",
-    label: "E-posta",
+    label: "email",
     icon: Mail,
     placeholder: "contact@arvesta-france.com",
     type: "email",
   },
   {
     key: "address",
-    label: "Adres",
+    label: "address",
     icon: MapPin,
     placeholder: "75001 Paris, France",
     type: "text",
   },
   {
     key: "instagram",
-    label: "Instagram URL",
-    icon: Instagram,
+    label: "instagramUrl",
+    icon: Globe,
     placeholder: "https://instagram.com/arvesta",
     type: "url",
   },
   {
     key: "whatsapp",
-    label: "WhatsApp URL",
+    label: "whatsappUrl",
     icon: Phone,
     placeholder: "https://wa.me/33143678800",
     type: "url",
@@ -86,58 +86,58 @@ const generalSettingKeys: SettingField[] = [
 const smtpSettingKeys: SettingField[] = [
   {
     key: "smtp_enabled",
-    label: "SMTP Aktif",
+    label: "smtpEnabled",
     icon: Send,
     placeholder: "false",
     type: "boolean",
-    help: "Açık olduğunda contact form mesajları mail olarak iletilir.",
+    help: "smtpEnabledHelp",
   },
   {
     key: "smtp_host",
-    label: "SMTP Host",
+    label: "smtpHost",
     icon: Send,
     placeholder: "smtp.gmail.com",
     type: "text",
   },
   {
     key: "smtp_port",
-    label: "SMTP Port",
+    label: "smtpPort",
     icon: Send,
     placeholder: "587",
     type: "number",
   },
   {
     key: "smtp_secure",
-    label: "SMTP Secure",
+    label: "smtpSecure",
     icon: Shield,
     placeholder: "false",
     type: "boolean",
-    help: "465 için true, 587 için false",
+    help: "smtpSecureHelp",
   },
   {
     key: "smtp_user",
-    label: "SMTP Kullanıcı",
+    label: "smtpUser",
     icon: Mail,
     placeholder: "mailer@domain.com",
     type: "text",
   },
   {
     key: "smtp_pass",
-    label: "SMTP Şifre / App Password",
+    label: "smtpPass",
     icon: Shield,
     placeholder: "••••••••",
     type: "password",
   },
   {
     key: "smtp_from",
-    label: "Gönderen (From)",
+    label: "smtpFrom",
     icon: Mail,
     placeholder: "Arvesta <mailer@domain.com>",
     type: "text",
   },
   {
     key: "smtp_to",
-    label: "İletilecek E-posta (To)",
+    label: "smtpTo",
     icon: Mail,
     placeholder: "admin@domain.com, ops@domain.com",
     type: "text",
@@ -145,6 +145,7 @@ const smtpSettingKeys: SettingField[] = [
 ];
 
 export default function AdminSettings() {
+  const t = useTranslations("adminSettings");
   const [values, setValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -176,17 +177,13 @@ export default function AdminSettings() {
   async function handleTestSmtp() {
     setTestingSmtp(true);
     setSmtpTestResult(null);
-
     try {
-      const res = await fetch("/api/settings/test-smtp", {
-        method: "POST",
-      });
+      const res = await fetch("/api/settings/test-smtp", { method: "POST" });
       const payload = (await res.json()) as {
         ok?: boolean;
         error?: string;
         message?: string;
       };
-
       if (!res.ok || !payload.ok) {
         setSmtpTestResult({
           type: "error",
@@ -195,20 +192,18 @@ export default function AdminSettings() {
       } else {
         setSmtpTestResult({
           type: "success",
-          message: payload.message || "SMTP test başarılı.",
+          message: payload.message || t("smtpTestSuccess"),
         });
       }
     } catch {
-      setSmtpTestResult({
-        type: "error",
-        message: "SMTP test sırasında ağ hatası oluştu.",
-      });
+      setSmtpTestResult({ type: "error", message: t("smtpTestNetworkError") });
     } finally {
       setTestingSmtp(false);
     }
   }
 
   function renderField(s: SettingField) {
+    const fieldLabel = t(s.label as Parameters<typeof t>[0]);
     return (
       <div
         key={s.key}
@@ -216,9 +211,8 @@ export default function AdminSettings() {
       >
         <Label className="flex items-center gap-2 text-sm text-(--arvesta-text-secondary)">
           <s.icon className="h-3.5 w-3.5 text-(--arvesta-gold)/90" />{" "}
-          {s.label}
+          {fieldLabel}
         </Label>
-
         {s.type === "boolean" ? (
           <Select
             value={values[s.key] || "false"}
@@ -243,9 +237,10 @@ export default function AdminSettings() {
             placeholder={s.placeholder}
           />
         )}
-
         {s.help ? (
-          <p className="text-xs text-(--arvesta-text-muted)">{s.help}</p>
+          <p className="text-xs text-(--arvesta-text-muted)">
+            {t(s.help as Parameters<typeof t>[0])}
+          </p>
         ) : null}
       </div>
     );
@@ -255,10 +250,10 @@ export default function AdminSettings() {
     <div>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-semibold text-white">
-          Site Ayarları
+          {t("title")}
         </h1>
         <p className="font-ui text-sm text-(--arvesta-text-muted)">
-          Genel ayarlar ve SMTP e-posta yönlendirme yapılandırması
+          {t("subtitle")}
         </p>
       </div>
 
@@ -266,7 +261,7 @@ export default function AdminSettings() {
         <CardHeader className="border-b border-(--arvesta-gold)/15 pb-4">
           <CardTitle className="flex items-center gap-2 font-ui text-base text-white">
             <SettingsIcon className="h-4 w-4 text-(--arvesta-gold)" />
-            Ayar Merkezi
+            {t("settingsCenter")}
           </CardTitle>
         </CardHeader>
 
@@ -277,13 +272,13 @@ export default function AdminSettings() {
                 value="general"
                 className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-(--arvesta-gold)/15 data-[selected]:text-(--arvesta-gold) data-active:bg-(--arvesta-gold)/15 data-active:text-(--arvesta-gold)"
               >
-                Genel Bilgiler
+                {t("generalTab")}
               </TabsTrigger>
               <TabsTrigger
                 value="smtp"
                 className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-(--arvesta-gold)/15 data-[selected]:text-(--arvesta-gold) data-active:bg-(--arvesta-gold)/15 data-active:text-(--arvesta-gold)"
               >
-                SMTP & Mail Forward
+                {t("smtpTab")}
               </TabsTrigger>
             </TabsList>
 
@@ -295,54 +290,46 @@ export default function AdminSettings() {
 
             <TabsContent value="smtp" className="space-y-4 pt-1">
               <div className="rounded-xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.01)] p-4">
-                <p className="font-ui text-xs leading-relaxed text-(--arvesta-text-muted)">
-                  İletişim formundan gelen mesajlar DB’ye kaydedilir. SMTP
-                  aktifse aynı anda mail adresine iletilir.
+                <p className="font-ui text-xs leading-relaxed text-(--arvesta-text-muted) mb-4">
+                  {t("smtpInfo")}
                 </p>
-
                 <div className="grid gap-4 md:grid-cols-2">
                   {smtpSettingKeys.map(renderField)}
                 </div>
-
-                <div className="flex flex-col gap-3 rounded-xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.01)] p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-4 flex flex-col gap-3 rounded-xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.01)] p-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="font-ui text-sm font-medium text-white">
-                      SMTP Test
+                      {t("smtpTest")}
                     </p>
                     <p className="font-ui text-xs text-(--arvesta-text-muted)">
-                      Bağlantıyı doğrular ve test mail gönderir.
+                      {t("smtpTestDesc")}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      onClick={handleTestSmtp}
-                      disabled={testingSmtp}
-                      className="h-10 border border-(--arvesta-gold)/35 bg-transparent px-4 text-(--arvesta-gold) hover:bg-(--arvesta-gold)/10"
-                    >
-                      {testingSmtp
-                        ? "Test ediliyor..."
-                        : "SMTP Test Mail Gönder"}
-                    </Button>
-                  </div>
-
-                  {smtpTestResult ? (
-                    <div
-                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
-                        smtpTestResult.type === "success"
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                          : "border-red-500/40 bg-red-500/10 text-red-300"
-                      }`}
-                    >
-                      {smtpTestResult.type === "success" ? (
-                        <CheckCircle2 className="h-4 w-4" />
-                      ) : (
-                        <AlertTriangle className="h-4 w-4" />
-                      )}
-                      <span>{smtpTestResult.message}</span>
-                    </div>
-                  ) : null}
+                  <Button
+                    type="button"
+                    onClick={handleTestSmtp}
+                    disabled={testingSmtp}
+                    className="h-10 border border-(--arvesta-gold)/35 bg-transparent px-4 text-(--arvesta-gold) hover:bg-(--arvesta-gold)/10"
+                  >
+                    {testingSmtp ? t("smtpTesting") : t("smtpTestBtn")}
+                  </Button>
                 </div>
+                {smtpTestResult ? (
+                  <div
+                    className={`mt-3 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                      smtpTestResult.type === "success"
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                        : "border-red-500/40 bg-red-500/10 text-red-300"
+                    }`}
+                  >
+                    {smtpTestResult.type === "success" ? (
+                      <CheckCircle2 className="h-4 w-4" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4" />
+                    )}
+                    <span>{smtpTestResult.message}</span>
+                  </div>
+                ) : null}
               </div>
             </TabsContent>
           </Tabs>
@@ -354,11 +341,7 @@ export default function AdminSettings() {
               className={`h-11 w-full font-ui font-semibold ${saved ? "bg-green-600 hover:bg-green-600" : "bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover)"}`}
             >
               <Save className="mr-2 h-4 w-4" />
-              {saved
-                ? "✓ Kaydedildi"
-                : saving
-                  ? "Kaydediliyor..."
-                  : "Ayarları Kaydet"}
+              {saved ? t("saved") : saving ? t("saving") : t("saveSettings")}
             </Button>
           </div>
         </CardContent>

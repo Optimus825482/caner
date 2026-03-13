@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ const localeLabels: Record<string, string> = {
 };
 
 export default function AdminCategories() {
+  const t = useTranslations("adminCategories");
   const [categories, setCategories] = useState<Cat[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Cat | null>(null);
@@ -64,12 +66,12 @@ export default function AdminCategories() {
     setSlug(cat.slug);
     setOrder(cat.order);
     setImage(cat.image || "");
-    const t: Record<string, { name: string; description: string }> = {};
+    const tr2: Record<string, { name: string; description: string }> = {};
     locales.forEach((l) => {
       const tr = cat.translations.find((x) => x.locale === l);
-      t[l] = { name: tr?.name || "", description: tr?.description || "" };
+      tr2[l] = { name: tr?.name || "", description: tr?.description || "" };
     });
-    setTranslations(t);
+    setTranslations(tr2);
   }
 
   function openNew() {
@@ -163,17 +165,17 @@ export default function AdminCategories() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            Catégories
+            {t("title")}
           </h1>
           <p className="text-(--arvesta-text-muted) font-ui text-sm">
-            {categories.length} catégories
+            {categories.length} {t("countLabel")}
           </p>
         </div>
         <Button
           onClick={openNew}
           className="bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui"
         >
-          <Plus className="w-4 h-4 mr-2" /> Yeni Kategori
+          <Plus className="w-4 h-4 mr-2" /> {t("newCategory")}
         </Button>
       </div>
 
@@ -182,10 +184,7 @@ export default function AdminCategories() {
         <div className="space-y-3">
           {loading
             ? [...Array(3)].map((_, i) => (
-                <Card
-                  key={i}
-                  className="border-white/5 bg-(--arvesta-bg-card)"
-                >
+                <Card key={i} className="border-white/5 bg-(--arvesta-bg-card)">
                   <CardContent className="p-4 flex items-center gap-4 animate-pulse">
                     <div className="w-16 h-12 rounded-lg bg-white/5 shrink-0" />
                     <div className="flex-1 space-y-2">
@@ -212,20 +211,20 @@ export default function AdminCategories() {
                         />
                       ) : (
                         <span className="text-[10px] text-(--arvesta-text-muted) font-ui">
-                          No image
+                          {t("noImageLabel")}
                         </span>
                       )}
                     </div>
                     <div className="flex-1">
                       <span className="text-sm font-semibold text-white block">
-                        {cat.translations.find((t) => t.locale === "fr")
+                        {cat.translations.find((tr) => tr.locale === "fr")
                           ?.name || cat.slug}
                       </span>
                       <Badge
                         variant="outline"
                         className="border-white/10 text-(--arvesta-text-muted) text-xs font-ui mt-1"
                       >
-                        {cat._count?.products || 0} ürün
+                        {cat._count?.products || 0} {t("productCount")}
                       </Badge>
                     </div>
                     <div className="flex gap-1">
@@ -257,13 +256,13 @@ export default function AdminCategories() {
             <CardHeader>
               <CardTitle className="font-ui text-base text-white flex items-center gap-2">
                 <Grid3X3 className="w-4 h-4 text-(--arvesta-accent)" />
-                {isNew ? "Yeni Kategori" : "Kategori Düzenle"}
+                {isNew ? t("newCategory") : t("editCategory")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-(--arvesta-text-secondary)">
-                  Slug
+                  {t("slug")}
                 </Label>
                 <Input
                   value={slug}
@@ -273,7 +272,7 @@ export default function AdminCategories() {
               </div>
               <div className="space-y-2">
                 <Label className="text-(--arvesta-text-secondary)">
-                  Sıra
+                  {t("order")}
                 </Label>
                 <Input
                   type="number"
@@ -285,7 +284,7 @@ export default function AdminCategories() {
 
               <div className="space-y-2">
                 <Label className="text-(--arvesta-text-secondary)">
-                  Kategori Görseli
+                  {t("categoryImage")}
                 </Label>
                 <div className="flex items-center gap-3">
                   <label className="inline-flex">
@@ -297,7 +296,7 @@ export default function AdminCategories() {
                     />
                     <span className="inline-flex h-10 px-3 items-center rounded-md border border-white/10 bg-(--arvesta-bg-elevated) text-(--arvesta-text-secondary) text-sm cursor-pointer hover:text-white transition-colors">
                       <Upload className="w-4 h-4 mr-2" />
-                      {uploading ? "Yükleniyor..." : "Görsel Seç"}
+                      {uploading ? t("uploading") : t("selectImage")}
                     </span>
                   </label>
 
@@ -313,7 +312,7 @@ export default function AdminCategories() {
                     </div>
                   ) : (
                     <span className="text-xs text-(--arvesta-text-muted)">
-                      Henüz görsel seçilmedi
+                      {t("noImage")}
                     </span>
                   )}
                 </div>
@@ -325,7 +324,7 @@ export default function AdminCategories() {
                   onClick={openEditorForExistingImage}
                   className="w-full border-white/10 text-(--arvesta-text-secondary) font-ui"
                 >
-                  {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
+                  {preparing ? t("preparing") : t("editExisting")}
                 </Button>
               </div>
 
@@ -347,7 +346,7 @@ export default function AdminCategories() {
                   <TabsContent key={l} value={l} className="space-y-3 mt-3">
                     <div className="space-y-1.5">
                       <Label className="text-(--arvesta-text-secondary) text-xs">
-                        Ad ({l.toUpperCase()})
+                        {t("name")} ({l.toUpperCase()})
                       </Label>
                       <Input
                         value={translations[l]?.name || ""}
@@ -362,7 +361,7 @@ export default function AdminCategories() {
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-(--arvesta-text-secondary) text-xs">
-                        Açıklama ({l.toUpperCase()})
+                        {t("description")} ({l.toUpperCase()})
                       </Label>
                       <Input
                         value={translations[l]?.description || ""}
@@ -387,7 +386,7 @@ export default function AdminCategories() {
                   onClick={handleSave}
                   className="flex-1 bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui"
                 >
-                  <Save className="w-4 h-4 mr-2" /> Kaydet
+                  <Save className="w-4 h-4 mr-2" /> {t("save")}
                 </Button>
                 <Button
                   variant="ghost"
@@ -397,7 +396,7 @@ export default function AdminCategories() {
                   }}
                   className="text-(--arvesta-text-muted)"
                 >
-                  İptal
+                  {t("cancel")}
                 </Button>
               </div>
             </CardContent>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +55,7 @@ export function MediaEditorDialog({
   onPublished,
   onClose,
 }: Props) {
+  const t = useTranslations("adminMediaEditor");
   const isTempPreview = Boolean(previewUrl?.startsWith("/api/media/temp/"));
 
   const [saving, setSaving] = useState(false);
@@ -345,9 +347,9 @@ export function MediaEditorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] sm:max-w-[95vw] xl:max-w-350 h-[90vh] bg-(--arvesta-bg-card) border border-white/10 text-white p-0 overflow-hidden flex flex-col">
         <DialogHeader className="px-5 pt-5 pb-2 shrink-0">
-          <DialogTitle className="font-ui">Traitement d&apos;image</DialogTitle>
+          <DialogTitle className="font-ui">{t("title")}</DialogTitle>
           <DialogDescription className="text-(--arvesta-text-muted)">
-            Appliquez les modifications, puis enregistrez pour publier.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -384,7 +386,7 @@ export function MediaEditorDialog({
                             >
                               <Image
                                 src="/logo.png"
-                                alt="Filigrane logo"
+                                alt={t("logoAlt")}
                                 width={220}
                                 height={220}
                                 className={`h-auto w-[70%] object-contain ${watermarkOpacityClass}`}
@@ -392,7 +394,7 @@ export function MediaEditorDialog({
                             </div>
                           ) : (
                             <div
-                                className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
+                              className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
                             >
                               {watermarkText || "ARVESTA"}
                             </div>
@@ -442,43 +444,43 @@ export function MediaEditorDialog({
                     >
                       <Image
                         src={previewUrl}
-                        alt="Aperçu"
+                        alt={t("noPreview")}
                         width={0}
                         height={0}
                         sizes="100vw"
-                          unoptimized={isTempPreview}
-                          className={`max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
-                          data-preview-filter={previewFilter}
+                        unoptimized={isTempPreview}
+                        className={`max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
+                        data-preview-filter={previewFilter}
                       />
                     </ReactCrop>
 
                     {/* Vignette preview */}
                     {vignette > 0 && (
                       <div
-                          className={`absolute inset-0 pointer-events-none rounded-lg bg-radial from-transparent via-transparent to-black ${vignetteOpacityClass}`}
+                        className={`absolute inset-0 pointer-events-none rounded-lg bg-radial from-transparent via-transparent to-black ${vignetteOpacityClass}`}
                       />
                     )}
 
                     {/* Watermark Live Preview */}
                     {watermarkEnabled && (
                       <div
-                          className={`absolute inset-0 pointer-events-none flex p-[3%] ${watermarkPositionClass} ${transformClass}`}
+                        className={`absolute inset-0 pointer-events-none flex p-[3%] ${watermarkPositionClass} ${transformClass}`}
                       >
                         {watermarkType === "logo" ? (
                           <div
-                              className={`flex items-center justify-center rounded-full flex-col shadow-xl aspect-square bg-black/45 ${watermarkOpacityClass} ${watermarkLogoSizeClass}`}
+                            className={`flex items-center justify-center rounded-full flex-col shadow-xl aspect-square bg-black/45 ${watermarkOpacityClass} ${watermarkLogoSizeClass}`}
                           >
                             <Image
                               src="/logo.png"
-                              alt="Aperçu du filigrane logo Arvesta"
+                              alt={t("logoAlt")}
                               width={220}
                               height={220}
-                                className={`h-auto w-[70%] object-contain ${watermarkOpacityClass}`}
+                              className={`h-auto w-[70%] object-contain ${watermarkOpacityClass}`}
                             />
                           </div>
                         ) : (
                           <div
-                                className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
+                            className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
                           >
                             {watermarkText || "ARVESTA"}
                           </div>
@@ -489,8 +491,8 @@ export function MediaEditorDialog({
                 )}
               </div>
             ) : (
-                <div className="h-full w-full flex items-center justify-center text-(--arvesta-text-muted)">
-                Aperçu non disponible
+              <div className="h-full w-full flex items-center justify-center text-(--arvesta-text-muted)">
+                {t("noPreview")}
               </div>
             )}
           </div>
@@ -507,31 +509,31 @@ export function MediaEditorDialog({
                   value="basic"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Base
+                  {t("tabBasic")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="crop"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Recadrer
+                  {t("tabCrop")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="style"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Style
+                  {t("tabStyle")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="overlay"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Calque
+                  {t("tabOverlay")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="depth"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
                 >
-                  Profondeur
+                  {t("tabDepth")}
                 </TabsTrigger>
               </TabsList>
 
@@ -539,7 +541,7 @@ export function MediaEditorDialog({
               <TabsContent value="basic" className="space-y-3 mt-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs text-(--arvesta-text-secondary)">
-                    Rotation
+                    {t("rotate")}
                   </Label>
                   <div className="flex gap-2">
                     {([0, 90, 180, 270] as const).map((value) => (
@@ -573,7 +575,7 @@ export function MediaEditorDialog({
                     }
                     onClick={() => setFlip(!flip)}
                   >
-                    ↕ Miroir V
+                    {t("flipV")}
                   </Button>
                   <Button
                     type="button"
@@ -586,7 +588,7 @@ export function MediaEditorDialog({
                     }
                     onClick={() => setFlop(!flop)}
                   >
-                    ↔ Miroir H
+                    {t("flipH")}
                   </Button>
                 </div>
 
@@ -595,7 +597,7 @@ export function MediaEditorDialog({
                     htmlFor="quality-range"
                     className="text-xs text-(--arvesta-text-secondary)"
                   >
-                    Qualité ({quality})
+                    {t("quality")} ({quality})
                   </Label>
                   <Input
                     id="quality-range"
@@ -611,8 +613,8 @@ export function MediaEditorDialog({
                   <input
                     id="autoEnhance"
                     type="checkbox"
-                    aria-label="Activer l'amélioration automatique"
-                    title="Activer l'amélioration automatique"
+                    aria-label={t("autoEnhanceAria")}
+                    title={t("autoEnhanceAria")}
                     checked={autoEnhance}
                     onChange={(e) => setAutoEnhance(e.target.checked)}
                     className="accent-(--arvesta-accent)"
@@ -621,7 +623,7 @@ export function MediaEditorDialog({
                     htmlFor="autoEnhance"
                     className="text-sm text-(--arvesta-text-secondary)"
                   >
-                    Amélioration auto
+                    {t("autoEnhance")}
                   </Label>
                 </div>
               </TabsContent>
@@ -629,8 +631,7 @@ export function MediaEditorDialog({
               {/* === CROP TAB === */}
               <TabsContent value="crop" className="space-y-3 mt-3">
                 <div className="text-xs text-(--arvesta-text-muted) mb-2">
-                  Vous pouvez aussi glisser le cadre directement sur
-                  l&apos;image.
+                  {t("cropHint")}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1.5">
@@ -698,7 +699,7 @@ export function MediaEditorDialog({
                       htmlFor="crop-width"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Largeur (%)
+                      {`${t("cropWidth")} (%)`}
                     </Label>
                     <Input
                       id="crop-width"
@@ -728,7 +729,7 @@ export function MediaEditorDialog({
                       htmlFor="crop-height"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Hauteur (%)
+                      {`${t("cropHeight")} (%)`}
                     </Label>
                     <Input
                       id="crop-height"
@@ -767,15 +768,10 @@ export function MediaEditorDialog({
                     setCropApplied(true);
                   }}
                 >
-                  {cropApplied
-                    ? "✓ Recadrage confirmé"
-                    : "Confirmer le recadrage"}
+                  {cropApplied ? t("cropConfirmed") : t("cropConfirm")}
                 </Button>
                 {cropApplied && (
-                  <p className="text-xs text-emerald-300">
-                    Recadrage appliqué. Il sera traité lors de
-                    l&apos;enregistrement.
-                  </p>
+                  <p className="text-xs text-emerald-300">{t("cropApplied")}</p>
                 )}
               </TabsContent>
 
@@ -789,7 +785,7 @@ export function MediaEditorDialog({
                     className="text-xs text-(--arvesta-text-muted) hover:text-white"
                     onClick={resetStyleToDefaults}
                   >
-                    Réinitialiser
+                    {t("reset")}
                   </Button>
                 </div>
 
@@ -798,7 +794,7 @@ export function MediaEditorDialog({
                     htmlFor="brightness-range"
                     className="text-xs text-(--arvesta-text-secondary)"
                   >
-                    Luminosité ({brightness})
+                    {t("brightness")} ({brightness})
                   </Label>
                   <Input
                     id="brightness-range"
@@ -814,7 +810,7 @@ export function MediaEditorDialog({
                     htmlFor="contrast-range"
                     className="text-xs text-(--arvesta-text-secondary)"
                   >
-                    Contraste ({contrast})
+                    {t("contrast")} ({contrast})
                   </Label>
                   <Input
                     id="contrast-range"
@@ -830,7 +826,7 @@ export function MediaEditorDialog({
                     htmlFor="saturation-range"
                     className="text-xs text-(--arvesta-text-secondary)"
                   >
-                    Saturation ({saturation})
+                    {t("saturation")} ({saturation})
                   </Label>
                   <Input
                     id="saturation-range"
@@ -848,7 +844,7 @@ export function MediaEditorDialog({
                       htmlFor="sharpen-range"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Netteté ({sharpen})
+                      {t("sharpness")} ({sharpen})
                     </Label>
                     <Input
                       id="sharpen-range"
@@ -864,7 +860,7 @@ export function MediaEditorDialog({
                       htmlFor="blur-range"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Flou ({blur.toFixed(1)})
+                      {t("blur")} ({blur.toFixed(1)})
                     </Label>
                     <Input
                       id="blur-range"
@@ -881,7 +877,7 @@ export function MediaEditorDialog({
                       htmlFor="vignette-range"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Vignette ({vignette})
+                      {t("vignette")} ({vignette})
                     </Label>
                     <Input
                       id="vignette-range"
@@ -900,12 +896,12 @@ export function MediaEditorDialog({
                       htmlFor="temperature-range"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Température (
+                      {t("temperature")} (
                       {temperature > 0
-                        ? `+${temperature} Chaud`
+                        ? `+${temperature} ${t("tempWarm")}`
                         : temperature < 0
-                          ? `${temperature} Froid`
-                          : "Neutre"}
+                          ? `${temperature} ${t("tempCold")}`
+                          : t("tempNeutral")}
                       )
                     </Label>
                     <Input
@@ -922,7 +918,7 @@ export function MediaEditorDialog({
                       htmlFor="gamma-range"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Gamma ({gamma.toFixed(2)})
+                      {t("gamma")} ({gamma.toFixed(2)})
                     </Label>
                     <Input
                       id="gamma-range"
@@ -943,8 +939,8 @@ export function MediaEditorDialog({
                   <input
                     id="watermarkEnabled"
                     type="checkbox"
-                    aria-label="Activer le filigrane"
-                    title="Activer le filigrane"
+                    aria-label={t("watermarkAria")}
+                    title={t("watermarkAria")}
                     checked={watermarkEnabled}
                     onChange={(e) => setWatermarkEnabled(e.target.checked)}
                     className="accent-(--arvesta-accent)"
@@ -953,7 +949,7 @@ export function MediaEditorDialog({
                     htmlFor="watermarkEnabled"
                     className="text-sm text-(--arvesta-text-secondary)"
                   >
-                    Filigrane (Watermark)
+                    {t("watermark")}
                   </Label>
                 </div>
 
@@ -966,8 +962,8 @@ export function MediaEditorDialog({
                           id="wm-text"
                           name="wmType"
                           value="text"
-                          aria-label="Filigrane texte"
-                          title="Filigrane texte"
+                          aria-label={t("watermarkTextAria")}
+                          title={t("watermarkTextAria")}
                           checked={watermarkType === "text"}
                           onChange={() => setWatermarkType("text")}
                           className="accent-(--arvesta-accent)"
@@ -976,7 +972,7 @@ export function MediaEditorDialog({
                           htmlFor="wm-text"
                           className="text-xs text-white cursor-pointer"
                         >
-                          Texte
+                          {t("watermarkText")}
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2 bg-black/20 p-2 rounded-md border border-white/5">
@@ -985,8 +981,8 @@ export function MediaEditorDialog({
                           id="wm-logo"
                           name="wmType"
                           value="logo"
-                          aria-label="Filigrane logo"
-                          title="Filigrane logo"
+                          aria-label={t("watermarkLogoAria")}
+                          title={t("watermarkLogoAria")}
                           checked={watermarkType === "logo"}
                           onChange={() => setWatermarkType("logo")}
                           className="accent-(--arvesta-accent)"
@@ -995,7 +991,7 @@ export function MediaEditorDialog({
                           htmlFor="wm-logo"
                           className="text-xs text-white cursor-pointer"
                         >
-                          Logo (Arvesta)
+                          {t("watermarkLogo")}
                         </Label>
                       </div>
                     </div>
@@ -1003,7 +999,7 @@ export function MediaEditorDialog({
                     {watermarkType === "text" && (
                       <div className="space-y-1.5">
                         <Label className="text-xs text-(--arvesta-text-secondary)">
-                          Texte du filigrane
+                          {t("watermarkContent")}
                         </Label>
                         <Input
                           value={watermarkText}
@@ -1017,12 +1013,12 @@ export function MediaEditorDialog({
                       htmlFor="watermark-position"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Position du filigrane
+                      {t("watermarkPosition")}
                     </Label>
                     <select
                       id="watermark-position"
-                      aria-label="Position du filigrane"
-                      title="Position du filigrane"
+                      aria-label={t("watermarkPositionAria")}
+                      title={t("watermarkPositionAria")}
                       value={watermarkPosition}
                       onChange={(e) =>
                         setWatermarkPosition(
@@ -1036,11 +1032,13 @@ export function MediaEditorDialog({
                       }
                       className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/10 rounded-md text-sm"
                     >
-                      <option value="top-left">Haut gauche</option>
-                      <option value="top-right">Haut droit</option>
-                      <option value="bottom-left">Bas gauche</option>
-                      <option value="bottom-right">Bas droit</option>
-                      <option value="center">Centre</option>
+                      <option value="top-left">{t("posTopLeft")}</option>
+                      <option value="top-right">{t("posTopRight")}</option>
+                      <option value="bottom-left">{t("posBottomLeft")}</option>
+                      <option value="bottom-right">
+                        {t("posBottomRight")}
+                      </option>
+                      <option value="center">{t("posCenter")}</option>
                     </select>
 
                     <div className="space-y-1">
@@ -1048,7 +1046,7 @@ export function MediaEditorDialog({
                         htmlFor="watermark-opacity"
                         className="text-xs text-(--arvesta-text-secondary)"
                       >
-                        Opacité du filigrane ({watermarkOpacity.toFixed(2)})
+                        {t("watermarkOpacity")} ({watermarkOpacity.toFixed(2)})
                       </Label>
                       <Input
                         id="watermark-opacity"
@@ -1068,7 +1066,7 @@ export function MediaEditorDialog({
                         htmlFor="watermark-scale"
                         className="text-xs text-(--arvesta-text-secondary)"
                       >
-                        Taille du filigrane ({watermarkScale.toFixed(2)})
+                        {t("watermarkSize")} ({watermarkScale.toFixed(2)})
                       </Label>
                       <Input
                         id="watermark-scale"
@@ -1088,7 +1086,7 @@ export function MediaEditorDialog({
                 <div className="pt-2 border-t border-white/10">
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm text-(--arvesta-text-secondary)">
-                      Ajouter du texte
+                      {t("addText")}
                     </Label>
                     <Button
                       type="button"
@@ -1098,7 +1096,7 @@ export function MediaEditorDialog({
                         setTextOverlays((p) => [...p, defaultOverlay()])
                       }
                     >
-                      Ajouter
+                      {t("add")}
                     </Button>
                   </div>
 
@@ -1118,7 +1116,7 @@ export function MediaEditorDialog({
                             ),
                           )
                         }
-                        placeholder="Metin"
+                        placeholder={t("textPlaceholder")}
                       />
                       <div className="grid grid-cols-2 gap-2">
                         <Input
@@ -1161,7 +1159,7 @@ export function MediaEditorDialog({
                               ),
                             )
                           }
-                          placeholder="Taille"
+                          placeholder={t("sizePlaceholder")}
                         />
                         <Input
                           type="color"
@@ -1188,7 +1186,7 @@ export function MediaEditorDialog({
                           )
                         }
                       >
-                        Supprimer
+                        {t("remove")}
                       </Button>
                     </div>
                   ))}
@@ -1203,9 +1201,7 @@ export function MediaEditorDialog({
                   onClick={handleGenerateDepthMap}
                   disabled={depthLoading || !tempId}
                 >
-                  {depthLoading
-                    ? "Génération..."
-                    : "Générer la carte de profondeur"}
+                  {depthLoading ? t("generatingDepth") : t("generateDepth")}
                 </Button>
                 {depthError && (
                   <p className="text-xs text-red-400">{depthError}</p>
@@ -1216,7 +1212,7 @@ export function MediaEditorDialog({
                       htmlFor="depth-intensity"
                       className="text-xs text-(--arvesta-text-secondary)"
                     >
-                      Intensité parallax ({depthIntensity})
+                      {t("depthIntensity")} ({depthIntensity})
                     </Label>
                     <Input
                       id="depth-intensity"
@@ -1240,7 +1236,7 @@ export function MediaEditorDialog({
                         htmlFor="depth-zoom"
                         className="text-xs text-(--arvesta-text-secondary)"
                       >
-                        Zoom ({depthZoom.toFixed(1)}×)
+                        {t("depthZoom")} ({depthZoom.toFixed(1)}×)
                       </Label>
                       <Input
                         id="depth-zoom"
@@ -1260,7 +1256,7 @@ export function MediaEditorDialog({
                           htmlFor="depth-focus-x"
                           className="text-xs text-(--arvesta-text-secondary)"
                         >
-                          Point focal X ({depthFocusX}%)
+                          {t("depthFocusX")} ({depthFocusX}%)
                         </Label>
                         <Input
                           id="depth-focus-x"
@@ -1278,7 +1274,7 @@ export function MediaEditorDialog({
                           htmlFor="depth-focus-y"
                           className="text-xs text-(--arvesta-text-secondary)"
                         >
-                          Point focal Y ({depthFocusY}%)
+                          {t("depthFocusY")} ({depthFocusY}%)
                         </Label>
                         <Input
                           id="depth-focus-y"
@@ -1299,8 +1295,8 @@ export function MediaEditorDialog({
                         <input
                           id="depth-rotation-toggle"
                           type="checkbox"
-                          aria-label="Activer la rotation 3D"
-                          title="Activer la rotation 3D"
+                          aria-label={t("depthRotation3DAria")}
+                          title={t("depthRotation3DAria")}
                           checked={depthRotationEnabled}
                           onChange={(e) =>
                             setDepthRotationEnabled(e.target.checked)
@@ -1311,7 +1307,7 @@ export function MediaEditorDialog({
                           htmlFor="depth-rotation-toggle"
                           className="text-sm text-(--arvesta-text-secondary)"
                         >
-                          Rotation 3D
+                          {t("depthRotation3D")}
                         </Label>
                       </div>
                       {depthRotationEnabled && (
@@ -1321,7 +1317,7 @@ export function MediaEditorDialog({
                               htmlFor="depth-rot-x"
                               className="text-xs text-(--arvesta-text-secondary)"
                             >
-                              Rotation X ({depthRotationX}°)
+                              {t("depthRotationX")} ({depthRotationX}°)
                             </Label>
                             <Input
                               id="depth-rot-x"
@@ -1339,7 +1335,7 @@ export function MediaEditorDialog({
                               htmlFor="depth-rot-y"
                               className="text-xs text-(--arvesta-text-secondary)"
                             >
-                              Rotation Y ({depthRotationY}°)
+                              {t("depthRotationY")} ({depthRotationY}°)
                             </Label>
                             <Input
                               id="depth-rot-y"
@@ -1362,8 +1358,8 @@ export function MediaEditorDialog({
                         <input
                           id="depth-fog-toggle"
                           type="checkbox"
-                          aria-label="Activer le brouillard"
-                          title="Activer le brouillard"
+                          aria-label={t("depthFogAria")}
+                          title={t("depthFogAria")}
                           checked={depthFogEnabled}
                           onChange={(e) => setDepthFogEnabled(e.target.checked)}
                           className="accent-(--arvesta-accent)"
@@ -1372,7 +1368,7 @@ export function MediaEditorDialog({
                           htmlFor="depth-fog-toggle"
                           className="text-sm text-(--arvesta-text-secondary)"
                         >
-                          Brouillard
+                          {t("depthFog")}
                         </Label>
                       </div>
                       {depthFogEnabled && (
@@ -1382,7 +1378,7 @@ export function MediaEditorDialog({
                               htmlFor="depth-fog-density"
                               className="text-xs text-(--arvesta-text-secondary)"
                             >
-                              Densité ({depthFogDensity})
+                              {t("depthFogDensity")} ({depthFogDensity})
                             </Label>
                             <Input
                               id="depth-fog-density"
@@ -1400,7 +1396,7 @@ export function MediaEditorDialog({
                               htmlFor="depth-fog-color"
                               className="text-xs text-(--arvesta-text-secondary)"
                             >
-                              Couleur du brouillard
+                              {t("depthFogColor")}
                             </Label>
                             <Input
                               id="depth-fog-color"
@@ -1420,8 +1416,8 @@ export function MediaEditorDialog({
                         <input
                           id="depth-colorize-toggle"
                           type="checkbox"
-                          aria-label="Activer la colorisation de profondeur"
-                          title="Activer la colorisation de profondeur"
+                          aria-label={t("depthColorizationAria")}
+                          title={t("depthColorizationAria")}
                           checked={depthColorize}
                           onChange={(e) => setDepthColorize(e.target.checked)}
                           className="accent-(--arvesta-accent)"
@@ -1430,7 +1426,7 @@ export function MediaEditorDialog({
                           htmlFor="depth-colorize-toggle"
                           className="text-sm text-(--arvesta-text-secondary)"
                         >
-                          Colorisation profondeur
+                          {t("depthColorization")}
                         </Label>
                       </div>
                       {depthColorize && (
@@ -1440,7 +1436,7 @@ export function MediaEditorDialog({
                               htmlFor="depth-color-from"
                               className="text-xs text-(--arvesta-text-secondary)"
                             >
-                              Couleur proche
+                              {t("depthColorNear")}
                             </Label>
                             <Input
                               id="depth-color-from"
@@ -1457,7 +1453,7 @@ export function MediaEditorDialog({
                               htmlFor="depth-color-to"
                               className="text-xs text-(--arvesta-text-secondary)"
                             >
-                              Couleur lointaine
+                              {t("depthColorFar")}
                             </Label>
                             <Input
                               id="depth-color-to"
@@ -1488,7 +1484,7 @@ export function MediaEditorDialog({
               onClose?.();
             }}
           >
-            Annuler
+            {t("cancel")}
           </Button>
           <Button
             type="button"
@@ -1496,7 +1492,7 @@ export function MediaEditorDialog({
             onClick={handlePublish}
             disabled={saving || !tempId}
           >
-            {saving ? "Enregistrement..." : "Enregistrer et publier"}
+            {saving ? t("savingPublish") : t("savePublish")}
           </Button>
         </DialogFooter>
       </DialogContent>

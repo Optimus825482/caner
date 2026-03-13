@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +49,7 @@ type Props = {
 type Filter = "all" | "unread" | "read";
 
 export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
+  const t = useTranslations("adminSubmissions");
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -103,7 +105,10 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
     });
   }, [submissions, query, filter, dateFrom, dateTo]);
 
-  const filteredIds = useMemo(() => new Set(filtered.map((s) => s.id)), [filtered]);
+  const filteredIds = useMemo(
+    () => new Set(filtered.map((s) => s.id)),
+    [filtered],
+  );
   const allFilteredSelected =
     filteredIds.size > 0 &&
     Array.from(filteredIds).every((id) => selectedIds.has(id));
@@ -162,7 +167,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       );
     } catch (error) {
       console.error(error);
-      setFeedback("Güncelleme başarısız oldu.");
+      setFeedback(t("updateFailed"));
     } finally {
       setBusyId(null);
     }
@@ -186,7 +191,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       });
     } catch (error) {
       console.error(error);
-      setFeedback("Silme işlemi başarısız oldu.");
+      setFeedback(t("deleteFailed"));
     } finally {
       setBusyId(null);
       setConfirmDeleteId(null);
@@ -217,7 +222,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       setSelectedIds(new Set());
     } catch (error) {
       console.error(error);
-      setFeedback("Toplu okundu işaretleme başarısız oldu.");
+      setFeedback(t("bulkMarkReadFailed"));
     } finally {
       setBulkBusy(false);
     }
@@ -239,11 +244,13 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
       if (!res.ok) throw new Error("Bulk delete failed");
 
-      setSubmissions((prev) => prev.filter((item) => !selectedIds.has(item.id)));
+      setSubmissions((prev) =>
+        prev.filter((item) => !selectedIds.has(item.id)),
+      );
       setSelectedIds(new Set());
     } catch (error) {
       console.error(error);
-      setFeedback("Toplu silme işlemi başarısız oldu.");
+      setFeedback(t("bulkDeleteFailed"));
     } finally {
       setBulkBusy(false);
       setConfirmBulkDeleteOpen(false);
@@ -253,10 +260,10 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
   const copyEmail = async (email: string) => {
     try {
       await navigator.clipboard.writeText(email);
-      setFeedback("E-posta adresi panoya kopyalandı.");
+      setFeedback(t("emailCopied"));
     } catch (error) {
       console.error(error);
-      setFeedback("E-posta adresi kopyalanamadı.");
+      setFeedback(t("emailCopyFailed"));
     }
   };
 
@@ -265,10 +272,10 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            İletişim Talepleri
+            {t("title")}
           </h1>
           <p className="font-ui text-sm text-(--arvesta-text-muted)">
-            Müşterilerden gelen mesajları filtrele, oku ve yönet.
+            {t("subtitle")}
           </p>
         </div>
       </div>
@@ -277,8 +284,12 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
         <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-(--arvesta-text-muted)">Toplam</p>
-              <p className="font-ui text-xl font-semibold text-white">{stats.total}</p>
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">
+                {t("total")}
+              </p>
+              <p className="font-ui text-xl font-semibold text-white">
+                {stats.total}
+              </p>
             </div>
             <Inbox className="h-5 w-5 text-(--arvesta-gold)" />
           </CardContent>
@@ -288,7 +299,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           <CardContent className="flex items-center justify-between p-4">
             <div>
               <p className="font-ui text-xs text-(--arvesta-text-muted)">
-                Okunmamış
+                {t("unread")}
               </p>
               <p className="font-ui text-xl font-semibold text-(--arvesta-accent)">
                 {stats.unread}
@@ -301,8 +312,12 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
         <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-(--arvesta-text-muted)">Okunan</p>
-              <p className="font-ui text-xl font-semibold text-emerald-400">{stats.read}</p>
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">
+                {t("readCount")}
+              </p>
+              <p className="font-ui text-xl font-semibold text-emerald-400">
+                {stats.read}
+              </p>
             </div>
             <CheckCircle2 className="h-5 w-5 text-emerald-400" />
           </CardContent>
@@ -317,7 +332,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.currentTarget.value)}
-                placeholder="İsim, e-posta, proje tipi veya mesaj içinde ara..."
+                placeholder={t("searchPlaceholder")}
                 className="h-10 border-white/10 bg-(--arvesta-bg-elevated) pl-9 text-white"
               />
             </div>
@@ -335,7 +350,11 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                       : "border-white/10 bg-(--arvesta-bg-elevated) text-(--arvesta-text-secondary)"
                   }
                 >
-                  {f === "all" ? "Tümü" : f === "unread" ? "Okunmamış" : "Okunan"}
+                  {f === "all"
+                    ? t("filterAll")
+                    : f === "unread"
+                      ? t("filterUnread")
+                      : t("filterRead")}
                 </Button>
               ))}
             </div>
@@ -345,7 +364,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1 text-xs text-(--arvesta-text-muted)">
                 <CalendarRange className="h-3.5 w-3.5" />
-                Tarih Aralığı
+                {t("dateRange")}
               </span>
               <Input
                 type="date"
@@ -367,7 +386,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                   onClick={clearDateFilter}
                   className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                 >
-                  Temizle
+                  {t("clear")}
                 </Button>
               )}
             </div>
@@ -385,7 +404,9 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 ) : (
                   <Square className="mr-1" />
                 )}
-                {allFilteredSelected ? "Filtreyi Bırak" : "Filtreyi Seç"}
+                {allFilteredSelected
+                  ? t("deselectFiltered")
+                  : t("selectFiltered")}
               </Button>
             </div>
           </div>
@@ -393,7 +414,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           {selectedCount > 0 && (
             <div className="flex flex-wrap items-center gap-2 rounded-xl border border-(--arvesta-accent)/20 bg-(--arvesta-accent)/5 p-2.5">
               <Badge className="border-(--arvesta-accent)/20 bg-(--arvesta-accent)/10 text-(--arvesta-accent)">
-                {selectedCount} seçili
+                {selectedCount} {t("selected")}
               </Badge>
 
               <Button
@@ -403,7 +424,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 className="bg-(--arvesta-accent) text-white hover:bg-(--arvesta-accent-hover)"
               >
                 <CheckCheck className="mr-1" />
-                Toplu Okundu İşaretle
+                {t("bulkMarkRead")}
               </Button>
 
               <Button
@@ -413,7 +434,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 onClick={() => setConfirmBulkDeleteOpen(true)}
               >
                 <Trash2 className="mr-1" />
-                Toplu Sil
+                {t("bulkDelete")}
               </Button>
             </div>
           )}
@@ -436,8 +457,9 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           return (
             <Card
               key={sub.id}
-              className={`border-white/5 bg-(--arvesta-bg-card) transition-all ${!sub.isRead ? "border-l-2 border-l-(--arvesta-accent)" : ""
-                } ${isSelected ? "ring-1 ring-(--arvesta-accent)/40" : ""}`}
+              className={`border-white/5 bg-(--arvesta-bg-card) transition-all ${
+                !sub.isRead ? "border-l-2 border-l-(--arvesta-accent)" : ""
+              } ${isSelected ? "ring-1 ring-(--arvesta-accent)/40" : ""}`}
             >
               <CardHeader className="pb-2">
                 <CardTitle className="flex flex-wrap items-center justify-between gap-2">
@@ -481,7 +503,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                   <div className="flex items-center gap-2">
                     {!sub.isRead && (
                       <Badge className="border-(--arvesta-accent)/20 bg-(--arvesta-accent)/10 text-(--arvesta-accent)">
-                        Yeni
+                        {t("new")}
                       </Badge>
                     )}
                     <span className="inline-flex items-center gap-1 text-xs text-(--arvesta-text-muted)">
@@ -513,8 +535,12 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     onClick={() => updateReadState(sub.id, !sub.isRead)}
                     className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                   >
-                    {sub.isRead ? <EyeOff className="mr-1" /> : <Eye className="mr-1" />}
-                    {sub.isRead ? "Okunmamış Yap" : "Okundu İşaretle"}
+                    {sub.isRead ? (
+                      <EyeOff className="mr-1" />
+                    ) : (
+                      <Eye className="mr-1" />
+                    )}
+                    {sub.isRead ? t("markUnread") : t("markRead")}
                   </Button>
 
                   <Button
@@ -524,14 +550,14 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                   >
                     <Copy className="mr-1" />
-                    E-postayı Kopyala
+                    {t("copyEmail")}
                   </Button>
 
                   <a
                     href={`mailto:${sub.email}`}
                     className="inline-flex h-7 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg-elevated) px-2.5 text-[0.8rem] text-white transition hover:bg-white/5"
                   >
-                    Yanıtla
+                    {t("reply")}
                   </a>
 
                   <Button
@@ -541,7 +567,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     onClick={() => setConfirmDeleteId(sub.id)}
                   >
                     <Trash2 className="mr-1" />
-                    Sil
+                    {t("delete")}
                   </Button>
                 </div>
               </CardContent>
@@ -554,7 +580,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
             <CardContent className="py-12 text-center">
               <MessageSquare className="mx-auto mb-3 h-10 w-10 text-(--arvesta-text-muted)" />
               <p className="font-ui text-(--arvesta-text-muted)">
-                Filtreye uygun talep bulunamadı.
+                {t("noResults")}
               </p>
             </CardContent>
           </Card>
@@ -569,9 +595,9 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       >
         <DialogContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
           <DialogHeader>
-            <DialogTitle>Talep silinsin mi?</DialogTitle>
+            <DialogTitle>{t("deleteConfirmTitle")}</DialogTitle>
             <DialogDescription className="text-(--arvesta-text-secondary)">
-              Bu işlem geri alınamaz.
+              {t("deleteConfirmDesc")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -580,7 +606,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               onClick={() => setConfirmDeleteId(null)}
               className="border-white/15 bg-transparent text-white"
             >
-              Vazgeç
+              {t("cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -589,18 +615,21 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 if (confirmDeleteId) void deleteSubmission(confirmDeleteId);
               }}
             >
-              Sil
+              {t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={confirmBulkDeleteOpen} onOpenChange={setConfirmBulkDeleteOpen}>
+      <Dialog
+        open={confirmBulkDeleteOpen}
+        onOpenChange={setConfirmBulkDeleteOpen}
+      >
         <DialogContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
           <DialogHeader>
-            <DialogTitle>Seçili talepler silinsin mi?</DialogTitle>
+            <DialogTitle>{t("bulkDeleteConfirmTitle")}</DialogTitle>
             <DialogDescription className="text-(--arvesta-text-secondary)">
-              {selectedCount} kayıt kalıcı olarak silinecek.
+              {t("bulkDeleteConfirmDesc", { count: selectedCount })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -609,10 +638,14 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               onClick={() => setConfirmBulkDeleteOpen(false)}
               className="border-white/15 bg-transparent text-white"
             >
-              Vazgeç
+              {t("cancel")}
             </Button>
-            <Button variant="destructive" disabled={bulkBusy} onClick={bulkDelete}>
-              Toplu Sil
+            <Button
+              variant="destructive"
+              disabled={bulkBusy}
+              onClick={bulkDelete}
+            >
+              {t("bulkDelete")}
             </Button>
           </DialogFooter>
         </DialogContent>

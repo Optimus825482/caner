@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { MediaEditorDialog } from "@/components/admin/MediaEditorDialog";
 
 interface Category {
@@ -49,6 +50,7 @@ export default function ProductFormPage({
   params: Promise<{ id: string }>;
 }) {
   const { id: productId } = React.use(params);
+  const t = useTranslations("adminProductForm");
   const isNew = productId === "new";
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -57,7 +59,9 @@ export default function ProductFormPage({
   const [preparing, setPreparing] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [pendingTempId, setPendingTempId] = useState<string | null>(null);
-  const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(null);
+  const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(
+    null,
+  );
   const [errorMessage, setErrorMessage] = useState("");
 
   const [slug, setSlug] = useState("");
@@ -229,11 +233,14 @@ export default function ProductFormPage({
     };
 
     try {
-      const res = await fetch(isNew ? "/api/products" : `/api/products/${productId}`, {
-        method: isNew ? "POST" : "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const res = await fetch(
+        isNew ? "/api/products" : `/api/products/${productId}`,
+        {
+          method: isNew ? "POST" : "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
 
       const payload = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -268,7 +275,7 @@ export default function ProductFormPage({
         </Link>
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            {isNew ? "Yeni Ürün" : "Ürün Düzenle"}
+            {isNew ? t("newProduct") : t("editProduct")}
           </h1>
         </div>
       </div>
@@ -285,7 +292,7 @@ export default function ProductFormPage({
           <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white">
-                Çoklu Dil İçerik
+                {t("multiLangContent")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -305,7 +312,7 @@ export default function ProductFormPage({
                   <TabsContent key={l} value={l} className="space-y-4">
                     <div className="space-y-2">
                       <Label className="text-(--arvesta-text-secondary)">
-                        Başlık ({l.toUpperCase()})
+                        {t("title")} ({l.toUpperCase()})
                       </Label>
                       <Input
                         value={translations[l]?.title || ""}
@@ -316,12 +323,12 @@ export default function ProductFormPage({
                           })
                         }
                         className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
-                        placeholder={`Ürün adı (${localeLabels[l]})`}
+                        placeholder={`${t("titlePlaceholder")} (${localeLabels[l]})`}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-(--arvesta-text-secondary)">
-                        Açıklama ({l.toUpperCase()})
+                        {t("description")} ({l.toUpperCase()})
                       </Label>
                       <Textarea
                         value={translations[l]?.description || ""}
@@ -336,7 +343,7 @@ export default function ProductFormPage({
                         }
                         className="bg-(--arvesta-bg-elevated) border-white/5 text-white resize-none"
                         rows={3}
-                        placeholder={`Ürün açıklaması (${localeLabels[l]})`}
+                        placeholder={`${t("descriptionPlaceholder")} (${localeLabels[l]})`}
                       />
                     </div>
                   </TabsContent>
@@ -353,7 +360,7 @@ export default function ProductFormPage({
             <CardHeader>
               <CardTitle className="font-ui text-base text-white flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-(--arvesta-accent)" />{" "}
-                Görsel
+                {t("image")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -368,8 +375,8 @@ export default function ProductFormPage({
                   />
                 </div>
               ) : (
-                  <div className="aspect-4/3 rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center mb-3">
-                    <Upload className="w-8 h-8 text-(--arvesta-text-muted)" />
+                <div className="aspect-4/3 rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center mb-3">
+                  <Upload className="w-8 h-8 text-(--arvesta-text-muted)" />
                 </div>
               )}
               <input
@@ -383,7 +390,7 @@ export default function ProductFormPage({
                 htmlFor="product-image-upload"
                 className="inline-flex w-full h-8 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg) text-sm font-medium text-(--arvesta-text-secondary) cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
               >
-                {uploading ? "Yükleniyor..." : "Görsel Yükle"}
+                {uploading ? t("uploading") : t("uploadImage")}
               </label>
               <Button
                 type="button"
@@ -392,7 +399,7 @@ export default function ProductFormPage({
                 onClick={openEditorForExistingImage}
                 className="mt-2 w-full border-white/10 text-(--arvesta-text-secondary) font-ui"
               >
-                {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
+                {preparing ? t("preparing") : t("editExisting")}
               </Button>
             </CardContent>
           </Card>
@@ -401,19 +408,19 @@ export default function ProductFormPage({
           <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white">
-                Detaylar
+                {t("details")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-(--arvesta-text-secondary)">
-                  Slug
+                  {t("slug")}
                 </Label>
                 <Input
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
-                  placeholder="urun-adi"
+                  placeholder={t("slugPlaceholder")}
                 />
               </div>
               <div className="space-y-2">
@@ -421,16 +428,16 @@ export default function ProductFormPage({
                   htmlFor="product-category"
                   className="text-(--arvesta-text-secondary)"
                 >
-                  Kategori
+                  {t("category")}
                 </Label>
                 <select
                   id="product-category"
-                  aria-label="Kategori"
+                  aria-label={t("category")}
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                   className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/5 rounded-md text-white text-sm focus:border-(--arvesta-accent) focus:outline-none"
                 >
-                  <option value="">Seçin...</option>
+                  <option value="">{t("selectCategory")}</option>
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.translations.find((t) => t.locale === "fr")?.name ||
@@ -441,7 +448,7 @@ export default function ProductFormPage({
               </div>
               <div className="space-y-2">
                 <Label className="text-(--arvesta-text-secondary)">
-                  Sıra
+                  {t("order")}
                 </Label>
                 <Input
                   type="number"
@@ -454,7 +461,7 @@ export default function ProductFormPage({
                 <input
                   type="checkbox"
                   id="featured"
-                  aria-label="Öne çıkan"
+                  aria-label={t("featured")}
                   checked={featured}
                   onChange={(e) => setFeatured(e.target.checked)}
                   className="accent-(--arvesta-accent)"
@@ -463,7 +470,7 @@ export default function ProductFormPage({
                   htmlFor="featured"
                   className="text-(--arvesta-text-secondary) flex items-center gap-1"
                 >
-                  <Star className="w-3 h-3" /> Öne Çıkan
+                  <Star className="w-3 h-3" /> {t("featured")}
                 </Label>
               </div>
             </CardContent>
@@ -475,7 +482,7 @@ export default function ProductFormPage({
             className="w-full bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui font-semibold h-11"
           >
             <Save className="w-4 h-4 mr-2" />
-            {saving ? "Kaydediliyor..." : "Kaydet"}
+            {saving ? t("saving") : t("save")}
           </Button>
         </div>
       </div>
