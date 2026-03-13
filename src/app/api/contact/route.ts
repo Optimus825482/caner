@@ -14,11 +14,14 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60_000; // 10 minutes
 const RATE_LIMIT_MAX_REQUESTS = 5;
 
 // DÜZELTME: Memory yerine kalıcı DB (Site Settings) bazlı rate limit.
-const contactRateLimitAdapter = createSiteSettingRateLimitAdapter(prisma.siteSetting);
+const contactRateLimitAdapter = createSiteSettingRateLimitAdapter(
+  prisma.siteSetting,
+);
 
 const contactSchema = z.object({
   fullName: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(254),
+  phone: z.string().trim().min(1).max(30),
   projectType: z.string().trim().min(1).max(120),
   description: z.string().trim().min(10).max(5000),
   locale: z.string().trim().min(1).max(10).default("fr"),
@@ -26,23 +29,28 @@ const contactSchema = z.object({
   captchaToken: z.string().trim().min(1).optional(),
 });
 
-
-async function verifyTurnstileToken(token: string, ip: string): Promise<boolean> {
+async function verifyTurnstileToken(
+  token: string,
+  ip: string,
+): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) return true;
 
-  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+  const response = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        secret,
+        response: token,
+        remoteip: ip,
+      }),
+      cache: "no-store",
     },
-    body: new URLSearchParams({
-      secret,
-      response: token,
-      remoteip: ip,
-    }),
-    cache: "no-store",
-  });
+  );
 
   if (!response.ok) return false;
 
@@ -85,6 +93,7 @@ export async function POST(req: NextRequest) {
     const {
       fullName,
       email,
+      phone,
       projectType,
       description,
       locale,
@@ -99,12 +108,18 @@ export async function POST(req: NextRequest) {
     const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
     if (turnstileSecret) {
       if (!captchaToken) {
-        return NextResponse.json({ error: "Captcha token is required" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Captcha token is required" },
+          { status: 400 },
+        );
       }
 
       const captchaOk = await verifyTurnstileToken(captchaToken, clientIp);
       if (!captchaOk) {
-        return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Captcha verification failed" },
+          { status: 400 },
+        );
       }
     }
 
@@ -112,6 +127,7 @@ export async function POST(req: NextRequest) {
       data: {
         fullName,
         email,
+        phone,
         projectType,
         description,
         locale,

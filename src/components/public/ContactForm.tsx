@@ -125,6 +125,7 @@ export default function ContactForm({ locale }: { locale: string }) {
         body: JSON.stringify({
           fullName: String(data.get("fullName") ?? ""),
           email: String(data.get("email") ?? ""),
+          phone: String(data.get("phone") ?? ""),
           projectType: String(data.get("projectType") ?? ""),
           description: String(data.get("description") ?? ""),
           honeypot: String(data.get("honeypot") ?? ""),
@@ -254,6 +255,16 @@ export default function ContactForm({ locale }: { locale: string }) {
                 className="h-12 rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-(--arvesta-text-muted) focus-visible:border-(--arvesta-accent) focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
               />
             </div>
+
+            <Input
+              name="phone"
+              type="tel"
+              placeholder={t("phone")}
+              aria-label={t("phone")}
+              autoComplete="tel"
+              required
+              className="h-12 rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-(--arvesta-text-muted) focus-visible:border-(--arvesta-accent) focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
+            />
 
             <Input
               name="honeypot"

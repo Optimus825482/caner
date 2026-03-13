@@ -51,6 +51,7 @@
     "call": "Appelez-nous",
     "name": "Nom complet",
     "email": "Adresse email",
+    "phone": "Numéro de téléphone",
     "select": "Type de projet",
     "optKitchen": "Cuisine Résidentielle",
     "optBathroom": "Salle de Bain",

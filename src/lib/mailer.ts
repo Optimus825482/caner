@@ -5,6 +5,7 @@ type ContactSubmissionMailPayload = {
   id: string;
   fullName: string;
   email: string;
+  phone: string | null;
   projectType: string;
   description: string;
   locale: string;
@@ -160,6 +161,7 @@ export async function sendContactSubmissionNotification(
     text: [
       `Name: ${submission.fullName}`,
       `Email: ${submission.email}`,
+      `Phone: ${submission.phone ?? "-"}`,
       `Project Type: ${submission.projectType}`,
       `Locale: ${submission.locale}`,
       `Created At: ${submission.createdAt.toISOString()}`,

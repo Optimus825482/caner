@@ -29,12 +29,14 @@ import {
   CheckCheck,
   CheckSquare,
   Square,
+  Phone,
 } from "lucide-react";
 
 type SubmissionItem = {
   id: string;
   fullName: string;
   email: string;
+  phone: string | null;
   projectType: string;
   description: string;
   locale: string;
@@ -484,6 +486,12 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                           <Mail className="h-3 w-3" />
                           {sub.email}
                         </span>
+                        {sub.phone && (
+                          <span className="inline-flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {sub.phone}
+                          </span>
+                        )}
                         <Badge
                           variant="outline"
                           className="border-white/10 text-(--arvesta-text-secondary)"

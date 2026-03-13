@@ -49,6 +49,7 @@
     "call": "Call Us",
     "name": "Full Name",
     "email": "Email Address",
+    "phone": "Phone Number",
     "select": "Project Type",
     "optKitchen": "Residential Kitchen",
     "optBathroom": "Bathroom",

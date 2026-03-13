@@ -51,6 +51,7 @@
     "call": "Bizi Arayın",
     "name": "Ad Soyad",
     "email": "E-posta adresi",
+    "phone": "Telefon Numarası",
     "select": "Proje türü",
     "optKitchen": "Konut Mutfağı",
     "optBathroom": "Banyo",
