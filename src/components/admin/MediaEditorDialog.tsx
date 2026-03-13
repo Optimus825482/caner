@@ -345,7 +345,7 @@ export function MediaEditorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-[95vw] xl:max-w-350 h-[90vh] bg-(--arvesta-bg-card) border border-white/10 text-white p-0 overflow-hidden flex flex-col">
+      <DialogContent className="z-[1000] w-[95vw] sm:max-w-[95vw] xl:max-w-350 h-[90vh] bg-(--arvesta-bg-card) border border-white/10 text-white p-0 overflow-hidden flex flex-col">
         <DialogHeader className="px-5 pt-5 pb-2 shrink-0">
           <DialogTitle className="font-ui">{t("title")}</DialogTitle>
           <DialogDescription className="text-(--arvesta-text-muted)">
@@ -442,14 +442,11 @@ export function MediaEditorDialog({
                       }}
                       className="max-h-full flex justify-center overflow-hidden"
                     >
-                      <Image
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
                         src={previewUrl}
                         alt={t("noPreview")}
-                        width={0}
-                        height={0}
-                        sizes="100vw"
-                        unoptimized={isTempPreview}
-                        className={`max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
+                        className={`max-w-full max-h-[calc(90vh-140px)] w-auto h-auto object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
                         data-preview-filter={previewFilter}
                       />
                     </ReactCrop>
