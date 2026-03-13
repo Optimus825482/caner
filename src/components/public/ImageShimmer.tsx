@@ -31,6 +31,7 @@ export default function ImageShimmer({ className = "", ...props }: ImageProps) {
   return (
     <Image
       {...props}
+      alt={props.alt || "Loading placeholder"}
       className={`transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
       placeholder="blur"
       blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmerSvg(16, 9))}`}

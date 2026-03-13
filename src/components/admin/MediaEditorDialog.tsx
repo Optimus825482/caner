@@ -272,10 +272,10 @@ export function MediaEditorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-[95vw] xl:max-w-[1400px] h-[90vh] bg-[var(--arvesta-bg-card)] border border-white/10 text-white p-0 overflow-hidden flex flex-col">
+      <DialogContent className="w-[95vw] sm:max-w-[95vw] xl:max-w-350 h-[90vh] bg-(--arvesta-bg-card) border border-white/10 text-white p-0 overflow-hidden flex flex-col">
         <DialogHeader className="px-5 pt-5 pb-2 shrink-0">
           <DialogTitle className="font-ui">Traitement d&apos;image</DialogTitle>
-          <DialogDescription className="text-[var(--arvesta-text-muted)]">
+          <DialogDescription className="text-(--arvesta-text-muted)">
             Appliquez les modifications, puis enregistrez pour publier.
           </DialogDescription>
         </DialogHeader>
@@ -399,9 +399,12 @@ export function MediaEditorDialog({
                       }}
                       className="max-h-full flex justify-center overflow-hidden"
                     >
-                      <img
+                      <Image
                         src={previewUrl}
                         alt="Aperçu"
+                        width={0}
+                        height={0}
+                        sizes="100vw"
                         className="max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl"
                         style={{
                           filter: previewFilter,
@@ -495,7 +498,7 @@ export function MediaEditorDialog({
               onValueChange={setActiveTab}
               className="flex flex-col"
             >
-              <TabsList className="bg-[var(--arvesta-bg-elevated)] border border-white/10 w-full grid grid-cols-2 sm:grid-cols-5 gap-1 h-auto p-1">
+              <TabsList className="bg-(--arvesta-bg-elevated) border border-white/10 w-full grid grid-cols-2 sm:grid-cols-5 gap-1 h-auto p-1">
                 <TabsTrigger
                   value="basic"
                   className="text-[11px] sm:text-xs px-1.5 py-1.5"
@@ -531,7 +534,7 @@ export function MediaEditorDialog({
               {/* === BASIC TAB === */}
               <TabsContent value="basic" className="space-y-3 mt-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-[var(--arvesta-text-secondary)]">
+                  <Label className="text-xs text-(--arvesta-text-secondary)">
                     Rotation
                   </Label>
                   <div className="flex gap-2">
@@ -543,8 +546,8 @@ export function MediaEditorDialog({
                         variant={rotate === value ? "default" : "outline"}
                         className={
                           rotate === value
-                            ? "bg-[var(--arvesta-accent)]"
-                            : "border-white/10 text-[var(--arvesta-text-secondary)]"
+                            ? "bg-(--arvesta-accent)"
+                            : "border-white/10 text-(--arvesta-text-secondary)"
                         }
                         onClick={() => setRotate(value)}
                       >
@@ -561,8 +564,8 @@ export function MediaEditorDialog({
                     variant={flip ? "default" : "outline"}
                     className={
                       flip
-                        ? "bg-[var(--arvesta-accent)]"
-                        : "border-white/10 text-[var(--arvesta-text-secondary)]"
+                        ? "bg-(--arvesta-accent)"
+                        : "border-white/10 text-(--arvesta-text-secondary)"
                     }
                     onClick={() => setFlip(!flip)}
                   >
@@ -574,8 +577,8 @@ export function MediaEditorDialog({
                     variant={flop ? "default" : "outline"}
                     className={
                       flop
-                        ? "bg-[var(--arvesta-accent)]"
-                        : "border-white/10 text-[var(--arvesta-text-secondary)]"
+                        ? "bg-(--arvesta-accent)"
+                        : "border-white/10 text-(--arvesta-text-secondary)"
                     }
                     onClick={() => setFlop(!flop)}
                   >
@@ -586,7 +589,7 @@ export function MediaEditorDialog({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="quality-range"
-                    className="text-xs text-[var(--arvesta-text-secondary)]"
+                    className="text-xs text-(--arvesta-text-secondary)"
                   >
                     Qualité ({quality})
                   </Label>
@@ -608,11 +611,11 @@ export function MediaEditorDialog({
                     title="Activer l'amélioration automatique"
                     checked={autoEnhance}
                     onChange={(e) => setAutoEnhance(e.target.checked)}
-                    className="accent-[var(--arvesta-accent)]"
+                    className="accent-(--arvesta-accent)"
                   />
                   <Label
                     htmlFor="autoEnhance"
-                    className="text-sm text-[var(--arvesta-text-secondary)]"
+                    className="text-sm text-(--arvesta-text-secondary)"
                   >
                     Amélioration auto
                   </Label>
@@ -621,7 +624,7 @@ export function MediaEditorDialog({
 
               {/* === CROP TAB === */}
               <TabsContent value="crop" className="space-y-3 mt-3">
-                <div className="text-xs text-[var(--arvesta-text-muted)] mb-2">
+                <div className="text-xs text-(--arvesta-text-muted) mb-2">
                   Vous pouvez aussi glisser le cadre directement sur
                   l&apos;image.
                 </div>

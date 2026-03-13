@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fc from "fast-check";
 import path from "path";
 import { mkdir, writeFile, readFile, readdir, unlink } from "fs/promises";
@@ -206,10 +206,12 @@ describe("Feature: depth-parallax-viewer, Property 10: Publish persists depth ma
     it("for any valid temp depth map PNG, copy creates file in uploads and removes temp", () => {
       fc.assert(
         fc.asyncProperty(
-          // Generate random small PNG-like content (just needs to be a file)
-          fc.uint8Array({ minLength: 8, maxLength: 512 }),
-          fc.integer({ min: 0, max: 100 }),
-          async (fileContent, intensity) => {
+          fc.tuple(
+            // Generate random small PNG-like content (just needs to be a file)
+            fc.uint8Array({ minLength: 8, maxLength: 512 }),
+            fc.integer({ min: 0, max: 100 })
+          ),
+          async ([fileContent, intensity]) => {
             // Create a temp depth map file
             const tempId = `depth-${Date.now()}-${randomUUID()}`;
             const tempFilename = `${tempId}.png`;

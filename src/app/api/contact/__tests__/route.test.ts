@@ -68,9 +68,8 @@ const validContact = {
 
 describe("POST /api/contact", () => {
   it("returns 403 when origin denied", async () => {
-    const { NextResponse } = require("next/server");
     mockEnforceSameOrigin.mockReturnValue(
-      NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+      Response.json({ error: "Forbidden" }, { status: 403 }),
     );
     const req = makeReq(validContact);
     const res = await POST(req);
@@ -113,9 +112,8 @@ describe("POST /api/contact", () => {
   });
 
   it("returns 429 when rate limited", async () => {
-    const { NextResponse } = require("next/server");
     mockEnforceRateLimit.mockResolvedValue(
-      NextResponse.json({ error: "Too many" }, { status: 429 }),
+      Response.json({ error: "Too many" }, { status: 429 }),
     );
     const req = makeReq(validContact);
     const res = await POST(req);

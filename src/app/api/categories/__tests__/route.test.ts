@@ -43,10 +43,9 @@ function adminOk() {
 }
 
 function adminDenied(status: number) {
-  const { NextResponse } = require("next/server");
   mockRequireAdminAuth.mockResolvedValue({
     ok: false,
-    response: NextResponse.json({ error: "Denied" }, { status }),
+    response: Response.json({ error: "Denied" }, { status }),
   });
 }
 
@@ -103,9 +102,8 @@ describe("GET /api/categories", () => {
 
 describe("POST /api/categories", () => {
   it("returns 403 when origin is denied", async () => {
-    const { NextResponse } = require("next/server");
     mockEnforceSameOrigin.mockReturnValue(
-      NextResponse.json({ error: "Forbidden origin" }, { status: 403 }),
+      Response.json({ error: "Forbidden origin" }, { status: 403 }),
     );
     const req = makeReq("POST", { slug: "test" });
     const res = await POST(req);
@@ -159,9 +157,8 @@ describe("POST /api/categories", () => {
 
   it("returns 429 when rate limited", async () => {
     adminOk();
-    const { NextResponse } = require("next/server");
     mockEnforceRateLimit.mockResolvedValue(
-      NextResponse.json({ error: "Too many" }, { status: 429 }),
+      Response.json({ error: "Too many" }, { status: 429 }),
     );
     const req = makeReq("POST", {
       slug: "test",

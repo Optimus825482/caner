@@ -11,7 +11,8 @@ export default function Preloader() {
   useEffect(() => {
     // Only show on first visit per session
     if (sessionStorage.getItem("arvesta-preloader-shown")) {
-      setSkip(true);
+      // Use a microtask to avoid synchronous state update in effect
+      Promise.resolve().then(() => setSkip(true));
       return;
     }
     sessionStorage.setItem("arvesta-preloader-shown", "1");

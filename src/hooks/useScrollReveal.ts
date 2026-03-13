@@ -28,7 +28,7 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (prefersReduced) {
-      setIsVisible(true);
+      Promise.resolve().then(() => setIsVisible(true));
       return;
     }
 

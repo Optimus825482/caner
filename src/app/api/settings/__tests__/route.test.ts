@@ -41,10 +41,9 @@ function adminOk() {
 }
 
 function adminDenied(status: number) {
-  const { NextResponse } = require("next/server");
   mockRequireAdminAuth.mockResolvedValue({
     ok: false,
-    response: NextResponse.json({ error: "Denied" }, { status }),
+    response: Response.json({ error: "Denied" }, { status }),
   });
 }
 
@@ -120,9 +119,8 @@ describe("PUT /api/settings", () => {
 
   it("returns 429 when rate limited", async () => {
     adminOk();
-    const { NextResponse } = require("next/server");
     mockEnforceRateLimit.mockResolvedValue(
-      NextResponse.json({ error: "Too many" }, { status: 429 }),
+      Response.json({ error: "Too many" }, { status: 429 }),
     );
     const req = makeReq("PUT", { site_name: "Test" });
     const res = await PUT(req);

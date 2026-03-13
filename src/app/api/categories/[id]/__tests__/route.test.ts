@@ -31,10 +31,9 @@ function adminOk() {
 }
 
 function adminDenied(status: number) {
-  const { NextResponse } = require("next/server");
   mockRequireAdminAuth.mockResolvedValue({
     ok: false,
-    response: NextResponse.json({ error: "Denied" }, { status }),
+    response: Response.json({ error: "Denied" }, { status }),
   });
 }
 

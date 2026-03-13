@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useCallback, useState } from "react";
+import Image from "next/image";
 
 interface DepthParallaxViewerProps {
   imageUrl: string;
@@ -113,7 +114,7 @@ function loadTex(
   url: string,
 ): Promise<{ tex: WebGLTexture; w: number; h: number }> {
   return new Promise((res, rej) => {
-    const img = new Image();
+    const img = new window.Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const t = gl.createTexture();
@@ -192,7 +193,24 @@ export function DepthParallaxViewer({
     depthColorFrom,
     depthColorTo,
   });
-  pRef.current = {
+
+  // Update ref with latest props in an effect
+  useEffect(() => {
+    pRef.current = {
+      intensity,
+      zoom,
+      focusPoint,
+      fogEnabled,
+      fogDensity,
+      fogColor,
+      rotationEnabled,
+      rotationX,
+      rotationY,
+      depthColorize,
+      depthColorFrom,
+      depthColorTo,
+    };
+  }, [
     intensity,
     zoom,
     focusPoint,
@@ -205,7 +223,7 @@ export function DepthParallaxViewer({
     depthColorize,
     depthColorFrom,
     depthColorTo,
-  };
+  ]);
 
   // ── Init WebGL context and shaders ──
   useEffect(() => {
@@ -213,7 +231,7 @@ export function DepthParallaxViewer({
     if (!canvas) return;
     const gl = canvas.getContext("webgl2");
     if (!gl) {
-      setWebglOk(false);
+      Promise.resolve().then(() => setWebglOk(false));
       return;
     }
     glRef.current = gl;
@@ -264,10 +282,14 @@ export function DepthParallaxViewer({
     gl.enableVertexAttribArray(aT);
     gl.vertexAttribPointer(aT, 2, gl.FLOAT, false, 16, 8);
 
+    // Store references to the values we'll need in cleanup
+    const currentTexRef = texRef.current;
+    const currentProgRef = progRef.current;
+    
     return () => {
-      if (texRef.current.img) gl.deleteTexture(texRef.current.img);
-      if (texRef.current.dep) gl.deleteTexture(texRef.current.dep);
-      if (progRef.current) gl.deleteProgram(progRef.current);
+      if (currentTexRef.img) gl.deleteTexture(currentTexRef.img);
+      if (currentTexRef.dep) gl.deleteTexture(currentTexRef.dep);
+      if (currentProgRef) gl.deleteProgram(currentProgRef);
       if (vbo) gl.deleteBuffer(vbo);
       if (vao) gl.deleteVertexArray(vao);
       glRef.current = null;
@@ -427,12 +449,16 @@ export function DepthParallaxViewer({
   if (!webglOk) {
     return (
       <div className={className}>
-        <img
+        <Image
           src={imageUrl}
           alt="Preview"
           className="w-full h-full object-cover"
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: '100%', height: 'auto' }}
         />
-        <p className="text-xs text-center text-[var(--arvesta-text-muted)] mt-1">
+        <p className="text-xs text-center text-(--arvesta-text-muted) mt-1">
           WebGL desteklenmiyor
         </p>
       </div>

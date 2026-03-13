@@ -1,16 +1,19 @@
 # Media Preprocess Technical Spec (Self-hosted Sharp)
 
 ## Goal
+
 Admin panelde yüklenen tüm görseller yayınlanmadan önce preprocess editöründen geçer.
 Kaydet aksiyonu anında publish eder.
 
 ## Scope
+
 - `/api/upload` kullanan tüm admin akışları
 - Hero form
 - Product form
 - (sonraki adım) Categories image upload
 
 ## Workflow
+
 1. Admin görsel seçer.
 2. `POST /api/upload` çağrılır.
 3. API dosyayı public yerine `storage/tmp-media` altına yazar ve `tempId + previewUrl` döner.
@@ -23,8 +26,10 @@ Kaydet aksiyonu anında publish eder.
 ## API Contracts
 
 ### POST /api/upload
+
 Input: multipart form-data `file`
 Output:
+
 ```json
 {
   "tempId": "uuid",
@@ -37,11 +42,14 @@ Output:
 ```
 
 ### GET /api/media/temp/:id
+
 - Admin auth + same-origin gerekir
 - Temp dosyayı no-store ile döndürür
 
 ### POST /api/media/publish
+
 Input:
+
 ```json
 {
   "tempId": "uuid",
@@ -63,7 +71,9 @@ Input:
   }
 }
 ```
+
 Output:
+
 ```json
 {
   "url": "/uploads/products/....jpg",
@@ -73,6 +83,7 @@ Output:
 ```
 
 ## Security
+
 - Magic-byte + MIME + extension eşleşmesi zorunlu
 - Max size ve max dimension kontrolleri
 - Admin auth + same-origin guard
@@ -80,10 +91,12 @@ Output:
 - Temp cleanup (24h)
 
 ## Known Trade-offs
+
 - Crop UI şu an input tabanlı (x/y/w/h yüzde). İkinci fazda drag-drop cropper eklenebilir.
 - Text overlay live-preview minimal; final authority backend Sharp.
 
 ## Next Steps
+
 - Categories admin sayfasına görsel upload alanı + editor entegrasyonu
 - Temp cleanup için cron/scheduled job
 - E2E testler (upload -> edit -> publish -> save)

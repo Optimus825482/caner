@@ -35,9 +35,8 @@ vi.mock("react", async () => {
 // Import AFTER mock setup
 import { DepthParallaxViewer } from "../DepthParallaxViewer";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function p(el: React.ReactElement): Record<string, any> {
-  return (el as any).props ?? {};
+function p(el: React.ReactElement): Record<string, unknown> {
+  return (el as { props: Record<string, unknown> }).props ?? {};
 }
 
 function findAll(
