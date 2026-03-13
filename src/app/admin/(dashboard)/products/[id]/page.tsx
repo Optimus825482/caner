@@ -280,228 +280,234 @@ export default function ProductFormPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {errorMessage && (
-          <div className="lg:col-span-3 rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            {errorMessage}
-          </div>
-        )}
+      {editorOpen ? (
+        <MediaEditorDialog
+          mode="inline"
+          open={editorOpen}
+          onOpenChange={setEditorOpen}
+          tempId={pendingTempId}
+          previewUrl={pendingPreviewUrl}
+          onPublished={(url) => {
+            setImageUrl(url);
+            setPendingTempId(null);
+            setPendingPreviewUrl(null);
+          }}
+          onClose={() => {
+            setPendingTempId(null);
+            setPendingPreviewUrl(null);
+          }}
+        />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {errorMessage && (
+            <div className="lg:col-span-3 rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {errorMessage}
+            </div>
+          )}
 
-        {/* Main */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="border-white/5 bg-(--arvesta-bg-card)">
-            <CardHeader>
-              <CardTitle className="font-ui text-base text-white">
-                {t("multiLangContent")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="fr">
-                <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5 mb-4">
+          {/* Main */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border-white/5 bg-(--arvesta-bg-card)">
+              <CardHeader>
+                <CardTitle className="font-ui text-base text-white">
+                  {t("multiLangContent")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="fr">
+                  <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5 mb-4">
+                    {locales.map((l) => (
+                      <TabsTrigger
+                        key={l}
+                        value={l}
+                        className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
+                      >
+                        {localeLabels[l]}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
                   {locales.map((l) => (
-                    <TabsTrigger
-                      key={l}
-                      value={l}
-                      className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
-                    >
-                      {localeLabels[l]}
-                    </TabsTrigger>
+                    <TabsContent key={l} value={l} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-(--arvesta-text-secondary)">
+                          {t("title")} ({l.toUpperCase()})
+                        </Label>
+                        <Input
+                          value={translations[l]?.title || ""}
+                          onChange={(e) =>
+                            setTranslations({
+                              ...translations,
+                              [l]: {
+                                ...translations[l],
+                                title: e.target.value,
+                              },
+                            })
+                          }
+                          className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
+                          placeholder={`${t("titlePlaceholder")} (${localeLabels[l]})`}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-(--arvesta-text-secondary)">
+                          {t("description")} ({l.toUpperCase()})
+                        </Label>
+                        <Textarea
+                          value={translations[l]?.description || ""}
+                          onChange={(e) =>
+                            setTranslations({
+                              ...translations,
+                              [l]: {
+                                ...translations[l],
+                                description: e.target.value,
+                              },
+                            })
+                          }
+                          className="bg-(--arvesta-bg-elevated) border-white/5 text-white resize-none"
+                          rows={3}
+                          placeholder={`${t("descriptionPlaceholder")} (${localeLabels[l]})`}
+                        />
+                      </div>
+                    </TabsContent>
                   ))}
-                </TabsList>
-                {locales.map((l) => (
-                  <TabsContent key={l} value={l} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-(--arvesta-text-secondary)">
-                        {t("title")} ({l.toUpperCase()})
-                      </Label>
-                      <Input
-                        value={translations[l]?.title || ""}
-                        onChange={(e) =>
-                          setTranslations({
-                            ...translations,
-                            [l]: { ...translations[l], title: e.target.value },
-                          })
-                        }
-                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
-                        placeholder={`${t("titlePlaceholder")} (${localeLabels[l]})`}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-(--arvesta-text-secondary)">
-                        {t("description")} ({l.toUpperCase()})
-                      </Label>
-                      <Textarea
-                        value={translations[l]?.description || ""}
-                        onChange={(e) =>
-                          setTranslations({
-                            ...translations,
-                            [l]: {
-                              ...translations[l],
-                              description: e.target.value,
-                            },
-                          })
-                        }
-                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white resize-none"
-                        rows={3}
-                        placeholder={`${t("descriptionPlaceholder")} (${localeLabels[l]})`}
-                      />
-                    </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Image Upload */}
-          <Card className="border-white/5 bg-(--arvesta-bg-card)">
-            <CardHeader>
-              <CardTitle className="font-ui text-base text-white flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-(--arvesta-accent)" />{" "}
-                {t("image")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {imageUrl ? (
-                <div className="relative aspect-4/3 rounded-lg overflow-hidden mb-3">
-                  <Image
-                    src={imageUrl}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                    sizes="300px"
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Image Upload */}
+            <Card className="border-white/5 bg-(--arvesta-bg-card)">
+              <CardHeader>
+                <CardTitle className="font-ui text-base text-white flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-(--arvesta-accent)" />{" "}
+                  {t("image")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {imageUrl ? (
+                  <div className="relative aspect-4/3 rounded-lg overflow-hidden mb-3">
+                    <Image
+                      src={imageUrl}
+                      alt="Preview"
+                      fill
+                      className="object-cover"
+                      sizes="300px"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-4/3 rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center mb-3">
+                    <Upload className="w-8 h-8 text-(--arvesta-text-muted)" />
+                  </div>
+                )}
+                <input
+                  id="product-image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="product-image-upload"
+                  className="inline-flex w-full h-8 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg) text-sm font-medium text-(--arvesta-text-secondary) cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  {uploading ? t("uploading") : t("uploadImage")}
+                </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!imageUrl || preparing}
+                  onClick={openEditorForExistingImage}
+                  className="mt-2 w-full border-white/10 text-(--arvesta-text-secondary) font-ui"
+                >
+                  {preparing ? t("preparing") : t("editExisting")}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Details */}
+            <Card className="border-white/5 bg-(--arvesta-bg-card)">
+              <CardHeader>
+                <CardTitle className="font-ui text-base text-white">
+                  {t("details")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-(--arvesta-text-secondary)">
+                    {t("slug")}
+                  </Label>
+                  <Input
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
+                    placeholder={t("slugPlaceholder")}
                   />
                 </div>
-              ) : (
-                <div className="aspect-4/3 rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center mb-3">
-                  <Upload className="w-8 h-8 text-(--arvesta-text-muted)" />
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="product-category"
+                    className="text-(--arvesta-text-secondary)"
+                  >
+                    {t("category")}
+                  </Label>
+                  <select
+                    id="product-category"
+                    aria-label={t("category")}
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/5 rounded-md text-white text-sm focus:border-(--arvesta-accent) focus:outline-none"
+                  >
+                    <option value="">{t("selectCategory")}</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.translations.find((t) => t.locale === "fr")?.name ||
+                          c.slug}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
-              <input
-                id="product-image-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleUpload}
-                className="hidden"
-              />
-              <label
-                htmlFor="product-image-upload"
-                className="inline-flex w-full h-8 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg) text-sm font-medium text-(--arvesta-text-secondary) cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
-              >
-                {uploading ? t("uploading") : t("uploadImage")}
-              </label>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!imageUrl || preparing}
-                onClick={openEditorForExistingImage}
-                className="mt-2 w-full border-white/10 text-(--arvesta-text-secondary) font-ui"
-              >
-                {preparing ? t("preparing") : t("editExisting")}
-              </Button>
-            </CardContent>
-          </Card>
+                <div className="space-y-2">
+                  <Label className="text-(--arvesta-text-secondary)">
+                    {t("order")}
+                  </Label>
+                  <Input
+                    type="number"
+                    value={order}
+                    onChange={(e) => setOrder(Number(e.target.value))}
+                    className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    aria-label={t("featured")}
+                    checked={featured}
+                    onChange={(e) => setFeatured(e.target.checked)}
+                    className="accent-(--arvesta-accent)"
+                  />
+                  <Label
+                    htmlFor="featured"
+                    className="text-(--arvesta-text-secondary) flex items-center gap-1"
+                  >
+                    <Star className="w-3 h-3" /> {t("featured")}
+                  </Label>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Details */}
-          <Card className="border-white/5 bg-(--arvesta-bg-card)">
-            <CardHeader>
-              <CardTitle className="font-ui text-base text-white">
-                {t("details")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-(--arvesta-text-secondary)">
-                  {t("slug")}
-                </Label>
-                <Input
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
-                  placeholder={t("slugPlaceholder")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="product-category"
-                  className="text-(--arvesta-text-secondary)"
-                >
-                  {t("category")}
-                </Label>
-                <select
-                  id="product-category"
-                  aria-label={t("category")}
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/5 rounded-md text-white text-sm focus:border-(--arvesta-accent) focus:outline-none"
-                >
-                  <option value="">{t("selectCategory")}</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.translations.find((t) => t.locale === "fr")?.name ||
-                        c.slug}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-(--arvesta-text-secondary)">
-                  {t("order")}
-                </Label>
-                <Input
-                  type="number"
-                  value={order}
-                  onChange={(e) => setOrder(Number(e.target.value))}
-                  className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  aria-label={t("featured")}
-                  checked={featured}
-                  onChange={(e) => setFeatured(e.target.checked)}
-                  className="accent-(--arvesta-accent)"
-                />
-                <Label
-                  htmlFor="featured"
-                  className="text-(--arvesta-text-secondary) flex items-center gap-1"
-                >
-                  <Star className="w-3 h-3" /> {t("featured")}
-                </Label>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui font-semibold h-11"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? t("saving") : t("save")}
-          </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui font-semibold h-11"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? t("saving") : t("save")}
+            </Button>
+          </div>
         </div>
-      </div>
-
-      <MediaEditorDialog
-        open={editorOpen}
-        onOpenChange={setEditorOpen}
-        tempId={pendingTempId}
-        previewUrl={pendingPreviewUrl}
-        onPublished={(url) => {
-          setImageUrl(url);
-          setPendingTempId(null);
-          setPendingPreviewUrl(null);
-        }}
-        onClose={() => {
-          setPendingTempId(null);
-          setPendingPreviewUrl(null);
-        }}
-      />
+      )}
     </div>
   );
 }
