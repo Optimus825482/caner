@@ -64,15 +64,15 @@ export default function AdminProducts() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            {t.title}
+            {t("title")}
           </h1>
           <p className="text-(--arvesta-text-muted) font-ui text-sm">
-            {products.length} {t.countLabel}
+            {products.length} {t("countLabel")}
           </p>
         </div>
         <Link href="/admin/products/new">
           <Button className="bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui">
-            <Plus className="w-4 h-4 mr-2" /> {t.newProduct}
+            <Plus className="w-4 h-4 mr-2" /> {t("newProduct")}
           </Button>
         </Link>
       </div>
@@ -96,19 +96,19 @@ export default function AdminProducts() {
               <TableHeader>
                 <TableRow className="border-white/5 hover:bg-transparent">
                   <TableHead className="text-(--arvesta-text-muted) font-ui">
-                    {t.table.image}
+                    {t("table.image")}
                   </TableHead>
                   <TableHead className="text-(--arvesta-text-muted) font-ui">
-                    {t.table.name}
+                    {t("table.name")}
                   </TableHead>
                   <TableHead className="text-(--arvesta-text-muted) font-ui">
-                    {t.table.category}
+                    {t("table.category")}
                   </TableHead>
                   <TableHead className="text-(--arvesta-text-muted) font-ui">
-                    {t.table.status}
+                    {t("table.status")}
                   </TableHead>
                   <TableHead className="text-(--arvesta-text-muted) font-ui text-right">
-                    {t.table.actions}
+                    {t("table.actions")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -162,7 +162,7 @@ export default function AdminProducts() {
                       <TableCell>
                         {product.featured && (
                           <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 font-ui text-xs">
-                            <Star className="w-3 h-3 mr-1" /> {t.featured}
+                            <Star className="w-3 h-3 mr-1" /> {t("featured")}
                           </Badge>
                         )}
                       </TableCell>
@@ -173,7 +173,7 @@ export default function AdminProducts() {
                               variant="ghost"
                               size="sm"
                               className="text-(--arvesta-text-muted) hover:text-white"
-                              aria-label={t.editAriaLabel}
+                              aria-label={t("editAriaLabel")}
                             >
                               <Pencil className="w-4 h-4" />
                             </Button>
@@ -189,7 +189,7 @@ export default function AdminProducts() {
                                   variant="ghost"
                                   size="sm"
                                   className="text-(--arvesta-text-muted) hover:text-red-400"
-                                  aria-label={t.deleteAriaLabel}
+                                  aria-label={t("deleteAriaLabel")}
                                 />
                               }
                             >
@@ -198,13 +198,13 @@ export default function AdminProducts() {
                             <DialogContent className="bg-(--arvesta-bg-card) border-white/5">
                               <DialogHeader>
                                 <DialogTitle className="text-white font-display">
-                                  {t.deleteDialog.title}
+                                  {t("deleteDialog.title")}
                                 </DialogTitle>
                                 <DialogDescription className="text-(--arvesta-text-muted)">
-                                  {t.deleteDialog.descriptionPrefix}&nbsp;
+                                  {t("deleteDialog.descriptionPrefix")}&nbsp;
                                   &quot;
                                   {primaryTitle}&quot;. &nbsp;
-                                  {t.deleteDialog.descriptionSuffix}
+                                  {t("deleteDialog.descriptionSuffix")}
                                 </DialogDescription>
                               </DialogHeader>
                               <DialogFooter>
@@ -216,13 +216,13 @@ export default function AdminProducts() {
                                     />
                                   }
                                 >
-                                  {t.deleteDialog.cancel}
+                                  {t("deleteDialog.cancel")}
                                 </DialogClose>
                                 <Button
                                   variant="destructive"
                                   onClick={() => handleDelete(product.id)}
                                 >
-                                  {t.deleteDialog.confirm}
+                                  {t("deleteDialog.confirm")}
                                 </Button>
                               </DialogFooter>
                             </DialogContent>
