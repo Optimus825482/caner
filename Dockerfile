@@ -25,7 +25,7 @@ RUN npm run build
 
 # ---- Runner ----
 FROM node:20-slim AS runner
-RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates libvips42 && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 ENV NODE_ENV=production

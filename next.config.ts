@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
+    localPatterns: [{ pathname: "/uploads/**" }],
     remotePatterns: [],
   },
 };
