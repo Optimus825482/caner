@@ -13,6 +13,12 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Download depth model (gitignored, so not in repo)
+RUN mkdir -p models && \
+    wget -q -O models/depth-anything-v2-small.onnx \
+    "https://huggingface.co/onnx-community/depth-anything-v2-small/resolve/main/onnx/model.onnx"
+
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
