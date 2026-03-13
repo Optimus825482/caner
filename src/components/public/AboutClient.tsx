@@ -14,12 +14,10 @@ export default function AboutClient({ locale }: { locale: string }) {
   const {
     ref: numRef,
     isVisible: numVisible,
-    getDelay,
   } = useStaggerReveal(4, 140, 400);
   const {
     ref: craftRef,
     isVisible: craftVisible,
-    getDelay: craftDelay,
   } = useStaggerReveal(3, 160, 500);
   const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal();
 
@@ -53,20 +51,17 @@ export default function AboutClient({ locale }: { locale: string }) {
             {t("heroTag")}
           </span>
           <h1
-            className={`mb-6 font-display text-5xl font-bold leading-[1.1] text-white md:text-7xl ${heroVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.12s" }}
+            className={`mb-6 font-display text-5xl font-bold leading-[1.1] text-white md:text-7xl ${heroVisible ? "anim-reveal-up anim-delay-120" : "opacity-0"}`}
           >
             {t("heroTitle")}
           </h1>
           <p
-            className={`mx-auto max-w-xl text-base leading-relaxed text-(--arvesta-text-secondary) md:text-lg ${heroVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.24s" }}
+            className={`mx-auto max-w-xl text-base leading-relaxed text-(--arvesta-text-secondary) md:text-lg ${heroVisible ? "anim-reveal-up anim-delay-240" : "opacity-0"}`}
           >
             {t("heroDesc")}
           </p>
           <div
-            className={`mx-auto mt-8 h-px w-32 bg-linear-to-r from-transparent via-(--arvesta-gold)/70 to-transparent ${heroVisible ? "anim-line-expand" : "opacity-0 scale-x-0"}`}
-            style={{ animationDelay: "0.36s" }}
+            className={`mx-auto mt-8 h-px w-32 bg-linear-to-r from-transparent via-(--arvesta-gold)/70 to-transparent ${heroVisible ? "anim-line-expand anim-delay-360" : "opacity-0 scale-x-0"}`}
           />
         </div>
       </section>
@@ -92,8 +87,7 @@ export default function AboutClient({ locale }: { locale: string }) {
             </div>
 
             <div
-              className={storyVisible ? "anim-slide-right" : "opacity-0"}
-              style={{ animationDelay: "0.15s" }}
+              className={storyVisible ? "anim-slide-right anim-delay-150" : "opacity-0"}
             >
               <span className="mb-3 block font-ui text-xs font-bold uppercase tracking-[0.24em] text-(--arvesta-gold)/90">
                 {t("storyTag")}
@@ -129,7 +123,6 @@ export default function AboutClient({ locale }: { locale: string }) {
               <div
                 key={i}
                 className={`group rounded-2xl border border-(--arvesta-gold)/15 bg-[rgba(10,21,42,0.5)] p-6 transition-all duration-500 hover:border-(--arvesta-gold)/40 hover:bg-[rgba(10,21,42,0.7)] md:p-8 ${numVisible ? "anim-reveal-up" : "opacity-0"}`}
-                style={{ animationDelay: `${getDelay(i)}ms` }}
               >
                 <div className="mb-2 font-display text-4xl font-bold text-(--arvesta-gold) md:text-5xl">
                   {n.value}
@@ -153,8 +146,7 @@ export default function AboutClient({ locale }: { locale: string }) {
               {t("craftTag")}
             </span>
             <h2
-              className={`font-display text-3xl font-bold text-white md:text-4xl ${craftVisible ? "anim-reveal-up" : "opacity-0"}`}
-              style={{ animationDelay: "0.1s" }}
+              className={`font-display text-3xl font-bold text-white md:text-4xl ${craftVisible ? "anim-reveal-up anim-delay-100" : "opacity-0"}`}
             >
               {t("craftTitle")}
             </h2>
@@ -165,7 +157,6 @@ export default function AboutClient({ locale }: { locale: string }) {
               <article
                 key={i}
                 className={`tilt-card group relative overflow-hidden rounded-3xl border border-(--arvesta-gold)/20 bg-[linear-gradient(160deg,rgba(10,21,42,0.9),rgba(5,11,24,0.95))] p-8 shadow-[0_20px_50px_rgba(2,8,20,0.45)] transition-all duration-500 hover:border-(--arvesta-gold)/45 md:p-10 ${craftVisible ? "anim-reveal-up" : "opacity-0"}`}
-                style={{ animationDelay: `${craftDelay(i)}ms` }}
               >
                 <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                   <div className="h-full w-full bg-[radial-gradient(circle_at_50%_0%,rgba(200,168,110,0.15),transparent_55%)]" />

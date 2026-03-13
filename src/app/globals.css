@@ -343,6 +343,13 @@ body {
   animation-delay: 0.1s;
 }
 
+.anim-delay-120 {
+  animation-delay: 0.12s;
+}
+
+.anim-delay-50 {
+  animation-delay: 0.05s;
+}
 .anim-delay-150 {
   animation-delay: 0.15s;
 }
@@ -355,10 +362,36 @@ body {
   animation-delay: 0.25s;
 }
 
+.anim-delay-240 {
+  animation-delay: 0.24s;
+}
+
+.anim-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.anim-delay-360 {
+  animation-delay: 0.36s;
+}
+
+.anim-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.anim-delay-420 {
+  animation-delay: 0.42s;
+}
+
+.anim-delay-520 {
+  animation-delay: 0.52s;
+}
 .anim-delay-500 {
   animation-delay: 0.5s;
 }
 
+.anim-delay-800 {
+  animation-delay: 0.8s;
+}
 .anim-delay-700 {
   animation-delay: 0.7s;
 }
@@ -480,6 +513,24 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
+.export-map-surface {
+  background:
+    radial-gradient(circle at 30% 50%,
+      rgba(200, 168, 110, 0.2) 0%,
+      transparent 42%),
+    radial-gradient(circle at 72% 58%,
+      rgba(31, 54, 93, 0.25) 0%,
+      transparent 40%),
+    linear-gradient(145deg, rgba(8, 18, 37, 0.97), rgba(4, 10, 20, 0.97));
+}
+
+.export-dash-line {
+  background-image: repeating-linear-gradient(90deg,
+      rgba(200, 168, 110, 0.55) 0px,
+      rgba(200, 168, 110, 0.55) 4px,
+      transparent 4px,
+      transparent 8px);
+}
 /* ── Reveal ── */
 .reveal {
   opacity: 0;

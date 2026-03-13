@@ -168,11 +168,19 @@ export default function Navbar({ locale }: { locale: string }) {
             {navLinks.map((link, i) => {
               const linkCls =
                 "font-display text-3xl font-medium text-white transition-all hover:text-[#f3c98b]";
-              const style = {
-                transitionDelay: `${(i + 1) * 0.05}s`,
-                opacity: mobileOpen ? 1 : 0,
-                transform: mobileOpen ? "translateY(0)" : "translateY(20px)",
-              };
+              const delayClass =
+                i === 0
+                  ? "anim-delay-50"
+                  : i === 1
+                    ? "anim-delay-100"
+                    : i === 2
+                      ? "anim-delay-150"
+                      : i === 3
+                        ? "anim-delay-200"
+                        : "anim-delay-250";
+              const stateClass = mobileOpen
+                ? "translate-y-0 opacity-100"
+                : "translate-y-5 opacity-0";
 
               return (
                 <li key={link.href}>
@@ -180,8 +188,7 @@ export default function Navbar({ locale }: { locale: string }) {
                     <a
                       href={isHome ? link.href : `/${locale}/${link.href}`}
                       onClick={() => setMobileOpen(false)}
-                      className={linkCls}
-                      style={style}
+                      className={`${linkCls} ${delayClass} ${stateClass}`}
                     >
                       {link.label}
                     </a>
@@ -189,8 +196,7 @@ export default function Navbar({ locale }: { locale: string }) {
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className={linkCls}
-                      style={style}
+                        className={`${linkCls} ${delayClass} ${stateClass}`}
                     >
                       {link.label}
                     </Link>

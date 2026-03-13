@@ -31,7 +31,6 @@ export default function CollectionsClient({
   const {
     ref: gridRef,
     isVisible: gridVisible,
-    getDelay,
   } = useStaggerReveal(categories.length, 120, 600);
 
   return (
@@ -49,20 +48,17 @@ export default function CollectionsClient({
             {tag}
           </h2>
           <h3
-            className={`mb-5 font-display text-4xl font-bold leading-tight text-white md:text-5xl ${headerVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.12s" }}
+            className={`mb-5 font-display text-4xl font-bold leading-tight text-white md:text-5xl ${headerVisible ? "anim-reveal-up anim-delay-120" : "opacity-0"}`}
           >
             {title}
           </h3>
           <p
-            className={`mx-auto max-w-2xl text-sm leading-relaxed text-(--arvesta-text-secondary) md:text-[1.02rem] ${headerVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.24s" }}
+            className={`mx-auto max-w-2xl text-sm leading-relaxed text-(--arvesta-text-secondary) md:text-[1.02rem] ${headerVisible ? "anim-reveal-up anim-delay-240" : "opacity-0"}`}
           >
             {desc}
           </p>
           <div
-            className={`mx-auto mt-7 h-px w-28 bg-linear-to-r from-transparent via-(--arvesta-gold)/75 to-transparent ${headerVisible ? "anim-line-expand" : "opacity-0 scale-x-0"}`}
-            style={{ animationDelay: "0.36s" }}
+            className={`mx-auto mt-7 h-px w-28 bg-linear-to-r from-transparent via-(--arvesta-gold)/75 to-transparent ${headerVisible ? "anim-line-expand anim-delay-360" : "opacity-0 scale-x-0"}`}
           />
         </div>
 
@@ -74,7 +70,6 @@ export default function CollectionsClient({
             <article
               key={cat.id}
               className={`tilt-card group relative overflow-hidden rounded-3xl border border-(--arvesta-gold)/30 bg-[linear-gradient(160deg,rgba(10,21,42,0.94)_0%,rgba(5,11,24,0.98)_100%)] shadow-[0_22px_50px_rgba(2,8,20,0.5)] transition-all duration-500 hover:border-(--arvesta-gold)/55 ${gridVisible ? "anim-reveal-up" : "opacity-0"}`}
-              style={{ animationDelay: `${getDelay(i)}ms` }}
             >
               <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                 <div className="h-full w-full bg-[radial-gradient(circle_at_75%_18%,rgba(200,168,110,0.24),transparent_46%)]" />

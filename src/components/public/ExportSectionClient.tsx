@@ -33,13 +33,7 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
           className={`relative ${mapVisible ? "anim-reveal-left" : "opacity-0"}`}
         >
           <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-(--arvesta-gold)/20 blur-3xl" />
-          <div
-            className="relative aspect-2/1 w-full overflow-hidden rounded-3xl border border-(--arvesta-gold)/30 bg-[linear-gradient(145deg,rgba(8,18,37,0.97),rgba(4,10,20,0.97))] shadow-[0_26px_58px_rgba(2,8,20,0.52)]"
-            style={{
-              background:
-                "radial-gradient(circle at 30% 50%, rgba(200,168,110,0.2) 0%, transparent 42%), radial-gradient(circle at 72% 58%, rgba(31,54,93,0.25) 0%, transparent 40%), linear-gradient(145deg, rgba(8,18,37,0.97), rgba(4,10,20,0.97))",
-            }}
-          >
+          <div className="export-map-surface relative aspect-2/1 w-full overflow-hidden rounded-3xl border border-(--arvesta-gold)/30 shadow-[0_26px_58px_rgba(2,8,20,0.52)]">
             <div className="group absolute left-[30%] top-[40%] h-3 w-3 cursor-pointer rounded-full bg-(--arvesta-accent)">
               <div className="absolute -inset-1.5 animate-dot-pulse rounded-full border border-(--arvesta-accent)" />
               <span className="pointer-events-none absolute bottom-[120%] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-(--arvesta-gold)/30 bg-[#050c1b]/92 px-2 py-1 font-ui text-[0.7rem] text-(--arvesta-text-secondary) opacity-0 transition-opacity group-hover:opacity-100">
@@ -67,8 +61,7 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
                 fill="none"
                 strokeDasharray="8 4"
                 opacity="0.78"
-                className={mapVisible ? "anim-svg-draw" : ""}
-                style={{ animationDelay: "0.5s" }}
+                className={mapVisible ? "anim-svg-draw anim-delay-500" : ""}
               />
               <path
                 d="M450,200 Q380,130 200,100"
@@ -77,15 +70,13 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
                 fill="none"
                 strokeDasharray="6 4"
                 opacity="0.55"
-                className={mapVisible ? "anim-svg-draw" : ""}
-                style={{ animationDelay: "0.8s" }}
+                className={mapVisible ? "anim-svg-draw anim-delay-800" : ""}
               />
             </svg>
           </div>
 
           <div
-            className={`absolute -bottom-6 -right-2 z-20 max-w-[250px] rounded-2xl border border-(--arvesta-gold)/40 bg-[rgba(6,13,26,0.88)] p-6 shadow-xl backdrop-blur-[12px] ${mapVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.4s" }}
+            className={`absolute -bottom-6 -right-2 z-20 max-w-62.5 rounded-2xl border border-(--arvesta-gold)/40 bg-[rgba(6,13,26,0.88)] p-6 shadow-xl backdrop-blur-md ${mapVisible ? "anim-reveal-up anim-delay-400" : "opacity-0"}`}
           >
             <p className="mb-2 font-ui text-xs font-bold uppercase tracking-[0.15em] text-(--arvesta-gold)">
               Production Hub
@@ -105,14 +96,12 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
               {texts.tag}
             </h2>
             <h3
-              className={`mb-6 font-display text-4xl font-bold leading-tight text-white md:text-5xl ${contentVisible ? "anim-reveal-up" : "opacity-0"}`}
-              style={{ animationDelay: "0.1s" }}
+              className={`mb-6 font-display text-4xl font-bold leading-tight text-white md:text-5xl ${contentVisible ? "anim-reveal-up anim-delay-100" : "opacity-0"}`}
             >
               {texts.title}
             </h3>
             <p
-              className={`max-w-xl text-lg leading-relaxed text-(--arvesta-text-secondary) ${contentVisible ? "anim-reveal-up" : "opacity-0"}`}
-              style={{ animationDelay: "0.2s" }}
+              className={`max-w-xl text-lg leading-relaxed text-(--arvesta-text-secondary) ${contentVisible ? "anim-reveal-up anim-delay-200" : "opacity-0"}`}
             >
               {texts.desc}
             </p>
@@ -120,14 +109,13 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div
-              className={`tilt-card rounded-2xl border border-(--arvesta-gold)/28 bg-[linear-gradient(150deg,rgba(10,21,40,0.9),rgba(6,13,26,0.95))] p-6 shadow-[0_16px_36px_rgba(2,8,20,0.4)] transition-colors hover:border-(--arvesta-gold)/60 ${contentVisible ? "anim-reveal-up" : "opacity-0"}`}
-              style={{ animationDelay: "0.3s" }}
+              className={`tilt-card rounded-2xl border border-(--arvesta-gold)/28 bg-[linear-gradient(150deg,rgba(10,21,40,0.9),rgba(6,13,26,0.95))] p-6 shadow-[0_16px_36px_rgba(2,8,20,0.4)] transition-colors hover:border-(--arvesta-gold)/60 ${contentVisible ? "anim-reveal-up anim-delay-300" : "opacity-0"}`}
             >
               <Home
                 className="mb-4 h-10 w-10 text-(--arvesta-gold)"
                 strokeWidth={1.5}
               />
-              <h4 className="mb-2 font-ui text-sm font-bold uppercase tracking-[0.1em] text-white">
+              <h4 className="mb-2 font-ui text-sm font-bold uppercase tracking-widest text-white">
                 {texts.network}
               </h4>
               <p className="text-sm leading-relaxed text-(--arvesta-text-secondary)">
@@ -136,14 +124,13 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
             </div>
 
             <div
-              className={`tilt-card rounded-2xl border border-(--arvesta-gold)/28 bg-[linear-gradient(150deg,rgba(10,21,40,0.9),rgba(6,13,26,0.95))] p-6 shadow-[0_16px_36px_rgba(2,8,20,0.4)] transition-colors hover:border-(--arvesta-gold)/60 ${contentVisible ? "anim-reveal-up" : "opacity-0"}`}
-              style={{ animationDelay: "0.42s" }}
+              className={`tilt-card rounded-2xl border border-(--arvesta-gold)/28 bg-[linear-gradient(150deg,rgba(10,21,40,0.9),rgba(6,13,26,0.95))] p-6 shadow-[0_16px_36px_rgba(2,8,20,0.4)] transition-colors hover:border-(--arvesta-gold)/60 ${contentVisible ? "anim-reveal-up anim-delay-420" : "opacity-0"}`}
             >
               <CheckCircle
                 className="mb-4 h-10 w-10 text-(--arvesta-gold)"
                 strokeWidth={1.5}
               />
-              <h4 className="mb-2 font-ui text-sm font-bold uppercase tracking-[0.1em] text-white">
+              <h4 className="mb-2 font-ui text-sm font-bold uppercase tracking-widest text-white">
                 {texts.quality}
               </h4>
               <p className="text-sm leading-relaxed text-(--arvesta-text-secondary)">
@@ -153,8 +140,7 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
           </div>
 
           <div
-            className={`flex items-center gap-4 ${contentVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.52s" }}
+            className={`flex items-center gap-4 ${contentVisible ? "anim-reveal-up anim-delay-520" : "opacity-0"}`}
           >
             <div className="flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full border-2 border-(--arvesta-text-muted)" />
@@ -162,13 +148,7 @@ export default function ExportSectionClient({ texts }: { texts: ExportTexts }) {
                 {texts.from}
               </span>
             </div>
-            <div
-              className="h-px flex-1"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(90deg, rgba(200,168,110,0.55) 0px, rgba(200,168,110,0.55) 4px, transparent 4px, transparent 8px)",
-              }}
-            />
+            <div className="export-dash-line h-px flex-1" />
             <div className="flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full border-2 border-(--arvesta-gold) bg-(--arvesta-gold)" />
               <span className="font-ui text-[0.8rem] text-(--arvesta-text-secondary)">
