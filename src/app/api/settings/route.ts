@@ -22,7 +22,7 @@ const settingsRateLimitAdapter = createSiteSettingRateLimitAdapter(
 const SETTINGS_MUTATION_RATE_LIMIT_WINDOW_MS = 60_000;
 const SETTINGS_MUTATION_RATE_LIMIT_MAX_REQUESTS = 20;
 
-const sensitiveSettingKeys = new Set(
+const sensitiveSettingKeys: ReadonlySet<string> = new Set(
   MAIL_KEYS.filter((key) => /pass|secret|token|key/i.test(key)),
 );
 
