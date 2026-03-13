@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import {
   buildClientKey,
-  createMemoryRateLimitAdapter,
+  createSiteSettingRateLimitAdapter,
   enforceRateLimit,
   enforceSameOrigin,
   getClientIp,
@@ -13,7 +13,8 @@ import { sendContactSubmissionNotification } from "@/lib/mailer";
 const RATE_LIMIT_WINDOW_MS = 10 * 60_000; // 10 minutes
 const RATE_LIMIT_MAX_REQUESTS = 5;
 
-const contactRateLimitAdapter = createMemoryRateLimitAdapter();
+// DÜZELTME: Memory yerine kalıcı DB (Site Settings) bazlı rate limit.
+const contactRateLimitAdapter = createSiteSettingRateLimitAdapter(prisma.siteSetting);
 
 const contactSchema = z.object({
   fullName: z.string().trim().min(1).max(120),

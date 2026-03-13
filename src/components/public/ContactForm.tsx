@@ -96,6 +96,14 @@ export default function ContactForm({ locale }: { locale: string }) {
         },
       },
     );
+
+    // DÜZELTME: Component unmount olduğunda widget DOM'dan temizlenir.
+    return () => {
+      if (window.turnstile && turnstileWidgetIdRef.current) {
+        window.turnstile.remove(turnstileWidgetIdRef.current);
+        turnstileWidgetIdRef.current = null;
+      }
+    };
   }, [isTurnstileScriptLoaded]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
