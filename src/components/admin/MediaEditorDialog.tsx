@@ -56,8 +56,6 @@ export function MediaEditorDialog({
   onClose,
 }: Props) {
   const t = useTranslations("adminMediaEditor");
-  const isTempPreview = Boolean(previewUrl?.startsWith("/api/media/temp/"));
-
   const [saving, setSaving] = useState(false);
   const [rotate, setRotate] = useState<0 | 90 | 180 | 270>(0);
   const [flip, setFlip] = useState(false);
@@ -118,12 +116,17 @@ export function MediaEditorDialog({
   const [depthColorFrom, setDepthColorFrom] = useState("#000033");
   const [depthColorTo, setDepthColorTo] = useState("#ffcc00");
 
-  const previewFilter = useMemo(() => {
+  const previewStyle = useMemo(() => {
     const b = 100 + brightness;
     const c = 100 + contrast;
     const s = 100 + saturation;
-    const blurPx = blur > 0 ? `${blur}` : "0";
-    return `${b}-${c}-${s}-${blurPx}`;
+    const parts: string[] = [
+      `brightness(${b / 100})`,
+      `contrast(${c / 100})`,
+      `saturate(${s / 100})`,
+    ];
+    if (blur > 0) parts.push(`blur(${blur}px)`);
+    return { filter: parts.join(" ") };
   }, [brightness, contrast, saturation, blur]);
 
   const transformClass = useMemo(() => {
@@ -440,14 +443,14 @@ export function MediaEditorDialog({
                         setCropW(nextW);
                         setCropH(nextH);
                       }}
-                      className="max-h-full flex justify-center overflow-hidden"
+                      className="max-h-full flex justify-center"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={previewUrl}
                         alt={t("noPreview")}
+                        style={previewStyle}
                         className={`max-w-full max-h-[calc(90vh-140px)] w-auto h-auto object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
-                        data-preview-filter={previewFilter}
                       />
                     </ReactCrop>
 
