@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import AdminLocaleSwitcher from "@/components/admin/AdminLocaleSwitcher";
 
 const menuKeys = [
   { href: "/admin", icon: LayoutDashboard, key: "dashboard" },
@@ -79,6 +80,11 @@ export default function AdminSidebar() {
           );
         })}
       </nav>
+
+      <Separator className="bg-white/5" />
+
+      {/* Language Switcher */}
+      <AdminLocaleSwitcher />
 
       <Separator className="bg-white/5" />
 

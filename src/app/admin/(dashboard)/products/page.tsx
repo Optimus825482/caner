@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import frMessages from "@/i18n/messages/fr.json";
-import { CONTENT_LOCALE } from "@/i18n/routing";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +27,6 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Star } from "lucide-react";
 
-const t = frMessages.adminProducts;
-
 interface Product {
   id: string;
   slug: string;
@@ -41,6 +38,8 @@ interface Product {
 }
 
 export default function AdminProducts() {
+  const t = useTranslations("adminProducts");
+  const locale = useLocale();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -116,13 +115,19 @@ export default function AdminProducts() {
               <TableBody>
                 {products.map((product) => {
                   const primaryTitle =
-                    product.translations.find(
-                      (tr) => tr.locale === CONTENT_LOCALE,
-                    )?.title || product.slug;
+                    product.translations.find((tr) => tr.locale === locale)
+                      ?.title ||
+                    product.translations.find((tr) => tr.locale === "fr")
+                      ?.title ||
+                    product.slug;
                   const categoryName =
                     product.category.translations.find(
-                      (tr) => tr.locale === CONTENT_LOCALE,
-                    )?.name || product.category.slug;
+                      (tr) => tr.locale === locale,
+                    )?.name ||
+                    product.category.translations.find(
+                      (tr) => tr.locale === "fr",
+                    )?.name ||
+                    product.category.slug;
                   return (
                     <TableRow
                       key={product.id}
