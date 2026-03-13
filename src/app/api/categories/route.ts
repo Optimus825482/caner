@@ -8,6 +8,7 @@ import {
   enforceRateLimit,
   enforceSameOrigin,
 } from "@/lib/request-guards";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 
 const categoryTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -22,39 +23,11 @@ const createCategorySchema = z.object({
   translations: z.array(categoryTranslationSchema).min(1),
 });
 
-const categoryRateLimitAdapter = createSiteSettingRateLimitAdapter(prisma.siteSetting);
+const categoryRateLimitAdapter = createSiteSettingRateLimitAdapter(
+  prisma.siteSetting,
+);
 const CATEGORY_MUTATION_RATE_LIMIT_WINDOW_MS = 60_000;
 const CATEGORY_MUTATION_RATE_LIMIT_MAX_REQUESTS = 30;
-
-function prismaWriteErrorResponse(error: unknown) {
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code)
-      : null;
-
-  if (code === "P2002") {
-    return NextResponse.json(
-      { error: "Resource already exists", code },
-      { status: 409 },
-    );
-  }
-
-  if (code === "P2025") {
-    return NextResponse.json(
-      { error: "Resource not found", code },
-      { status: 404 },
-    );
-  }
-
-  if (code === "P2003" || code === "P2014") {
-    return NextResponse.json(
-      { error: "Invalid relation reference", code },
-      { status: 422 },
-    );
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
-}
 
 export async function GET() {
   const authResult = await requireAdminAuth();

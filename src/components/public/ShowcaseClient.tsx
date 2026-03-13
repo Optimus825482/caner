@@ -27,12 +27,11 @@ export default function ShowcaseClient({
   products,
 }: {
   categories: Category[];
-  products: Product[];
-  locale: string;
+    products: Product[];
 }) {
   const t = useTranslations();
   const [filter, setFilter] = useState("all");
-  const [lightbox, setLightbox] = useState<number | null>(null);
+  const [lightboxProductId, setLightboxProductId] = useState<string | null>(null);
 
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
   const { ref: filterRef, isVisible: filterVisible } = useScrollReveal();
@@ -47,32 +46,44 @@ export default function ShowcaseClient({
       ? products
       : products.filter((p) => p.categorySlug === filter);
 
+  const lightboxIndex = lightboxProductId
+    ? filtered.findIndex((p) => p.id === lightboxProductId)
+    : -1;
+  const activeLightboxItem = lightboxIndex >= 0 ? filtered[lightboxIndex] : null;
+
   const openLightbox = useCallback((i: number) => {
-    setLightbox(i);
+    const item = filtered[i];
+    if (!item) return;
+    setLightboxProductId(item.id);
     document.body.style.overflow = "hidden";
-  }, []);
+  }, [filtered]);
 
   const closeLightbox = useCallback(() => {
-    setLightbox(null);
+    setLightboxProductId(null);
     document.body.style.overflow = "";
   }, []);
 
   const prevItem = useCallback(
-    () =>
-      setLightbox((i) =>
-        i !== null ? (i - 1 + filtered.length) % filtered.length : null,
-      ),
-    [filtered.length],
+    () => {
+      if (!filtered.length || lightboxIndex < 0) return;
+      const nextIndex = (lightboxIndex - 1 + filtered.length) % filtered.length;
+      setLightboxProductId(filtered[nextIndex]?.id ?? null);
+    },
+    [filtered, lightboxIndex],
   );
 
   const nextItem = useCallback(
-    () => setLightbox((i) => (i !== null ? (i + 1) % filtered.length : null)),
-    [filtered.length],
+    () => {
+      if (!filtered.length || lightboxIndex < 0) return;
+      const nextIndex = (lightboxIndex + 1) % filtered.length;
+      setLightboxProductId(filtered[nextIndex]?.id ?? null);
+    },
+    [filtered, lightboxIndex],
   );
 
   // Keyboard navigation for lightbox
   useEffect(() => {
-    if (lightbox === null) return;
+    if (lightboxProductId === null) return;
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") closeLightbox();
       else if (e.key === "ArrowLeft") prevItem();
@@ -80,7 +91,7 @@ export default function ShowcaseClient({
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightbox, closeLightbox, prevItem, nextItem]);
+  }, [lightboxProductId, closeLightbox, prevItem, nextItem]);
 
   return (
     <>
@@ -196,7 +207,7 @@ export default function ShowcaseClient({
         </div>
       </section>
 
-      {lightbox !== null && (
+      {lightboxProductId !== null && activeLightboxItem && (
         <div
           className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-[#02050c]/95 px-3 pb-4 pt-24 md:px-6 md:pt-28"
           onClick={closeLightbox}
@@ -237,18 +248,18 @@ export default function ShowcaseClient({
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={filtered[lightbox]?.image || ""}
-              alt={filtered[lightbox]?.title || ""}
+              src={activeLightboxItem.image || ""}
+              alt={activeLightboxItem.title || ""}
               width={1200}
               height={800}
               className="mx-auto max-h-[calc(100vh-14rem)] w-auto rounded-xl object-contain md:max-h-[75vh]"
             />
             <div className="mt-4 pb-1">
               <h3 className="mb-1 font-display text-xl text-white">
-                {filtered[lightbox]?.title}
+                {activeLightboxItem.title}
               </h3>
               <p className="text-sm text-[var(--arvesta-text-secondary)]">
-                {filtered[lightbox]?.description}
+                {activeLightboxItem.description}
               </p>
             </div>
           </div>

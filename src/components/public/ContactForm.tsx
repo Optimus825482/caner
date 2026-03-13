@@ -28,28 +28,32 @@ declare global {
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-function getFriendlyErrorMessage(status: number, apiError?: string): string {
+function getFriendlyErrorMessage(
+  t: ReturnType<typeof useTranslations<"contact">>,
+  status: number,
+  apiError?: string,
+): string {
   if (status === 429) {
-    return "You are sending messages too quickly. Please wait a few minutes and try again.";
+    return t("errors.rateLimited");
   }
 
   if (status === 403) {
-    return "Security check failed. Please refresh the page and try again.";
+    return t("errors.securityFailed");
   }
 
   if (status === 400) {
     if (apiError?.toLowerCase().includes("captcha")) {
-      return "Please complete the captcha verification and try again.";
+      return t("errors.captchaRequired");
     }
 
     if (apiError?.toLowerCase().includes("spam")) {
-      return "Your message could not be verified. Please try again.";
+      return t("errors.spamDetected");
     }
 
-    return "Please check the form fields and try again.";
+    return t("errors.invalidForm");
   }
 
-  return "Something went wrong while sending your message. Please try again.";
+  return t("errors.generic");
 }
 
 export default function ContactForm({ locale }: { locale: string }) {
@@ -148,11 +152,9 @@ export default function ContactForm({ locale }: { locale: string }) {
         // ignore parse errors
       }
 
-      setErrorMessage(getFriendlyErrorMessage(res.status, apiError));
+      setErrorMessage(getFriendlyErrorMessage(t, res.status, apiError));
     } catch {
-      setErrorMessage(
-        "Network error. Please check your connection and try again.",
-      );
+      setErrorMessage(t("errors.network"));
     } finally {
       setSending(false);
     }

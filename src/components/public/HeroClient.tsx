@@ -15,8 +15,7 @@ interface Slide {
 export default function HeroClient({
   slides,
 }: {
-  slides: Slide[];
-  locale: string;
+    slides: Slide[];
 }) {
   const t = useTranslations("hero");
   const [current, setCurrent] = useState(0);

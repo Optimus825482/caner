@@ -78,7 +78,7 @@ void main() {
 
 // ── WebGL Helpers ──
 
-function mkShader(gl: WebGL2RenderingContext, type: number, src: string) {
+function createShader(gl: WebGL2RenderingContext, type: number, src: string) {
   const s = gl.createShader(type);
   if (!s) return null;
   gl.shaderSource(s, src);
@@ -91,7 +91,7 @@ function mkShader(gl: WebGL2RenderingContext, type: number, src: string) {
   return s;
 }
 
-function mkProgram(
+function createProgram(
   gl: WebGL2RenderingContext,
   vs: WebGLShader,
   fs: WebGLShader,
@@ -109,7 +109,7 @@ function mkProgram(
   return p;
 }
 
-function loadTex(
+function loadTexture(
   gl: WebGL2RenderingContext,
   url: string,
 ): Promise<{ tex: WebGLTexture; w: number; h: number }> {
@@ -136,7 +136,22 @@ function loadTex(
 }
 
 function hex2rgb(hex: string): [number, number, number] {
-  const h = hex.replace("#", "");
+  const source = hex.trim();
+  const prefixed = source.startsWith("#") ? source : `#${source}`;
+  const shortMatch = /^#([A-Fa-f0-9]{3})$/.exec(prefixed);
+  const fullMatch = /^#([A-Fa-f0-9]{6})$/.exec(prefixed);
+
+  if (!shortMatch && !fullMatch) {
+    return [0.1019, 0.1019, 0.1803]; // fallback: #1a1a2e
+  }
+
+  const h = shortMatch
+    ? shortMatch[1]
+      .split("")
+      .map((c) => c + c)
+      .join("")
+    : fullMatch![1];
+
   return [
     parseInt(h.slice(0, 2), 16) / 255,
     parseInt(h.slice(2, 4), 16) / 255,
@@ -192,10 +207,17 @@ export function DepthParallaxViewer({
     depthColorize,
     depthColorFrom,
     depthColorTo,
+    fogRgb: hex2rgb(fogColor),
+    depthColorFromRgb: hex2rgb(depthColorFrom),
+    depthColorToRgb: hex2rgb(depthColorTo),
   });
 
   // Update ref with latest props in an effect
   useEffect(() => {
+    const fogRgb = hex2rgb(fogColor);
+    const depthColorFromRgb = hex2rgb(depthColorFrom);
+    const depthColorToRgb = hex2rgb(depthColorTo);
+
     pRef.current = {
       intensity,
       zoom,
@@ -209,6 +231,9 @@ export function DepthParallaxViewer({
       depthColorize,
       depthColorFrom,
       depthColorTo,
+      fogRgb,
+      depthColorFromRgb,
+      depthColorToRgb,
     };
   }, [
     intensity,
@@ -236,10 +261,10 @@ export function DepthParallaxViewer({
     }
     glRef.current = gl;
 
-    const vs = mkShader(gl, gl.VERTEX_SHADER, VERT);
-    const fs = mkShader(gl, gl.FRAGMENT_SHADER, FRAG);
+    const vs = createShader(gl, gl.VERTEX_SHADER, VERT);
+    const fs = createShader(gl, gl.FRAGMENT_SHADER, FRAG);
     if (!vs || !fs) return;
-    const prog = mkProgram(gl, vs, fs);
+    const prog = createProgram(gl, vs, fs);
     if (!prog) return;
     progRef.current = prog;
     gl.deleteShader(vs);
@@ -310,7 +335,7 @@ export function DepthParallaxViewer({
           gl.deleteTexture(texRef.current.img);
           texRef.current.img = null;
         }
-        const r = await loadTex(gl, imageUrl);
+        const r = await loadTexture(gl, imageUrl);
         if (dead) {
           gl.deleteTexture(r.tex);
           return;
@@ -333,7 +358,7 @@ export function DepthParallaxViewer({
             gl.deleteTexture(texRef.current.dep);
             texRef.current.dep = null;
           }
-          const r = await loadTex(gl, depthMapUrl);
+          const r = await loadTexture(gl, depthMapUrl);
           if (dead) {
             gl.deleteTexture(r.tex);
             return;
@@ -376,10 +401,18 @@ export function DepthParallaxViewer({
     if (!gl || !prog) return;
     let on = true;
 
+    const stop = () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
+      }
+    };
+
     function draw() {
       if (!on || !gl || !prog) return;
       const { img, dep } = texRef.current;
       if (!img) {
+        rafRef.current = 0;
         rafRef.current = requestAnimationFrame(draw);
         return;
       }
@@ -398,12 +431,12 @@ export function DepthParallaxViewer({
       gl.uniform1f(u.u_rotY, p.rotationEnabled ? p.rotationY : 0);
       gl.uniform1f(u.u_fogEnabled, p.fogEnabled ? 1 : 0);
       gl.uniform1f(u.u_fogDensity, p.fogDensity / 100);
-      const fc = hex2rgb(p.fogColor);
+      const fc = p.fogRgb;
       gl.uniform3f(u.u_fogColor, fc[0], fc[1], fc[2]);
       gl.uniform1f(u.u_depthColorize, p.depthColorize ? 1 : 0);
-      const cf = hex2rgb(p.depthColorFrom);
+      const cf = p.depthColorFromRgb;
       gl.uniform3f(u.u_depthColorFrom, cf[0], cf[1], cf[2]);
-      const ct = hex2rgb(p.depthColorTo);
+      const ct = p.depthColorToRgb;
       gl.uniform3f(u.u_depthColorTo, ct[0], ct[1], ct[2]);
 
       // Bind textures and draw
@@ -415,13 +448,30 @@ export function DepthParallaxViewer({
       gl.uniform1i(u.u_depthMap, 1);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
+      rafRef.current = 0;
       rafRef.current = requestAnimationFrame(draw);
     }
 
-    rafRef.current = requestAnimationFrame(draw);
+    const start = () => {
+      if (!on || rafRef.current) return;
+      rafRef.current = requestAnimationFrame(draw);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stop();
+        return;
+      }
+      start();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    start();
+
     return () => {
       on = false;
-      cancelAnimationFrame(rafRef.current);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      stop();
     };
   }, []);
 
@@ -448,15 +498,13 @@ export function DepthParallaxViewer({
   // ── Fallback for no WebGL ──
   if (!webglOk) {
     return (
-      <div className={className}>
+      <div className={`relative ${className || ""}`}>
         <Image
           src={imageUrl}
           alt="Preview"
-          className="w-full h-full object-cover"
-          width={0}
-          height={0}
+          className="object-cover"
+          fill
           sizes="100vw"
-          style={{ width: '100%', height: 'auto' }}
         />
         <p className="text-xs text-center text-(--arvesta-text-muted) mt-1">
           WebGL desteklenmiyor
@@ -470,10 +518,9 @@ export function DepthParallaxViewer({
     <div className={`relative ${className || ""}`}>
       <canvas
         ref={canvasRef}
-        className="w-full h-full object-cover"
+        className="h-full w-full touch-none object-cover"
         onPointerMove={onMove}
         onPointerLeave={onLeave}
-        style={{ touchAction: "none" }}
       />
       {watermarkOverlay}
     </div>

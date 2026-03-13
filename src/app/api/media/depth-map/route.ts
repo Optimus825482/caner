@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { writeFile } from "fs/promises";
-import { randomUUID } from "crypto";
-import path from "path";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
-import {
-  resolveTempFileById,
-  getTempMediaDir,
-  ensureMediaDirs,
-} from "@/lib/media-preprocess";
+import { resolveTempFileById, saveTempMedia } from "@/lib/media-preprocess";
 import { generateDepthMap } from "@/lib/depth-inference";
 
 const depthMapSchema = z.object({
@@ -50,12 +43,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { buffer: depthBuffer } = await generateDepthMap(temp.filePath);
-
-    await ensureMediaDirs();
-    const depthTempId = `depth-${Date.now()}-${randomUUID()}`;
-    const depthFilename = `${depthTempId}.png`;
-    const depthFilePath = path.join(getTempMediaDir(), depthFilename);
-    await writeFile(depthFilePath, depthBuffer);
+    const { tempId: depthTempId } = await saveTempMedia(depthBuffer, ".png");
 
     return NextResponse.json({
       depthMapUrl: `/api/media/temp/${depthTempId}`,

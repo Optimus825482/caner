@@ -2,19 +2,20 @@ import { prisma } from "@/lib/prisma";
 import ShowcaseClient from "./ShowcaseClient";
 
 export default async function Showcase({ locale }: { locale: string }) {
-  const categories = await prisma.category.findMany({
-    include: { translations: { where: { locale } } },
-    orderBy: { order: "asc" },
-  });
-
-  const products = await prisma.product.findMany({
-    include: {
-      translations: { where: { locale } },
-      images: { orderBy: { order: "asc" }, take: 1 },
-      category: { include: { translations: { where: { locale } } } },
-    },
-    orderBy: { order: "asc" },
-  });
+  const [categories, products] = await Promise.all([
+    prisma.category.findMany({
+      include: { translations: { where: { locale } } },
+      orderBy: { order: "asc" },
+    }),
+    prisma.product.findMany({
+      include: {
+        translations: { where: { locale } },
+        images: { orderBy: { order: "asc" }, take: 1 },
+        category: { include: { translations: { where: { locale } } } },
+      },
+      orderBy: { order: "asc" },
+    }),
+  ]);
 
   const cats = categories.map((c: (typeof categories)[number]) => ({
     slug: c.slug,
@@ -32,5 +33,5 @@ export default async function Showcase({ locale }: { locale: string }) {
     featured: p.featured,
   }));
 
-  return <ShowcaseClient categories={cats} products={items} locale={locale} />;
+  return <ShowcaseClient categories={cats} products={items} />;
 }

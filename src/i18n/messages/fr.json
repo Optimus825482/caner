@@ -59,7 +59,16 @@
     "optCustom": "Projet Sur Mesure",
     "desc_field": "Description du projet",
     "submit": "Envoyer la Demande",
-    "success": "Message envoyé avec succès !"
+    "success": "Message envoyé avec succès !",
+    "errors": {
+      "rateLimited": "Vous envoyez des messages trop rapidement. Veuillez patienter quelques minutes puis réessayer.",
+      "securityFailed": "La vérification de sécurité a échoué. Veuillez actualiser la page puis réessayer.",
+      "captchaRequired": "Veuillez compléter la vérification captcha puis réessayer.",
+      "spamDetected": "Votre message n'a pas pu être vérifié. Veuillez réessayer.",
+      "invalidForm": "Veuillez vérifier les champs du formulaire puis réessayer.",
+      "generic": "Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer.",
+      "network": "Erreur réseau. Veuillez vérifier votre connexion puis réessayer."
+    }
   },
   "footer": {
     "tagline": "Mobilier d'excellence, fabriqué avec passion.",

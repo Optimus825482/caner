@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Mail,
   Clock,
   Search,
@@ -45,13 +53,22 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [bulkBusy, setBulkBusy] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [feedback, setFeedback] = useState<string>("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
 
   useEffect(() => {
     const allIds = new Set(submissions.map((s) => s.id));
-    setSelectedIds((prev) => prev.filter((id) => allIds.has(id)));
+    setSelectedIds((prev) => {
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (allIds.has(id)) next.add(id);
+      }
+      return next;
+    });
   }, [submissions]);
 
   const stats = useMemo(() => {
@@ -86,25 +103,40 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
     });
   }, [submissions, query, filter, dateFrom, dateTo]);
 
-  const filteredIds = useMemo(() => filtered.map((s) => s.id), [filtered]);
+  const filteredIds = useMemo(() => new Set(filtered.map((s) => s.id)), [filtered]);
   const allFilteredSelected =
-    filteredIds.length > 0 && filteredIds.every((id) => selectedIds.includes(id));
-  const selectedCount = selectedIds.length;
+    filteredIds.size > 0 &&
+    Array.from(filteredIds).every((id) => selectedIds.has(id));
+  const selectedCount = selectedIds.size;
 
   const toggleSelectOne = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
 
   const toggleSelectAllFiltered = () => {
     setSelectedIds((prev) => {
+      const next = new Set(prev);
+
       if (allFilteredSelected) {
-        return prev.filter((id) => !filteredIds.includes(id));
+        for (const id of filteredIds) {
+          next.delete(id);
+        }
+        return next;
       }
 
-      const merged = new Set([...prev, ...filteredIds]);
-      return Array.from(merged);
+      for (const id of filteredIds) {
+        next.add(id);
+      }
+
+      return next;
     });
   };
 
@@ -115,6 +147,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
   const updateReadState = async (id: string, isRead: boolean) => {
     setBusyId(id);
+    setFeedback("");
     try {
       const res = await fetch(`/api/submissions/${id}`, {
         method: "PATCH",
@@ -129,17 +162,15 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       );
     } catch (error) {
       console.error(error);
-      alert("Güncelleme başarısız oldu.");
+      setFeedback("Güncelleme başarısız oldu.");
     } finally {
       setBusyId(null);
     }
   };
 
   const deleteSubmission = async (id: string) => {
-    const confirmed = window.confirm("Bu talebi silmek istediğine emin misin?");
-    if (!confirmed) return;
-
     setBusyId(id);
+    setFeedback("");
     try {
       const res = await fetch(`/api/submissions/${id}`, {
         method: "DELETE",
@@ -148,75 +179,84 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       if (!res.ok) throw new Error("Failed to delete submission");
 
       setSubmissions((prev) => prev.filter((item) => item.id !== id));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     } catch (error) {
       console.error(error);
-      alert("Silme işlemi başarısız oldu.");
+      setFeedback("Silme işlemi başarısız oldu.");
     } finally {
       setBusyId(null);
+      setConfirmDeleteId(null);
     }
   };
 
   const bulkMarkRead = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.size === 0) return;
+
+    const ids = Array.from(selectedIds);
 
     setBulkBusy(true);
+    setFeedback("");
     try {
       const res = await fetch("/api/submissions/bulk", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds, isRead: true }),
+        body: JSON.stringify({ ids, isRead: true }),
       });
 
       if (!res.ok) throw new Error("Bulk mark read failed");
 
       setSubmissions((prev) =>
         prev.map((item) =>
-          selectedIds.includes(item.id) ? { ...item, isRead: true } : item,
+          selectedIds.has(item.id) ? { ...item, isRead: true } : item,
         ),
       );
-      setSelectedIds([]);
+      setSelectedIds(new Set());
     } catch (error) {
       console.error(error);
-      alert("Toplu okundu işaretleme başarısız oldu.");
+      setFeedback("Toplu okundu işaretleme başarısız oldu.");
     } finally {
       setBulkBusy(false);
     }
   };
 
   const bulkDelete = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.size === 0) return;
 
-    const confirmed = window.confirm(
-      `${selectedIds.length} adet talebi silmek istediğine emin misin?`,
-    );
-    if (!confirmed) return;
+    const ids = Array.from(selectedIds);
 
     setBulkBusy(true);
+    setFeedback("");
     try {
       const res = await fetch("/api/submissions/bulk", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds }),
+        body: JSON.stringify({ ids }),
       });
 
       if (!res.ok) throw new Error("Bulk delete failed");
 
-      const selectedSet = new Set(selectedIds);
-      setSubmissions((prev) => prev.filter((item) => !selectedSet.has(item.id)));
-      setSelectedIds([]);
+      setSubmissions((prev) => prev.filter((item) => !selectedIds.has(item.id)));
+      setSelectedIds(new Set());
     } catch (error) {
       console.error(error);
-      alert("Toplu silme işlemi başarısız oldu.");
+      setFeedback("Toplu silme işlemi başarısız oldu.");
     } finally {
       setBulkBusy(false);
+      setConfirmBulkDeleteOpen(false);
     }
   };
 
   const copyEmail = async (email: string) => {
     try {
       await navigator.clipboard.writeText(email);
+      setFeedback("E-posta adresi panoya kopyalandı.");
     } catch (error) {
       console.error(error);
+      setFeedback("E-posta adresi kopyalanamadı.");
     }
   };
 
@@ -336,7 +376,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={filteredIds.length === 0}
+                disabled={filteredIds.size === 0}
                 onClick={toggleSelectAllFiltered}
                 className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
               >
@@ -370,19 +410,28 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 variant="destructive"
                 size="sm"
                 disabled={bulkBusy}
-                onClick={bulkDelete}
+                onClick={() => setConfirmBulkDeleteOpen(true)}
               >
                 <Trash2 className="mr-1" />
                 Toplu Sil
               </Button>
             </div>
           )}
+
+          {feedback && (
+            <p
+              className="rounded-lg border border-white/10 bg-[var(--arvesta-bg-elevated)] px-3 py-2 text-xs text-[var(--arvesta-text-secondary)]"
+              role="status"
+            >
+              {feedback}
+            </p>
+          )}
         </CardContent>
       </Card>
 
       <div className="space-y-3">
         {filtered.map((sub) => {
-          const isSelected = selectedIds.includes(sub.id);
+          const isSelected = selectedIds.has(sub.id);
 
           return (
             <Card
@@ -490,7 +539,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     variant="destructive"
                     size="sm"
                     disabled={busyId === sub.id}
-                    onClick={() => deleteSubmission(sub.id)}
+                    onClick={() => setConfirmDeleteId(sub.id)}
                   >
                     <Trash2 className="mr-1" />
                     Sil
@@ -512,6 +561,63 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           </Card>
         )}
       </div>
+
+      <Dialog
+        open={confirmDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDeleteId(null);
+        }}
+      >
+        <DialogContent className="border-white/10 bg-[var(--arvesta-bg-card)] text-white">
+          <DialogHeader>
+            <DialogTitle>Talep silinsin mi?</DialogTitle>
+            <DialogDescription className="text-[var(--arvesta-text-secondary)]">
+              Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteId(null)}
+              className="border-white/15 bg-transparent text-white"
+            >
+              Vazgeç
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={!confirmDeleteId || busyId === confirmDeleteId}
+              onClick={() => {
+                if (confirmDeleteId) void deleteSubmission(confirmDeleteId);
+              }}
+            >
+              Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={confirmBulkDeleteOpen} onOpenChange={setConfirmBulkDeleteOpen}>
+        <DialogContent className="border-white/10 bg-[var(--arvesta-bg-card)] text-white">
+          <DialogHeader>
+            <DialogTitle>Seçili talepler silinsin mi?</DialogTitle>
+            <DialogDescription className="text-[var(--arvesta-text-secondary)]">
+              {selectedCount} kayıt kalıcı olarak silinecek.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmBulkDeleteOpen(false)}
+              className="border-white/15 bg-transparent text-white"
+            >
+              Vazgeç
+            </Button>
+            <Button variant="destructive" disabled={bulkBusy} onClick={bulkDelete}>
+              Toplu Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

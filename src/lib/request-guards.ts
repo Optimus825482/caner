@@ -11,6 +11,11 @@ export type RateLimitAdapter = {
   set: (key: string, state: RateLimitState) => Promise<void>;
 };
 
+type CachedRateLimitState = {
+  state: RateLimitState;
+  expiresAt: number;
+};
+
 export function enforceSameOrigin(req: NextRequest): NextResponse | null {
   const origin = req.headers.get("origin");
   const referer = req.headers.get("referer");
@@ -110,6 +115,70 @@ export function createMemoryRateLimitAdapter(): RateLimitAdapter {
   };
 }
 
+function touchCacheEntry<K, V>(map: Map<K, V>, key: K, value: V) {
+  map.delete(key);
+  map.set(key, value);
+}
+
+function pruneLruCache<K, V>(map: Map<K, V>, maxEntries: number) {
+  while (map.size > maxEntries) {
+    const oldestKey = map.keys().next().value;
+    if (oldestKey === undefined) break;
+    map.delete(oldestKey);
+  }
+}
+
+function resolveCacheExpiry(state: RateLimitState, fallbackTtlMs: number) {
+  const now = Date.now();
+  return state.resetAt > now ? state.resetAt : now + fallbackTtlMs;
+}
+
+function createLruRateLimitAdapter(
+  adapter: RateLimitAdapter,
+  {
+    maxEntries = 2000,
+    fallbackTtlMs = 60_000,
+  }: { maxEntries?: number; fallbackTtlMs?: number } = {},
+): RateLimitAdapter {
+  const cache = new Map<string, CachedRateLimitState>();
+
+  return {
+    async get(key: string) {
+      const now = Date.now();
+      const cached = cache.get(key);
+
+      if (cached) {
+        if (cached.expiresAt > now) {
+          touchCacheEntry(cache, key, cached);
+          return cached.state;
+        }
+
+        cache.delete(key);
+      }
+
+      const state = await adapter.get(key);
+      if (state) {
+        touchCacheEntry(cache, key, {
+          state,
+          expiresAt: resolveCacheExpiry(state, fallbackTtlMs),
+        });
+        pruneLruCache(cache, maxEntries);
+      }
+
+      return state;
+    },
+
+    async set(key: string, state: RateLimitState) {
+      touchCacheEntry(cache, key, {
+        state,
+        expiresAt: resolveCacheExpiry(state, fallbackTtlMs),
+      });
+      pruneLruCache(cache, maxEntries);
+      await adapter.set(key, state);
+    },
+  };
+}
+
 type SiteSettingDelegate = {
   findUnique: (args: {
     where: { key: string };
@@ -124,7 +193,7 @@ type SiteSettingDelegate = {
 export function createSiteSettingRateLimitAdapter(
   siteSetting: SiteSettingDelegate,
 ): RateLimitAdapter {
-  return {
+  const dbAdapter: RateLimitAdapter = {
     async get(key: string) {
       const existing = await siteSetting.findUnique({ where: { key } });
       if (!existing) return null;
@@ -138,6 +207,8 @@ export function createSiteSettingRateLimitAdapter(
       });
     },
   };
+
+  return createLruRateLimitAdapter(dbAdapter);
 }
 
 export async function enforceRateLimit({

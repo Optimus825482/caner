@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
+import { invalidateSmtpCache, MAIL_KEYS } from "@/lib/mailer";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 import {
   buildClientKey,
   createSiteSettingRateLimitAdapter,
@@ -14,39 +16,15 @@ const settingsSchema = z.record(
   z.union([z.string(), z.number(), z.boolean()]),
 );
 
-const settingsRateLimitAdapter = createSiteSettingRateLimitAdapter(prisma.siteSetting);
+const settingsRateLimitAdapter = createSiteSettingRateLimitAdapter(
+  prisma.siteSetting,
+);
 const SETTINGS_MUTATION_RATE_LIMIT_WINDOW_MS = 60_000;
 const SETTINGS_MUTATION_RATE_LIMIT_MAX_REQUESTS = 20;
 
-function prismaWriteErrorResponse(error: unknown) {
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code)
-      : null;
-
-  if (code === "P2002") {
-    return NextResponse.json(
-      { error: "Resource already exists", code },
-      { status: 409 },
-    );
-  }
-
-  if (code === "P2025") {
-    return NextResponse.json(
-      { error: "Resource not found", code },
-      { status: 404 },
-    );
-  }
-
-  if (code === "P2003" || code === "P2014") {
-    return NextResponse.json(
-      { error: "Invalid relation reference", code },
-      { status: 422 },
-    );
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
-}
+const sensitiveSettingKeys = new Set(
+  MAIL_KEYS.filter((key) => /pass|secret|token|key/i.test(key)),
+);
 
 export async function GET(req: NextRequest) {
   const originDenied = enforceSameOrigin(req);
@@ -59,7 +37,9 @@ export async function GET(req: NextRequest) {
   const map: Record<string, string> = {};
 
   for (const setting of settings) {
-    map[setting.key] = setting.value;
+    map[setting.key] = sensitiveSettingKeys.has(setting.key)
+      ? "***"
+      : setting.value;
   }
 
   return NextResponse.json(map);
@@ -104,13 +84,17 @@ export async function PUT(req: NextRequest) {
   ]) as [string, string][];
 
   try {
-    for (const [key, value] of entries) {
-      await prisma.siteSetting.upsert({
-        where: { key },
-        update: { value },
-        create: { key, value },
-      });
-    }
+    await prisma.$transaction(
+      entries.map(([key, value]) =>
+        prisma.siteSetting.upsert({
+          where: { key },
+          update: { value },
+          create: { key, value },
+        }),
+      ),
+    );
+
+    invalidateSmtpCache();
 
     return NextResponse.json({ success: true });
   } catch (error) {

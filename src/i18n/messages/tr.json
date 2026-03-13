@@ -59,7 +59,16 @@
     "optCustom": "Özel Proje",
     "desc_field": "Proje açıklaması",
     "submit": "Talep Gönder",
-    "success": "Mesajınız başarıyla gönderildi!"
+    "success": "Mesajınız başarıyla gönderildi!",
+    "errors": {
+      "rateLimited": "Çok hızlı mesaj gönderiyorsunuz. Lütfen birkaç dakika bekleyip tekrar deneyin.",
+      "securityFailed": "Güvenlik doğrulaması başarısız oldu. Lütfen sayfayı yenileyip tekrar deneyin.",
+      "captchaRequired": "Lütfen captcha doğrulamasını tamamlayıp tekrar deneyin.",
+      "spamDetected": "Mesajınız doğrulanamadı. Lütfen tekrar deneyin.",
+      "invalidForm": "Lütfen form alanlarını kontrol edip tekrar deneyin.",
+      "generic": "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+      "network": "Ağ hatası oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin."
+    }
   },
   "footer": {
     "tagline": "Tutkuyla üretilen mükemmel mobilyalar.",

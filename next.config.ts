@@ -8,7 +8,20 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  serverExternalPackages: ["@prisma/client"],
+  serverExternalPackages: ["@prisma/client", "sharp", "onnxruntime-node"],
+  async headers() {
+    return [
+      {
+        source: "/uploads/products/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
   turbopack: {
     root: process.cwd(),
   },

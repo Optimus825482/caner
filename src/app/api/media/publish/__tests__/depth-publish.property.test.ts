@@ -211,7 +211,7 @@ describe("Feature: depth-parallax-viewer, Property 10: Publish persists depth ma
             fc.uint8Array({ minLength: 8, maxLength: 512 }),
             fc.integer({ min: 0, max: 100 })
           ),
-          async ([fileContent, intensity]) => {
+          async ([fileContent]) => {
             // Create a temp depth map file
             const tempId = `depth-${Date.now()}-${randomUUID()}`;
             const tempFilename = `${tempId}.png`;

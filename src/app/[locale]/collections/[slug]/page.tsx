@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
@@ -10,12 +11,16 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, slug } = await params;
-  const category = await prisma.category.findUnique({
+const getCategoryBySlug = cache(async (slug: string, locale: string) => {
+  return prisma.category.findUnique({
     where: { slug },
     include: { translations: { where: { locale } } },
   });
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const category = await getCategoryBySlug(slug, locale);
   if (!category) return {};
   const name = category.translations[0]?.name || slug;
   return {
@@ -28,10 +33,7 @@ export default async function CollectionPage({ params }: Props) {
   const { locale, slug } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
 
-  const category = await prisma.category.findUnique({
-    where: { slug },
-    include: { translations: { where: { locale } } },
-  });
+  const category = await getCategoryBySlug(slug, locale);
 
   if (!category) notFound();
 

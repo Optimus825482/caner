@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,9 +48,9 @@ export default function ProductFormPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { id: productId } = React.use(params);
+  const isNew = productId === "new";
   const router = useRouter();
-  const [productId, setProductId] = useState<string>("");
-  const [isNew, setIsNew] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -58,6 +58,7 @@ export default function ProductFormPage({
   const [editorOpen, setEditorOpen] = useState(false);
   const [pendingTempId, setPendingTempId] = useState<string | null>(null);
   const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -71,71 +72,142 @@ export default function ProductFormPage({
   );
 
   useEffect(() => {
-    params.then(({ id }) => {
-      if (id !== "new") {
-        setProductId(id);
-        setIsNew(false);
-        fetch(`/api/products`)
-          .then((r) => r.json())
-          .then((all: ProductResponse[]) => {
-            const p = all.find((x) => x.id === id);
-            if (p) {
-              setSlug(p.slug);
-              setCategoryId(p.categoryId);
-              setFeatured(p.featured);
-              setOrder(p.order);
-              setImageUrl(p.images?.[0]?.url || "");
-              const t: Record<string, { title: string; description: string }> =
-                {};
-              locales.forEach((l) => {
-                const tr = p.translations.find((x) => x.locale === l);
-                t[l] = {
-                  title: tr?.title || "",
-                  description: tr?.description || "",
-                };
-              });
-              setTranslations(t);
-            }
+    let active = true;
+
+    async function loadInitialData() {
+      setErrorMessage("");
+
+      try {
+        const categoriesRes = await fetch("/api/categories");
+        if (!categoriesRes.ok) {
+          throw new Error("Kategoriler yüklenemedi.");
+        }
+        const categoriesData = (await categoriesRes.json()) as Category[];
+        if (active) setCategories(categoriesData);
+
+        if (!isNew) {
+          const productRes = await fetch(`/api/products/${productId}`);
+          if (!productRes.ok) {
+            throw new Error("Ürün bilgisi yüklenemedi.");
+          }
+
+          const p = (await productRes.json()) as ProductResponse;
+          if (!active) return;
+
+          setSlug(p.slug);
+          setCategoryId(p.categoryId);
+          setFeatured(p.featured);
+          setOrder(p.order);
+          setImageUrl(p.images?.[0]?.url || "");
+
+          const nextTranslations: Record<
+            string,
+            { title: string; description: string }
+          > = {};
+
+          locales.forEach((l) => {
+            const tr = p.translations.find((x) => x.locale === l);
+            nextTranslations[l] = {
+              title: tr?.title || "",
+              description: tr?.description || "",
+            };
           });
+
+          setTranslations(nextTranslations);
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Veriler yüklenirken bir hata oluştu.";
+        if (active) {
+          setErrorMessage(message);
+          alert(message);
+        }
       }
-    });
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then(setCategories);
-  }, [params]);
+    }
+
+    loadInitialData();
+
+    return () => {
+      active = false;
+    };
+  }, [isNew, productId]);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    if (data.tempId && data.previewUrl) {
-      setPendingTempId(data.tempId);
-      setPendingPreviewUrl(data.previewUrl);
-      setEditorOpen(true);
+    setErrorMessage("");
+
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = (await res.json().catch(() => ({}))) as {
+        tempId?: string;
+        previewUrl?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        throw new Error(data.error || "Görsel yüklenemedi.");
+      }
+
+      if (data.tempId && data.previewUrl) {
+        setPendingTempId(data.tempId);
+        setPendingPreviewUrl(data.previewUrl);
+        setEditorOpen(true);
+      } else {
+        throw new Error("Yükleme tamamlandı ancak önizleme oluşturulamadı.");
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Görsel yüklenemedi.";
+      setErrorMessage(message);
+      alert(message);
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
   }
 
   async function openEditorForExistingImage() {
     if (!imageUrl) return;
 
     setPreparing(true);
+    setErrorMessage("");
+
     try {
       const res = await fetch("/api/media/prepare", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sourceUrl: imageUrl }),
       });
-      const data = await res.json();
+
+      const data = (await res.json().catch(() => ({}))) as {
+        tempId?: string;
+        previewUrl?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        throw new Error(data.error || "Görsel düzenleme için hazırlanamadı.");
+      }
+
       if (data?.tempId && data?.previewUrl) {
         setPendingTempId(data.tempId);
         setPendingPreviewUrl(data.previewUrl);
         setEditorOpen(true);
+      } else {
+        throw new Error("Düzenleyici verisi alınamadı.");
       }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Görsel düzenleme hazırlanırken hata oluştu.";
+      setErrorMessage(message);
+      alert(message);
     } finally {
       setPreparing(false);
     }
@@ -143,6 +215,8 @@ export default function ProductFormPage({
 
   async function handleSave() {
     setSaving(true);
+    setErrorMessage("");
+
     const body = {
       slug,
       categoryId,
@@ -154,21 +228,30 @@ export default function ProductFormPage({
         : [],
     };
 
-    if (isNew) {
-      await fetch("/api/products", {
-        method: "POST",
+    try {
+      const res = await fetch(isNew ? "/api/products" : `/api/products/${productId}`, {
+        method: isNew ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-    } else {
-      await fetch(`/api/products/${productId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+
+      const payload = (await res.json().catch(() => ({}))) as {
+        error?: string;
+      };
+
+      if (!res.ok) {
+        throw new Error(payload.error || "Ürün kaydedilemedi.");
+      }
+
+      router.push("/admin/products");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Ürün kaydedilemedi.";
+      setErrorMessage(message);
+      alert(message);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    router.push("/admin/products");
   }
 
   return (
@@ -191,6 +274,12 @@ export default function ProductFormPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {errorMessage && (
+          <div className="lg:col-span-3 rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            {errorMessage}
+          </div>
+        )}
+
         {/* Main */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
@@ -328,10 +417,15 @@ export default function ProductFormPage({
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[var(--arvesta-text-secondary)]">
+                <Label
+                  htmlFor="product-category"
+                  className="text-[var(--arvesta-text-secondary)]"
+                >
                   Kategori
                 </Label>
                 <select
+                  id="product-category"
+                  aria-label="Kategori"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                   className="w-full h-10 px-3 bg-[var(--arvesta-bg-elevated)] border border-white/5 rounded-md text-white text-sm focus:border-[var(--arvesta-accent)] focus:outline-none"
@@ -360,6 +454,7 @@ export default function ProductFormPage({
                 <input
                   type="checkbox"
                   id="featured"
+                  aria-label="Öne çıkan"
                   checked={featured}
                   onChange={(e) => setFeatured(e.target.checked)}
                   className="accent-[var(--arvesta-accent)]"

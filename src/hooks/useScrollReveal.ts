@@ -51,11 +51,11 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
   return { ref, isVisible };
 }
 
-export function useStaggerReveal(
-  itemCount: number,
-  baseDelay = 80,
-  maxDelay = 600,
-) {
+/**
+ * itemCount intentionally preserved for API compatibility with existing call sites.
+ * Delay distribution is currently index-based and independent from total item count.
+ */
+export function useStaggerReveal(_itemCount: number, baseDelay = 80, maxDelay = 600) {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   const getDelay = useCallback(

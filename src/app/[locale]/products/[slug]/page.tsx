@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
@@ -11,15 +12,20 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, slug } = await params;
-  const product = await prisma.product.findUnique({
+const getProductBySlug = cache(async (slug: string, locale: string) => {
+  return prisma.product.findUnique({
     where: { slug },
     include: {
       translations: { where: { locale } },
-      images: { take: 1, orderBy: { order: "asc" } },
+      images: { orderBy: { order: "asc" } },
+      category: { include: { translations: { where: { locale } } } },
     },
   });
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const product = await getProductBySlug(slug, locale);
   if (!product) return {};
   const title = product.translations[0]?.title || slug;
   return {
@@ -35,14 +41,7 @@ export default async function ProductPage({ params }: Props) {
   const { locale, slug } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
 
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      translations: { where: { locale } },
-      images: { orderBy: { order: "asc" } },
-      category: { include: { translations: { where: { locale } } } },
-    },
-  });
+  const product = await getProductBySlug(slug, locale);
 
   if (!product) notFound();
 

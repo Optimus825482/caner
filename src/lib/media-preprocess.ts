@@ -25,6 +25,9 @@ export const SNIFFED_TYPE_MIME: Record<".jpg" | ".png" | ".webp", string[]> = {
 
 export type SupportedExt = ".jpg" | ".png" | ".webp";
 
+const TEMP_DIR_CACHE_TTL_MS = 5_000;
+let tempDirEntriesCache: { entries: string[]; expiresAt: number } | null = null;
+
 export function getSafeExt(originalName: string): string | null {
   const ext = path.extname(originalName || "").toLowerCase();
   return ALLOWED_FILE_TYPES[ext] ? ext : null;
@@ -84,12 +87,29 @@ export async function saveTempMedia(buffer: Buffer, ext: SupportedExt) {
   const filename = `${tempId}${ext}`;
   const filePath = path.join(getTempMediaDir(), filename);
   await writeFile(filePath, buffer, { flag: "wx" });
+  tempDirEntriesCache = null;
   return { tempId, filename, filePath };
+}
+
+async function getTempDirEntriesCached() {
+  const now = Date.now();
+
+  if (tempDirEntriesCache && tempDirEntriesCache.expiresAt > now) {
+    return tempDirEntriesCache.entries;
+  }
+
+  const entries = await readdir(getTempMediaDir()).catch(() => [] as string[]);
+  tempDirEntriesCache = {
+    entries,
+    expiresAt: now + TEMP_DIR_CACHE_TTL_MS,
+  };
+
+  return entries;
 }
 
 export async function resolveTempFileById(tempId: string) {
   const dir = getTempMediaDir();
-  const entries = await readdir(dir).catch(() => [] as string[]);
+  const entries = await getTempDirEntriesCached();
   const found = entries.find((name) =>
     [".jpg", ".png", ".webp"].some((ext) => name === `${tempId}${ext}`),
   );
@@ -109,6 +129,7 @@ export async function cleanupOldTempMedia(maxAgeHours = 24) {
   if (entries.length === 0) return;
 
   const threshold = Date.now() - maxAgeHours * 60 * 60 * 1000;
+  let deletedAny = false;
 
   await Promise.all(
     entries.map(async (name) => {
@@ -117,10 +138,15 @@ export async function cleanupOldTempMedia(maxAgeHours = 24) {
         const meta = await stat(fullPath);
         if (meta.mtimeMs < threshold) {
           await unlink(fullPath);
+          deletedAny = true;
         }
       } catch {
         // noop
       }
     }),
   );
+
+  if (deletedAny) {
+    tempDirEntriesCache = null;
+  }
 }

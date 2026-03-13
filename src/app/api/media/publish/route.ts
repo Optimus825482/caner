@@ -142,6 +142,31 @@ function buildWatermarkSvg(
   );
 }
 
+function buildLogoWatermarkSvg(
+  width: number,
+  height: number,
+  position:
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "center",
+  opacity: number,
+  scale: number,
+  logoPngBuffer: Buffer,
+) {
+  const logoW = Math.max(32, Math.round(width * clamp(scale, 0.1, 1) * 0.28));
+  const logoH = logoW;
+  const { x, y } = getWatermarkBounds(width, height, position, logoW, logoH);
+  const base64 = logoPngBuffer.toString("base64");
+
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+      <image href="data:image/png;base64,${base64}" x="${x}" y="${y}" width="${logoW}" height="${logoH}" opacity="${clamp(opacity, 0, 1)}" preserveAspectRatio="xMidYMid meet" />
+    </svg>`,
+  );
+}
+
 function getWatermarkBounds(
   width: number,
   height: number,
@@ -240,9 +265,7 @@ export async function POST(req: NextRequest) {
     limitInputPixels: 16_000_000,
   }).autoOrient();
 
-  const baseMeta = await sharp(inputBuffer, { limitInputPixels: 16_000_000 })
-    .autoOrient()
-    .metadata();
+  const baseMeta = await pipeline.metadata();
   const baseW = baseMeta.width ?? 0;
   const baseH = baseMeta.height ?? 0;
   let outW = baseW;
@@ -353,7 +376,13 @@ export async function POST(req: NextRequest) {
   }
 
   // Step 11: Composites (vignette, text overlays, watermark)
-  const composites: Array<{ input: Buffer; top?: number; left?: number }> = [];
+  const composites: Array<{
+    input: Buffer;
+    top?: number;
+    left?: number;
+    blend?: "over";
+    premultiplied?: boolean;
+  }> = [];
 
   // Vignette overlay
   if (recipe.vignette && recipe.vignette > 0 && outW > 0 && outH > 0) {
@@ -376,31 +405,25 @@ export async function POST(req: NextRequest) {
 
     if (recipe.watermark.type === "logo") {
       const logoPath = path.join(process.cwd(), "public", "logo.png");
-      const logoW = Math.max(32, Math.round(outW * wmScale * 0.28));
-      const logoH = logoW;
-      const { x, y } = getWatermarkBounds(
-        outW,
-        outH,
-        recipe.watermark.position,
-        logoW,
-        logoH,
-      );
-
       try {
-        const logoBuffer = await readFile(logoPath);
-        // Preserve original alpha, then composite with desired opacity
-        const preparedLogo = await sharp(logoBuffer)
-          .resize({
-            width: logoW,
-            height: logoH,
-            fit: "contain",
-            background: { r: 0, g: 0, b: 0, alpha: 0 },
-          })
-          .ensureAlpha(wmOpacity)
+        const rawLogo = await readFile(logoPath);
+        const preparedLogo = await sharp(rawLogo)
+          .ensureAlpha()
           .png()
           .toBuffer();
 
-        composites.push({ input: preparedLogo, left: x, top: y });
+        composites.push({
+          input: buildLogoWatermarkSvg(
+            outW,
+            outH,
+            recipe.watermark.position,
+            wmOpacity,
+            wmScale,
+            preparedLogo,
+          ),
+          blend: "over",
+          premultiplied: false,
+        });
       } catch {
         // Fallback to text watermark if logo file not found
         composites.push({
@@ -412,6 +435,8 @@ export async function POST(req: NextRequest) {
             recipe.watermark.scale,
             recipe.watermark.text,
           ),
+          blend: "over",
+          premultiplied: false,
         });
       }
     } else {
@@ -424,6 +449,8 @@ export async function POST(req: NextRequest) {
           recipe.watermark.scale,
           recipe.watermark.text,
         ),
+        blend: "over",
+        premultiplied: false,
       });
     }
   }

@@ -59,7 +59,16 @@
     "optCustom": "Custom Project",
     "desc_field": "Project description",
     "submit": "Send Inquiry",
-    "success": "Message sent successfully!"
+    "success": "Message sent successfully!",
+    "errors": {
+      "rateLimited": "You are sending messages too quickly. Please wait a few minutes and try again.",
+      "securityFailed": "Security check failed. Please refresh the page and try again.",
+      "captchaRequired": "Please complete the captcha verification and try again.",
+      "spamDetected": "Your message could not be verified. Please try again.",
+      "invalidForm": "Please check the form fields and try again.",
+      "generic": "Something went wrong while sending your message. Please try again.",
+      "network": "Network error. Please check your connection and try again."
+    }
   },
   "footer": {
     "tagline": "Furniture of excellence, crafted with passion.",

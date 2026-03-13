@@ -37,7 +37,7 @@ model Product {
   slug         String                 @unique
   featured     Boolean                @default(false)
   order        Int                    @default(0)
-  category     Category               @relation(fields: [categoryId], references: [id])
+    category     Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   categoryId   String
   images       ProductImage[]
   translations ProductTranslation[]
@@ -107,6 +107,8 @@ model ContactSubmission {
   isRead      Boolean  @default(false)
   createdAt   DateTime @default(now())
 
+  @@index([isRead])
+  @@index([createdAt])
   @@map("contact_submissions")
 }
 

@@ -20,8 +20,6 @@ import { LogIn } from "lucide-react";
 const t = frMessages.adminLogin;
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
-const demoUsername = process.env.NEXT_PUBLIC_DEMO_USERNAME ?? "admin";
-const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? "";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -55,14 +53,28 @@ export default function AdminLoginPage() {
   }
 
   async function handleDemoLogin() {
-    if (!demoPassword) {
-      setError("Demo şifresi tanımlı değil (NEXT_PUBLIC_DEMO_PASSWORD).");
-      return;
-    }
+    setLoading(true);
+    setError("");
 
-    setUsername(demoUsername);
-    setPassword(demoPassword);
-    await loginWithCredentials(demoUsername, demoPassword);
+    try {
+      const res = await fetch("/api/auth/demo-login", {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        setError(payload.error ?? t.invalidCredentials);
+        return;
+      }
+
+      router.push("/admin");
+    } catch {
+      setError("Demo giriş sırasında bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

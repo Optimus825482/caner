@@ -191,8 +191,7 @@ export async function POST(req: NextRequest) {
   }
 
   const saved = await saveTempMedia(finalBuffer, finalExt);
-  // DÜZELTME: void yerine await ile sunucu sürecinin sonlanması engellendi.
-  await cleanupOldTempMedia(24);
+  void cleanupOldTempMedia(24);
 
   return NextResponse.json({
     tempId: saved.tempId,
