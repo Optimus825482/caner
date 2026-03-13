@@ -280,14 +280,24 @@ export default function ContactForm({ locale }: { locale: string }) {
               required
               className="h-12 w-full appearance-none rounded-xl border border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] px-4 text-sm text-(--arvesta-text-secondary) focus-visible:border-(--arvesta-accent) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
             >
-              <option value="" disabled>
+              <option value="" disabled className="bg-[#0a1628] text-white">
                 {t("select")}
               </option>
-              <option value="kitchen">{t("optKitchen")}</option>
-              <option value="bathroom">{t("optBathroom")}</option>
-              <option value="wardrobe">{t("optWardrobe")}</option>
-              <option value="commercial">{t("optCommercial")}</option>
-              <option value="custom">{t("optCustom")}</option>
+              <option value="kitchen" className="bg-[#0a1628] text-white">
+                {t("optKitchen")}
+              </option>
+              <option value="bathroom" className="bg-[#0a1628] text-white">
+                {t("optBathroom")}
+              </option>
+              <option value="wardrobe" className="bg-[#0a1628] text-white">
+                {t("optWardrobe")}
+              </option>
+              <option value="commercial" className="bg-[#0a1628] text-white">
+                {t("optCommercial")}
+              </option>
+              <option value="custom" className="bg-[#0a1628] text-white">
+                {t("optCustom")}
+              </option>
             </select>
             <Textarea
               name="description"
