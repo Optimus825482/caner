@@ -18,7 +18,7 @@ export default function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contact us on WhatsApp"
-      className={`fixed bottom-6 right-6 z-[900] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_24px_rgba(37,211,102,0.4)] transition-all duration-500 hover:scale-110 hover:shadow-[0_8px_32px_rgba(37,211,102,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arvesta-bg)] ${
+      className={`fixed bottom-6 right-6 z-900 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_24px_rgba(37,211,102,0.4)] transition-all duration-500 hover:scale-110 hover:shadow-[0_8px_32px_rgba(37,211,102,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arvesta-bg)] ${
         show
           ? "translate-y-0 opacity-100"
           : "translate-y-4 opacity-0 pointer-events-none"

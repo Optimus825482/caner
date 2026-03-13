@@ -67,7 +67,7 @@ export default function Navbar({ locale }: { locale: string }) {
     <>
       <nav className="fixed left-0 right-0 top-0 z-50 px-4 py-4 md:px-10">
         <div
-          className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border border-white/20 bg-gradient-to-r from-[#0b0b0b]/72 via-[#121212]/66 to-[#0b0b0b]/72 backdrop-blur-2xl transition-all duration-300 ${
+          className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border border-white/20 bg-linear-to-r from-[#0b0b0b]/72 via-[#121212]/66 to-[#0b0b0b]/72 backdrop-blur-2xl transition-all duration-300 ${
             scrolled
               ? "px-5 py-2.5 shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
               : "px-6 py-3"
@@ -90,7 +90,7 @@ export default function Navbar({ locale }: { locale: string }) {
                 ? activeSection === sectionId
                 : pathname === link.href;
 
-              const cls = `relative font-ui text-sm font-medium tracking-[0.03em] transition-colors duration-300 after:absolute after:bottom-[-6px] after:left-0 after:h-px after:bg-gradient-to-r after:from-[#f3c98b] after:to-[var(--arvesta-accent)] after:transition-all after:duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] ${
+              const cls = `relative font-ui text-sm font-medium tracking-[0.03em] transition-colors duration-300 after:absolute after:bottom-[-6px] after:left-0 after:h-px after:bg-linear-to-r after:from-[#f3c98b] after:to-(--arvesta-accent) after:transition-all after:duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] ${
                 isActive
                   ? "text-[#f3c98b] after:w-full"
                   : "text-white/88 after:w-0 hover:text-[#f3c98b] hover:after:w-full"
@@ -138,14 +138,14 @@ export default function Navbar({ locale }: { locale: string }) {
 
             <a
               href="#contact"
-              className="hidden rounded-full border border-[#ffd8a6]/40 bg-gradient-to-b from-[#f6c583] to-[var(--arvesta-accent)] px-6 py-2.5 font-ui text-sm font-bold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)] transition-all duration-200 hover:-translate-y-px hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] lg:inline-flex"
+              className="hidden rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-6 py-2.5 font-ui text-sm font-bold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)] transition-all duration-200 hover:-translate-y-px hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] lg:inline-flex"
             >
               {t("quote")}
             </a>
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="z-[1001] rounded-full border border-white/20 bg-black/20 p-2.5 transition-colors hover:border-[#f3c98b]/50 hover:bg-black/35 lg:hidden"
+              className="z-1001 rounded-full border border-white/20 bg-black/20 p-2.5 transition-colors hover:border-[#f3c98b]/50 hover:bg-black/35 lg:hidden"
               aria-label="Menu"
             >
               {mobileOpen ? (
@@ -159,7 +159,7 @@ export default function Navbar({ locale }: { locale: string }) {
       </nav>
 
       <div
-        className={`fixed inset-0 z-[999] flex items-center justify-center bg-[#080808]/96 backdrop-blur-2xl transition-all duration-500 ${
+        className={`fixed inset-0 z-999 flex items-center justify-center bg-[#080808]/96 backdrop-blur-2xl transition-all duration-500 ${
           mobileOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
@@ -211,7 +211,7 @@ export default function Navbar({ locale }: { locale: string }) {
                 className={`rounded-full border px-4 py-2 font-ui text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] ${
                   locale === l.code
                     ? "border-[#f3c98b]/70 bg-[#f3c98b]/12 text-[#f3c98b]"
-                    : "border-white/15 text-[var(--arvesta-text-muted)] hover:border-[#f3c98b]/40 hover:text-[#f3c98b]"
+                    : "border-white/15 text-(--arvesta-text-muted) hover:border-[#f3c98b]/40 hover:text-[#f3c98b]"
                 }`}
               >
                 {l.label}
@@ -222,7 +222,7 @@ export default function Navbar({ locale }: { locale: string }) {
           <a
             href="#contact"
             onClick={() => setMobileOpen(false)}
-            className="inline-block rounded-full border border-[#ffd8a6]/40 bg-gradient-to-b from-[#f6c583] to-[var(--arvesta-accent)] px-10 py-3.5 font-ui text-base font-semibold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)] transition-all duration-200 hover:brightness-110"
+            className="inline-block rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-10 py-3.5 font-ui text-base font-semibold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)] transition-all duration-200 hover:brightness-110"
           >
             {t("quote")}
           </a>

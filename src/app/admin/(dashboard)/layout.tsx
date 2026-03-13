@@ -26,7 +26,7 @@ export default async function AdminDashboardLayout({
     <SessionProvider>
       <NextIntlClientProvider locale="tr" messages={trMessages}>
         <TooltipProvider>
-          <div className="min-h-screen bg-[var(--arvesta-bg)]">
+          <div className="min-h-screen bg-(--arvesta-bg)">
             <AdminSidebar />
             <main className="p-4 pt-16 lg:ml-[260px] lg:p-8 lg:pt-8">
               {children}

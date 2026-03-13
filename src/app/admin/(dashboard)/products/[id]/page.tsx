@@ -261,7 +261,7 @@ export default function ProductFormPage({
           <Button
             variant="ghost"
             size="sm"
-            className="text-[var(--arvesta-text-muted)]"
+            className="text-(--arvesta-text-muted)"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -282,7 +282,7 @@ export default function ProductFormPage({
 
         {/* Main */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+          <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white">
                 Çoklu Dil İçerik
@@ -290,12 +290,12 @@ export default function ProductFormPage({
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="fr">
-                <TabsList className="bg-[var(--arvesta-bg-elevated)] border border-white/5 mb-4">
+                <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5 mb-4">
                   {locales.map((l) => (
                     <TabsTrigger
                       key={l}
                       value={l}
-                      className="font-ui text-xs data-[state=active]:bg-[var(--arvesta-accent)] data-[state=active]:text-white"
+                      className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
                     >
                       {localeLabels[l]}
                     </TabsTrigger>
@@ -304,7 +304,7 @@ export default function ProductFormPage({
                 {locales.map((l) => (
                   <TabsContent key={l} value={l} className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-[var(--arvesta-text-secondary)]">
+                      <Label className="text-(--arvesta-text-secondary)">
                         Başlık ({l.toUpperCase()})
                       </Label>
                       <Input
@@ -315,12 +315,12 @@ export default function ProductFormPage({
                             [l]: { ...translations[l], title: e.target.value },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                         placeholder={`Ürün adı (${localeLabels[l]})`}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[var(--arvesta-text-secondary)]">
+                      <Label className="text-(--arvesta-text-secondary)">
                         Açıklama ({l.toUpperCase()})
                       </Label>
                       <Textarea
@@ -334,7 +334,7 @@ export default function ProductFormPage({
                             },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white resize-none"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white resize-none"
                         rows={3}
                         placeholder={`Ürün açıklaması (${localeLabels[l]})`}
                       />
@@ -349,16 +349,16 @@ export default function ProductFormPage({
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Image Upload */}
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+          <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-[var(--arvesta-accent)]" />{" "}
+                <ImageIcon className="w-4 h-4 text-(--arvesta-accent)" />{" "}
                 Görsel
               </CardTitle>
             </CardHeader>
             <CardContent>
               {imageUrl ? (
-                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-3">
+                <div className="relative aspect-4/3 rounded-lg overflow-hidden mb-3">
                   <Image
                     src={imageUrl}
                     alt="Preview"
@@ -368,8 +368,8 @@ export default function ProductFormPage({
                   />
                 </div>
               ) : (
-                <div className="aspect-[4/3] rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center mb-3">
-                  <Upload className="w-8 h-8 text-[var(--arvesta-text-muted)]" />
+                  <div className="aspect-4/3 rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center mb-3">
+                    <Upload className="w-8 h-8 text-(--arvesta-text-muted)" />
                 </div>
               )}
               <input
@@ -381,7 +381,7 @@ export default function ProductFormPage({
               />
               <label
                 htmlFor="product-image-upload"
-                className="inline-flex w-full h-8 items-center justify-center rounded-lg border border-white/10 bg-[var(--arvesta-bg)] text-sm font-medium text-[var(--arvesta-text-secondary)] cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
+                className="inline-flex w-full h-8 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg) text-sm font-medium text-(--arvesta-text-secondary) cursor-pointer hover:bg-muted hover:text-foreground transition-colors"
               >
                 {uploading ? "Yükleniyor..." : "Görsel Yükle"}
               </label>
@@ -390,7 +390,7 @@ export default function ProductFormPage({
                 variant="outline"
                 disabled={!imageUrl || preparing}
                 onClick={openEditorForExistingImage}
-                className="mt-2 w-full border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
+                className="mt-2 w-full border-white/10 text-(--arvesta-text-secondary) font-ui"
               >
                 {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
               </Button>
@@ -398,7 +398,7 @@ export default function ProductFormPage({
           </Card>
 
           {/* Details */}
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+          <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white">
                 Detaylar
@@ -406,20 +406,20 @@ export default function ProductFormPage({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-[var(--arvesta-text-secondary)]">
+                <Label className="text-(--arvesta-text-secondary)">
                   Slug
                 </Label>
                 <Input
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                  className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                   placeholder="urun-adi"
                 />
               </div>
               <div className="space-y-2">
                 <Label
                   htmlFor="product-category"
-                  className="text-[var(--arvesta-text-secondary)]"
+                  className="text-(--arvesta-text-secondary)"
                 >
                   Kategori
                 </Label>
@@ -428,7 +428,7 @@ export default function ProductFormPage({
                   aria-label="Kategori"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full h-10 px-3 bg-[var(--arvesta-bg-elevated)] border border-white/5 rounded-md text-white text-sm focus:border-[var(--arvesta-accent)] focus:outline-none"
+                  className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/5 rounded-md text-white text-sm focus:border-(--arvesta-accent) focus:outline-none"
                 >
                   <option value="">Seçin...</option>
                   {categories.map((c) => (
@@ -440,14 +440,14 @@ export default function ProductFormPage({
                 </select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[var(--arvesta-text-secondary)]">
+                <Label className="text-(--arvesta-text-secondary)">
                   Sıra
                 </Label>
                 <Input
                   type="number"
                   value={order}
                   onChange={(e) => setOrder(Number(e.target.value))}
-                  className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                  className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -457,11 +457,11 @@ export default function ProductFormPage({
                   aria-label="Öne çıkan"
                   checked={featured}
                   onChange={(e) => setFeatured(e.target.checked)}
-                  className="accent-[var(--arvesta-accent)]"
+                  className="accent-(--arvesta-accent)"
                 />
                 <Label
                   htmlFor="featured"
-                  className="text-[var(--arvesta-text-secondary)] flex items-center gap-1"
+                  className="text-(--arvesta-text-secondary) flex items-center gap-1"
                 >
                   <Star className="w-3 h-3" /> Öne Çıkan
                 </Label>
@@ -472,7 +472,7 @@ export default function ProductFormPage({
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="w-full bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui font-semibold h-11"
+            className="w-full bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui font-semibold h-11"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? "Kaydediliyor..." : "Kaydet"}

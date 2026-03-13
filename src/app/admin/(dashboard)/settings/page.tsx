@@ -212,10 +212,10 @@ export default function AdminSettings() {
     return (
       <div
         key={s.key}
-        className="space-y-2 rounded-xl border border-[var(--arvesta-gold)]/10 bg-[rgba(255,255,255,0.015)] p-4"
+        className="space-y-2 rounded-xl border border-(--arvesta-gold)/10 bg-[rgba(255,255,255,0.015)] p-4"
       >
-        <Label className="flex items-center gap-2 text-sm text-[var(--arvesta-text-secondary)]">
-          <s.icon className="h-3.5 w-3.5 text-[var(--arvesta-gold)]/90" />{" "}
+        <Label className="flex items-center gap-2 text-sm text-(--arvesta-text-secondary)">
+          <s.icon className="h-3.5 w-3.5 text-(--arvesta-gold)/90" />{" "}
           {s.label}
         </Label>
 
@@ -226,10 +226,10 @@ export default function AdminSettings() {
               setValues((prev) => ({ ...prev, [s.key]: value ?? "false" }))
             }
           >
-            <SelectTrigger className="h-10 w-full border-[var(--arvesta-gold)]/20 bg-[var(--arvesta-bg-elevated)] text-white">
+            <SelectTrigger className="h-10 w-full border-(--arvesta-gold)/20 bg-(--arvesta-bg-elevated) text-white">
               <SelectValue placeholder={s.placeholder} />
             </SelectTrigger>
-            <SelectContent className="border-white/10 bg-[var(--arvesta-bg-card)] text-white">
+            <SelectContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
               <SelectItem value="true">true</SelectItem>
               <SelectItem value="false">false</SelectItem>
             </SelectContent>
@@ -239,13 +239,13 @@ export default function AdminSettings() {
             type={s.type}
             value={values[s.key] || ""}
             onChange={(e) => setValues({ ...values, [s.key]: e.target.value })}
-            className="h-10 border-[var(--arvesta-gold)]/20 bg-[var(--arvesta-bg-elevated)] text-white focus-visible:ring-[var(--arvesta-accent-glow)]"
+            className="h-10 border-(--arvesta-gold)/20 bg-(--arvesta-bg-elevated) text-white focus-visible:ring-(--arvesta-accent-glow)"
             placeholder={s.placeholder}
           />
         )}
 
         {s.help ? (
-          <p className="text-xs text-[var(--arvesta-text-muted)]">{s.help}</p>
+          <p className="text-xs text-(--arvesta-text-muted)">{s.help}</p>
         ) : null}
       </div>
     );
@@ -257,31 +257,31 @@ export default function AdminSettings() {
         <h1 className="font-display text-2xl font-semibold text-white">
           Site Ayarları
         </h1>
-        <p className="font-ui text-sm text-[var(--arvesta-text-muted)]">
+        <p className="font-ui text-sm text-(--arvesta-text-muted)">
           Genel ayarlar ve SMTP e-posta yönlendirme yapılandırması
         </p>
       </div>
 
-      <Card className="mx-auto w-full max-w-5xl border-[var(--arvesta-gold)]/20 bg-[linear-gradient(170deg,rgba(8,16,30,0.96),rgba(6,12,24,0.96))] shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-        <CardHeader className="border-b border-[var(--arvesta-gold)]/15 pb-4">
+      <Card className="mx-auto w-full max-w-5xl border-(--arvesta-gold)/20 bg-[linear-gradient(170deg,rgba(8,16,30,0.96),rgba(6,12,24,0.96))] shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+        <CardHeader className="border-b border-(--arvesta-gold)/15 pb-4">
           <CardTitle className="flex items-center gap-2 font-ui text-base text-white">
-            <SettingsIcon className="h-4 w-4 text-[var(--arvesta-gold)]" />
+            <SettingsIcon className="h-4 w-4 text-(--arvesta-gold)" />
             Ayar Merkezi
           </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-5 pt-5">
           <Tabs defaultValue="general" className="flex w-full flex-col gap-5">
-            <TabsList className="flex h-auto w-full gap-1 rounded-xl border border-[var(--arvesta-gold)]/20 bg-[rgba(255,255,255,0.02)] p-1">
+            <TabsList className="flex h-auto w-full gap-1 rounded-xl border border-(--arvesta-gold)/20 bg-[rgba(255,255,255,0.02)] p-1">
               <TabsTrigger
                 value="general"
-                className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-[var(--arvesta-gold)]/15 data-[selected]:text-[var(--arvesta-gold)] data-active:bg-[var(--arvesta-gold)]/15 data-active:text-[var(--arvesta-gold)]"
+                className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-(--arvesta-gold)/15 data-[selected]:text-(--arvesta-gold) data-active:bg-(--arvesta-gold)/15 data-active:text-(--arvesta-gold)"
               >
                 Genel Bilgiler
               </TabsTrigger>
               <TabsTrigger
                 value="smtp"
-                className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-[var(--arvesta-gold)]/15 data-[selected]:text-[var(--arvesta-gold)] data-active:bg-[var(--arvesta-gold)]/15 data-active:text-[var(--arvesta-gold)]"
+                className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-(--arvesta-gold)/15 data-[selected]:text-(--arvesta-gold) data-active:bg-(--arvesta-gold)/15 data-active:text-(--arvesta-gold)"
               >
                 SMTP & Mail Forward
               </TabsTrigger>
@@ -294,8 +294,8 @@ export default function AdminSettings() {
             </TabsContent>
 
             <TabsContent value="smtp" className="space-y-4 pt-1">
-              <div className="rounded-xl border border-[var(--arvesta-gold)]/15 bg-[rgba(255,255,255,0.01)] p-4">
-                <p className="font-ui text-xs leading-relaxed text-[var(--arvesta-text-muted)]">
+              <div className="rounded-xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.01)] p-4">
+                <p className="font-ui text-xs leading-relaxed text-(--arvesta-text-muted)">
                   İletişim formundan gelen mesajlar DB’ye kaydedilir. SMTP
                   aktifse aynı anda mail adresine iletilir.
                 </p>
@@ -304,12 +304,12 @@ export default function AdminSettings() {
                   {smtpSettingKeys.map(renderField)}
                 </div>
 
-                <div className="flex flex-col gap-3 rounded-xl border border-[var(--arvesta-gold)]/15 bg-[rgba(255,255,255,0.01)] p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 rounded-xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.01)] p-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="font-ui text-sm font-medium text-white">
                       SMTP Test
                     </p>
-                    <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">
+                    <p className="font-ui text-xs text-(--arvesta-text-muted)">
                       Bağlantıyı doğrular ve test mail gönderir.
                     </p>
                   </div>
@@ -318,7 +318,7 @@ export default function AdminSettings() {
                       type="button"
                       onClick={handleTestSmtp}
                       disabled={testingSmtp}
-                      className="h-10 border border-[var(--arvesta-gold)]/35 bg-transparent px-4 text-[var(--arvesta-gold)] hover:bg-[var(--arvesta-gold)]/10"
+                      className="h-10 border border-(--arvesta-gold)/35 bg-transparent px-4 text-(--arvesta-gold) hover:bg-(--arvesta-gold)/10"
                     >
                       {testingSmtp
                         ? "Test ediliyor..."
@@ -347,11 +347,11 @@ export default function AdminSettings() {
             </TabsContent>
           </Tabs>
 
-          <div className="border-t border-[var(--arvesta-gold)]/15 pt-4">
+          <div className="border-t border-(--arvesta-gold)/15 pt-4">
             <Button
               onClick={handleSave}
               disabled={saving}
-              className={`h-11 w-full font-ui font-semibold ${saved ? "bg-green-600 hover:bg-green-600" : "bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)]"}`}
+              className={`h-11 w-full font-ui font-semibold ${saved ? "bg-green-600 hover:bg-green-600" : "bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover)"}`}
             >
               <Save className="mr-2 h-4 w-4" />
               {saved

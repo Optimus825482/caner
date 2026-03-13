@@ -33,7 +33,7 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[var(--arvesta-bg)] transition-opacity duration-700 ${
+      className={`fixed inset-0 z-99999 flex flex-col items-center justify-center bg-(--arvesta-bg) transition-opacity duration-700 ${
         loaded ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
@@ -48,9 +48,9 @@ export default function Preloader() {
         />
       </div>
       <div className="h-px w-40 overflow-hidden rounded-full bg-white/10">
-        <div className="animate-preloader-fill h-full bg-gradient-to-r from-[var(--arvesta-accent)] to-[var(--arvesta-gold)]" />
+        <div className="animate-preloader-fill h-full bg-linear-to-r from-(--arvesta-accent) to-(--arvesta-gold)" />
       </div>
-      <p className="mt-5 font-display text-base italic tracking-wider text-[var(--arvesta-text-muted)]">
+      <p className="mt-5 font-display text-base italic tracking-wider text-(--arvesta-text-muted)">
         Arvesta Menuiserie France
       </p>
     </div>

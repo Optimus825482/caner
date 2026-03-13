@@ -28,13 +28,13 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[99999] focus:rounded-md focus:bg-[var(--arvesta-gold)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[#2b160a]"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-99999 focus:rounded-md focus:bg-(--arvesta-gold) focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[#2b160a]"
       >
         Skip to content
       </a>
       <Preloader />
       <CustomCursor />
-      <div className="flex min-h-dvh flex-col bg-[var(--arvesta-bg)] text-[var(--arvesta-text)]">
+      <div className="flex min-h-dvh flex-col bg-(--arvesta-bg) text-(--arvesta-text)">
         <Navbar locale={locale} />
         <main id="main-content" className="flex-1 overflow-x-clip">
           {children}

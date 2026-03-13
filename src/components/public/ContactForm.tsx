@@ -172,57 +172,57 @@ export default function ContactForm({ locale }: { locale: string }) {
           onLoad={() => setIsTurnstileScriptLoaded(true)}
         />
       ) : null}
-      <div className="mx-auto grid max-w-[1200px] grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-14">
+      <div className="mx-auto grid max-w-300 grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-14">
         <div
           ref={leftRef}
           className={`relative rounded-3xl border border-[rgba(196,161,90,0.32)] bg-[linear-gradient(165deg,rgba(12,24,44,0.72),rgba(6,14,28,0.82))] p-8 shadow-[0_24px_80px_rgba(2,8,20,0.5)] backdrop-blur-[10px] ${leftVisible ? "anim-reveal-left" : "opacity-0"}`}
         >
-          <span className="mb-3 block font-ui text-xs font-bold tracking-[0.28em] text-[var(--arvesta-accent)] uppercase">
+          <span className="mb-3 block font-ui text-xs font-bold tracking-[0.28em] text-(--arvesta-accent) uppercase">
             {t("tag")}
           </span>
           <h2 className="mb-4 font-display text-[clamp(2rem,4vw,3.2rem)] font-bold leading-tight text-white">
             {t("title")}
           </h2>
-          <p className="mb-8 max-w-[46ch] text-base leading-relaxed text-[var(--arvesta-text-secondary)]">
+          <p className="mb-8 max-w-[46ch] text-base leading-relaxed text-(--arvesta-text-secondary)">
             {t("desc")}
           </p>
 
           <div className="flex flex-col gap-5">
             <div className="group flex items-start gap-4 rounded-2xl border border-[rgba(196,161,90,0.18)] bg-[rgba(4,12,24,0.56)] p-4 transition-colors hover:border-[rgba(196,161,90,0.38)]">
-              <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-xl border border-[rgba(196,161,90,0.35)] bg-[rgba(196,161,90,0.12)] text-[var(--arvesta-accent)]">
+              <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-xl border border-[rgba(196,161,90,0.35)] bg-[rgba(196,161,90,0.12)] text-(--arvesta-accent)">
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
                 <strong className="mb-0.5 block font-ui text-sm font-semibold text-white">
                   {t("office")}
                 </strong>
-                <span className="text-sm text-[var(--arvesta-text-secondary)]">
+                <span className="text-sm text-(--arvesta-text-secondary)">
                   75001 Paris, France
                 </span>
               </div>
             </div>
             <div className="group flex items-start gap-4 rounded-2xl border border-[rgba(196,161,90,0.18)] bg-[rgba(4,12,24,0.56)] p-4 transition-colors hover:border-[rgba(196,161,90,0.38)]">
-              <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-xl border border-[rgba(196,161,90,0.35)] bg-[rgba(196,161,90,0.12)] text-[var(--arvesta-accent)]">
+              <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-xl border border-[rgba(196,161,90,0.35)] bg-[rgba(196,161,90,0.12)] text-(--arvesta-accent)">
                 <Phone className="h-5 w-5" />
               </div>
               <div>
                 <strong className="mb-0.5 block font-ui text-sm font-semibold text-white">
                   {t("call")}
                 </strong>
-                <span className="text-sm text-[var(--arvesta-text-secondary)]">
+                <span className="text-sm text-(--arvesta-text-secondary)">
                   +33 (0) 1 43 67 88
                 </span>
               </div>
             </div>
             <div className="group flex items-start gap-4 rounded-2xl border border-[rgba(196,161,90,0.18)] bg-[rgba(4,12,24,0.56)] p-4 transition-colors hover:border-[rgba(196,161,90,0.38)]">
-              <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-xl border border-[rgba(196,161,90,0.35)] bg-[rgba(196,161,90,0.12)] text-[var(--arvesta-accent)]">
+              <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-xl border border-[rgba(196,161,90,0.35)] bg-[rgba(196,161,90,0.12)] text-(--arvesta-accent)">
                 <Mail className="h-5 w-5" />
               </div>
               <div>
                 <strong className="mb-0.5 block font-ui text-sm font-semibold text-white">
                   Email
                 </strong>
-                <span className="text-sm text-[var(--arvesta-text-secondary)]">
+                <span className="text-sm text-(--arvesta-text-secondary)">
                   contact@arvesta-france.com
                 </span>
               </div>
@@ -242,7 +242,7 @@ export default function ContactForm({ locale }: { locale: string }) {
                 aria-label={t("name")}
                 autoComplete="name"
                 required
-                className="h-12 rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-[var(--arvesta-text-muted)] focus-visible:border-[var(--arvesta-accent)] focus-visible:ring-2 focus-visible:ring-[var(--arvesta-accent-glow)]"
+                className="h-12 rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-(--arvesta-text-muted) focus-visible:border-(--arvesta-accent) focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
               />
               <Input
                 name="email"
@@ -251,7 +251,7 @@ export default function ContactForm({ locale }: { locale: string }) {
                 aria-label={t("email")}
                 autoComplete="email"
                 required
-                className="h-12 rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-[var(--arvesta-text-muted)] focus-visible:border-[var(--arvesta-accent)] focus-visible:ring-2 focus-visible:ring-[var(--arvesta-accent-glow)]"
+                className="h-12 rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-(--arvesta-text-muted) focus-visible:border-(--arvesta-accent) focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
               />
             </div>
 
@@ -267,13 +267,7 @@ export default function ContactForm({ locale }: { locale: string }) {
               name="projectType"
               aria-label={t("select")}
               required
-              className="h-12 w-full appearance-none rounded-xl border border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] px-4 text-sm text-[var(--arvesta-text-secondary)] focus-visible:border-[var(--arvesta-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-accent-glow)]"
-              style={{
-                backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c4a15a' d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "right 16px center",
-              }}
+              className="h-12 w-full appearance-none rounded-xl border border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] px-4 text-sm text-(--arvesta-text-secondary) focus-visible:border-(--arvesta-accent) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
             >
               <option value="" disabled>
                 {t("select")}
@@ -291,7 +285,7 @@ export default function ContactForm({ locale }: { locale: string }) {
               autoComplete="off"
               rows={4}
               required
-              className="resize-none rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-[var(--arvesta-text-muted)] focus-visible:border-[var(--arvesta-accent)] focus-visible:ring-2 focus-visible:ring-[var(--arvesta-accent-glow)]"
+              className="resize-none rounded-xl border-[rgba(196,161,90,0.32)] bg-[linear-gradient(180deg,rgba(3,11,22,0.9),rgba(3,10,20,0.82))] text-white placeholder:text-(--arvesta-text-muted) focus-visible:border-(--arvesta-accent) focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow)"
             />
 
             {turnstileSiteKey ? (

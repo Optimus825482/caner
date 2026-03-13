@@ -84,7 +84,7 @@ export default async function HomePage({
       <JsonLd locale={locale} />
       <Hero locale={locale} />
 
-      <div className="relative z-[1]">
+      <div className="relative z-1">
         <Collections locale={locale} />
         <Showcase locale={locale} />
         <ExportSection locale={locale} />

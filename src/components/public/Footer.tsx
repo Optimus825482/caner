@@ -9,7 +9,7 @@ export default async function Footer({ locale }: { locale: string }) {
   const tf = await getTranslations({ locale, namespace: "filter" });
 
   return (
-    <footer className="relative overflow-hidden border-t border-[var(--arvesta-gold)]/25 bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-6 pt-16">
+    <footer className="relative overflow-hidden border-t border-(--arvesta-gold)/25 bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-6 pt-16">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_14%,rgba(200,168,110,0.13),transparent_32%),radial-gradient(circle_at_90%_84%,rgba(8,18,34,0.56),transparent_44%)]" />
 
       <div className="relative mx-auto max-w-[1200px]">
@@ -22,62 +22,62 @@ export default async function Footer({ locale }: { locale: string }) {
               height={200}
               className="mx-auto mb-4 object-contain opacity-85"
             />
-            <p className="font-display text-sm italic text-[var(--arvesta-text-secondary)] md:text-base">
+            <p className="font-display text-sm italic text-(--arvesta-text-secondary) md:text-base">
               {t("tagline")}
             </p>
           </div>
 
           <div className="mx-auto mb-12 grid max-w-[560px] grid-cols-2 gap-10 text-center">
             <div>
-              <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-[var(--arvesta-gold)]/95">
+              <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
                 {t("collections")}
               </h4>
               <Link
                 href={`/${locale}#collections`}
-                className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {tf("kitchen")}
               </Link>
               <Link
                 href={`/${locale}#collections`}
-                className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {tf("wardrobe")}
               </Link>
               <Link
                 href={`/${locale}#collections`}
-                className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {tf("bathroom")}
               </Link>
             </div>
             <div>
-              <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-[var(--arvesta-gold)]/95">
+              <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
                 {t("company")}
               </h4>
               <Link
                 href={`/${locale}/about`}
-                className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("about")}
               </Link>
               <Link
                 href={`/${locale}/contact`}
-                className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("contact")}
               </Link>
               <Link
                 href={`/${locale}`}
-                className="block rounded-md py-1 text-sm text-[var(--arvesta-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:underline focus-visible:outline-none"
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("privacy")}
               </Link>
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-between gap-6 border-t border-[var(--arvesta-gold)]/22 pt-6 text-center md:flex-row">
-            <span className="text-xs text-[var(--arvesta-text-muted)]">
+          <div className="flex flex-col items-center justify-between gap-6 border-t border-(--arvesta-gold)/22 pt-6 text-center md:flex-row">
+            <span className="text-xs text-(--arvesta-text-muted)">
               © {new Date().getFullYear()} Arvesta Menuiserie France.{" "}
               {t("rights")}
             </span>
@@ -87,7 +87,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--arvesta-gold)]/35 bg-[rgba(8,16,30,0.82)] text-[var(--arvesta-text-secondary)] transition-colors hover:border-[var(--arvesta-gold)] hover:bg-[rgba(200,168,110,0.14)] hover:text-[var(--arvesta-gold)] focus-visible:border-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-accent-glow)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arvesta-bg)]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-(--arvesta-gold)/35 bg-[rgba(8,16,30,0.82)] text-(--arvesta-text-secondary) transition-colors hover:border-(--arvesta-gold) hover:bg-[rgba(200,168,110,0.14)] hover:text-(--arvesta-gold) focus-visible:border-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow) focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arvesta-bg)]"
               >
                 <Instagram className="h-4 w-4" />
               </a>
@@ -96,7 +96,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--arvesta-gold)]/35 bg-[rgba(8,16,30,0.82)] text-[var(--arvesta-text-secondary)] transition-colors hover:border-[var(--arvesta-gold)] hover:bg-[rgba(200,168,110,0.14)] hover:text-[var(--arvesta-gold)] focus-visible:border-[var(--arvesta-gold)] focus-visible:text-[var(--arvesta-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-accent-glow)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arvesta-bg)]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-(--arvesta-gold)/35 bg-[rgba(8,16,30,0.82)] text-(--arvesta-text-secondary) transition-colors hover:border-(--arvesta-gold) hover:bg-[rgba(200,168,110,0.14)] hover:text-(--arvesta-gold) focus-visible:border-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-accent-glow) focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--arvesta-bg)]"
               >
                 <svg
                   viewBox="0 0 24 24"

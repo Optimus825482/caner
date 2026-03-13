@@ -67,18 +67,18 @@ export default function AdminProducts() {
           <h1 className="font-display text-2xl font-semibold text-white">
             {t.title}
           </h1>
-          <p className="text-[var(--arvesta-text-muted)] font-ui text-sm">
+          <p className="text-(--arvesta-text-muted) font-ui text-sm">
             {products.length} {t.countLabel}
           </p>
         </div>
         <Link href="/admin/products/new">
-          <Button className="bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui">
+          <Button className="bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui">
             <Plus className="w-4 h-4 mr-2" /> {t.newProduct}
           </Button>
         </Link>
       </div>
 
-      <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+      <Card className="border-white/5 bg-(--arvesta-bg-card)">
         <CardContent className="p-0 overflow-x-auto">
           {loading ? (
             <div className="space-y-3 p-6">
@@ -96,19 +96,19 @@ export default function AdminProducts() {
             <Table className="min-w-[640px]">
               <TableHeader>
                 <TableRow className="border-white/5 hover:bg-transparent">
-                  <TableHead className="text-[var(--arvesta-text-muted)] font-ui">
+                  <TableHead className="text-(--arvesta-text-muted) font-ui">
                     {t.table.image}
                   </TableHead>
-                  <TableHead className="text-[var(--arvesta-text-muted)] font-ui">
+                  <TableHead className="text-(--arvesta-text-muted) font-ui">
                     {t.table.name}
                   </TableHead>
-                  <TableHead className="text-[var(--arvesta-text-muted)] font-ui">
+                  <TableHead className="text-(--arvesta-text-muted) font-ui">
                     {t.table.category}
                   </TableHead>
-                  <TableHead className="text-[var(--arvesta-text-muted)] font-ui">
+                  <TableHead className="text-(--arvesta-text-muted) font-ui">
                     {t.table.status}
                   </TableHead>
-                  <TableHead className="text-[var(--arvesta-text-muted)] font-ui text-right">
+                  <TableHead className="text-(--arvesta-text-muted) font-ui text-right">
                     {t.table.actions}
                   </TableHead>
                 </TableRow>
@@ -149,7 +149,7 @@ export default function AdminProducts() {
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className="border-white/10 text-[var(--arvesta-text-secondary)] font-ui text-xs"
+                          className="border-white/10 text-(--arvesta-text-secondary) font-ui text-xs"
                         >
                           {categoryName}
                         </Badge>
@@ -167,7 +167,7 @@ export default function AdminProducts() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-[var(--arvesta-text-muted)] hover:text-white"
+                              className="text-(--arvesta-text-muted) hover:text-white"
                               aria-label={t.editAriaLabel}
                             >
                               <Pencil className="w-4 h-4" />
@@ -183,19 +183,19 @@ export default function AdminProducts() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-[var(--arvesta-text-muted)] hover:text-red-400"
+                                  className="text-(--arvesta-text-muted) hover:text-red-400"
                                   aria-label={t.deleteAriaLabel}
                                 />
                               }
                             >
                               <Trash2 className="w-4 h-4" />
                             </DialogTrigger>
-                            <DialogContent className="bg-[var(--arvesta-bg-card)] border-white/5">
+                            <DialogContent className="bg-(--arvesta-bg-card) border-white/5">
                               <DialogHeader>
                                 <DialogTitle className="text-white font-display">
                                   {t.deleteDialog.title}
                                 </DialogTitle>
-                                <DialogDescription className="text-[var(--arvesta-text-muted)]">
+                                <DialogDescription className="text-(--arvesta-text-muted)">
                                   {t.deleteDialog.descriptionPrefix}&nbsp;
                                   &quot;
                                   {primaryTitle}&quot;. &nbsp;
@@ -207,7 +207,7 @@ export default function AdminProducts() {
                                   render={
                                     <Button
                                       variant="ghost"
-                                      className="text-[var(--arvesta-text-secondary)]"
+                                      className="text-(--arvesta-text-secondary)"
                                     />
                                   }
                                 >

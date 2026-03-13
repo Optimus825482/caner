@@ -165,13 +165,13 @@ export default function AdminCategories() {
           <h1 className="font-display text-2xl font-semibold text-white">
             Catégories
           </h1>
-          <p className="text-[var(--arvesta-text-muted)] font-ui text-sm">
+          <p className="text-(--arvesta-text-muted) font-ui text-sm">
             {categories.length} catégories
           </p>
         </div>
         <Button
           onClick={openNew}
-          className="bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui"
+          className="bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui"
         >
           <Plus className="w-4 h-4 mr-2" /> Yeni Kategori
         </Button>
@@ -184,7 +184,7 @@ export default function AdminCategories() {
             ? [...Array(3)].map((_, i) => (
                 <Card
                   key={i}
-                  className="border-white/5 bg-[var(--arvesta-bg-card)]"
+                  className="border-white/5 bg-(--arvesta-bg-card)"
                 >
                   <CardContent className="p-4 flex items-center gap-4 animate-pulse">
                     <div className="w-16 h-12 rounded-lg bg-white/5 shrink-0" />
@@ -198,7 +198,7 @@ export default function AdminCategories() {
             : categories.map((cat) => (
                 <Card
                   key={cat.id}
-                  className="border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all"
+                  className="border-white/5 bg-(--arvesta-bg-card) hover:border-white/10 transition-all"
                 >
                   <CardContent className="p-4 flex items-center gap-4">
                     <div className="w-16 h-12 rounded-lg overflow-hidden bg-white/5 relative shrink-0 flex items-center justify-center">
@@ -211,7 +211,7 @@ export default function AdminCategories() {
                           sizes="64px"
                         />
                       ) : (
-                        <span className="text-[10px] text-[var(--arvesta-text-muted)] font-ui">
+                        <span className="text-[10px] text-(--arvesta-text-muted) font-ui">
                           No image
                         </span>
                       )}
@@ -223,7 +223,7 @@ export default function AdminCategories() {
                       </span>
                       <Badge
                         variant="outline"
-                        className="border-white/10 text-[var(--arvesta-text-muted)] text-xs font-ui mt-1"
+                        className="border-white/10 text-(--arvesta-text-muted) text-xs font-ui mt-1"
                       >
                         {cat._count?.products || 0} ürün
                       </Badge>
@@ -233,7 +233,7 @@ export default function AdminCategories() {
                         variant="ghost"
                         size="sm"
                         onClick={() => openEdit(cat)}
-                        className="text-[var(--arvesta-text-muted)] hover:text-white"
+                        className="text-(--arvesta-text-muted) hover:text-white"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
@@ -241,7 +241,7 @@ export default function AdminCategories() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(cat.id)}
-                        className="text-[var(--arvesta-text-muted)] hover:text-red-400"
+                        className="text-(--arvesta-text-muted) hover:text-red-400"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -253,38 +253,38 @@ export default function AdminCategories() {
 
         {/* Edit Form */}
         {showForm && (
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)] h-fit">
+          <Card className="border-white/5 bg-(--arvesta-bg-card) h-fit">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white flex items-center gap-2">
-                <Grid3X3 className="w-4 h-4 text-[var(--arvesta-accent)]" />
+                <Grid3X3 className="w-4 h-4 text-(--arvesta-accent)" />
                 {isNew ? "Yeni Kategori" : "Kategori Düzenle"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-[var(--arvesta-text-secondary)]">
+                <Label className="text-(--arvesta-text-secondary)">
                   Slug
                 </Label>
                 <Input
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                  className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[var(--arvesta-text-secondary)]">
+                <Label className="text-(--arvesta-text-secondary)">
                   Sıra
                 </Label>
                 <Input
                   type="number"
                   value={order}
                   onChange={(e) => setOrder(Number(e.target.value))}
-                  className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                  className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[var(--arvesta-text-secondary)]">
+                <Label className="text-(--arvesta-text-secondary)">
                   Kategori Görseli
                 </Label>
                 <div className="flex items-center gap-3">
@@ -295,7 +295,7 @@ export default function AdminCategories() {
                       onChange={handleUpload}
                       className="hidden"
                     />
-                    <span className="inline-flex h-10 px-3 items-center rounded-md border border-white/10 bg-[var(--arvesta-bg-elevated)] text-[var(--arvesta-text-secondary)] text-sm cursor-pointer hover:text-white transition-colors">
+                    <span className="inline-flex h-10 px-3 items-center rounded-md border border-white/10 bg-(--arvesta-bg-elevated) text-(--arvesta-text-secondary) text-sm cursor-pointer hover:text-white transition-colors">
                       <Upload className="w-4 h-4 mr-2" />
                       {uploading ? "Yükleniyor..." : "Görsel Seç"}
                     </span>
@@ -312,7 +312,7 @@ export default function AdminCategories() {
                       />
                     </div>
                   ) : (
-                    <span className="text-xs text-[var(--arvesta-text-muted)]">
+                    <span className="text-xs text-(--arvesta-text-muted)">
                       Henüz görsel seçilmedi
                     </span>
                   )}
@@ -323,7 +323,7 @@ export default function AdminCategories() {
                   variant="outline"
                   disabled={!image || preparing}
                   onClick={openEditorForExistingImage}
-                  className="w-full border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
+                  className="w-full border-white/10 text-(--arvesta-text-secondary) font-ui"
                 >
                   {preparing ? "Hazırlanıyor..." : "Mevcut Görseli Düzenle"}
                 </Button>
@@ -332,12 +332,12 @@ export default function AdminCategories() {
               <Separator className="bg-white/5" />
 
               <Tabs defaultValue="fr">
-                <TabsList className="bg-[var(--arvesta-bg-elevated)] border border-white/5">
+                <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5">
                   {locales.map((l) => (
                     <TabsTrigger
                       key={l}
                       value={l}
-                      className="font-ui text-xs data-[state=active]:bg-[var(--arvesta-accent)] data-[state=active]:text-white"
+                      className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
                     >
                       {localeLabels[l]}
                     </TabsTrigger>
@@ -346,7 +346,7 @@ export default function AdminCategories() {
                 {locales.map((l) => (
                   <TabsContent key={l} value={l} className="space-y-3 mt-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[var(--arvesta-text-secondary)] text-xs">
+                      <Label className="text-(--arvesta-text-secondary) text-xs">
                         Ad ({l.toUpperCase()})
                       </Label>
                       <Input
@@ -357,11 +357,11 @@ export default function AdminCategories() {
                             [l]: { ...translations[l], name: e.target.value },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[var(--arvesta-text-secondary)] text-xs">
+                      <Label className="text-(--arvesta-text-secondary) text-xs">
                         Açıklama ({l.toUpperCase()})
                       </Label>
                       <Input
@@ -375,7 +375,7 @@ export default function AdminCategories() {
                             },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                       />
                     </div>
                   </TabsContent>
@@ -385,7 +385,7 @@ export default function AdminCategories() {
               <div className="flex gap-2">
                 <Button
                   onClick={handleSave}
-                  className="flex-1 bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui"
+                  className="flex-1 bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui"
                 >
                   <Save className="w-4 h-4 mr-2" /> Kaydet
                 </Button>
@@ -395,7 +395,7 @@ export default function AdminCategories() {
                     setEditing(null);
                     setIsNew(false);
                   }}
-                  className="text-[var(--arvesta-text-muted)]"
+                  className="text-(--arvesta-text-muted)"
                 >
                   İptal
                 </Button>

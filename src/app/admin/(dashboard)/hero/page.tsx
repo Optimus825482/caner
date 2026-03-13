@@ -177,13 +177,13 @@ export default function AdminHero() {
           <h1 className="font-display text-2xl font-semibold text-white">
             {t("title")}
           </h1>
-          <p className="text-[var(--arvesta-text-muted)] font-ui text-sm">
+          <p className="text-(--arvesta-text-muted) font-ui text-sm">
             {slides.length} {t("slideCount")}
           </p>
         </div>
         <Button
           onClick={openNew}
-          className="bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui"
+          className="bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui"
         >
           <Plus className="w-4 h-4 mr-2" /> {t("newSlide")}
         </Button>
@@ -196,7 +196,7 @@ export default function AdminHero() {
             ? [...Array(3)].map((_, i) => (
                 <Card
                   key={i}
-                  className="border-white/5 bg-[var(--arvesta-bg-card)]"
+                className="border-white/5 bg-(--arvesta-bg-card)"
                 >
                   <CardContent className="p-3 flex items-center gap-3 animate-pulse">
                     <div className="w-24 h-14 rounded-lg bg-white/5 shrink-0" />
@@ -212,7 +212,7 @@ export default function AdminHero() {
             slides.map((s) => (
               <Card
                 key={s.id}
-                className={`border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all cursor-pointer ${editing?.id === s.id ? "border-[var(--arvesta-accent)]/30" : ""}`}
+                className={`border-white/5 bg-(--arvesta-bg-card) hover:border-white/10 transition-all cursor-pointer ${editing?.id === s.id ? "border-(--arvesta-accent)/30" : ""}`}
                 onClick={() => openEdit(s)}
               >
                 <CardContent className="p-3 flex items-center gap-3">
@@ -237,7 +237,7 @@ export default function AdminHero() {
                       >
                         {s.active ? "Actif" : "Inactif"}
                       </Badge>
-                      <span className="text-xs text-[var(--arvesta-text-muted)]">
+                      <span className="text-xs text-(--arvesta-text-muted)">
                         Ordre: {s.order}
                       </span>
                     </div>
@@ -249,7 +249,7 @@ export default function AdminHero() {
                       e.stopPropagation();
                       handleDelete(s.id);
                     }}
-                    className="text-[var(--arvesta-text-muted)] hover:text-red-400 shrink-0"
+                    className="text-(--arvesta-text-muted) hover:text-red-400 shrink-0"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -260,7 +260,7 @@ export default function AdminHero() {
 
         {/* Edit Form */}
         {showForm && (
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)] h-fit">
+          <Card className="border-white/5 bg-(--arvesta-bg-card) h-fit">
             <CardHeader>
               <CardTitle className="font-ui text-base text-white">
                 {isNew ? "Nouveau Slide" : "Modifier le Slide"}
@@ -280,7 +280,7 @@ export default function AdminHero() {
                 </div>
               ) : (
                 <div className="aspect-video rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-[var(--arvesta-text-muted)]" />
+                    <Upload className="w-8 h-8 text-(--arvesta-text-muted)" />
                 </div>
               )}
               <label className="cursor-pointer block">
@@ -290,7 +290,7 @@ export default function AdminHero() {
                   onChange={handleUpload}
                   className="hidden"
                 />
-                <span className="inline-flex items-center justify-center w-full h-10 px-4 rounded-md border border-white/10 bg-transparent text-[var(--arvesta-text-secondary)] font-ui text-sm hover:bg-white/5 transition-colors">
+                <span className="inline-flex items-center justify-center w-full h-10 px-4 rounded-md border border-white/10 bg-transparent text-(--arvesta-text-secondary) font-ui text-sm hover:bg-white/5 transition-colors">
                   {uploading ? "Chargement..." : "Charger une image"}
                 </span>
               </label>
@@ -299,21 +299,21 @@ export default function AdminHero() {
                 variant="outline"
                 disabled={!image || preparing}
                 onClick={openEditorForExistingImage}
-                className="w-full mt-2 border-white/10 text-[var(--arvesta-text-secondary)] font-ui"
+                className="w-full mt-2 border-white/10 text-(--arvesta-text-secondary) font-ui"
               >
                 {preparing ? "Préparation..." : "Modifier l'image existante"}
               </Button>
 
               <div className="flex gap-3">
                 <div className="flex-1 space-y-1.5">
-                  <Label className="text-[var(--arvesta-text-secondary)] text-xs">
+                  <Label className="text-(--arvesta-text-secondary) text-xs">
                     Ordre
                   </Label>
                   <Input
                     type="number"
                     value={order}
                     onChange={(e) => setOrder(Number(e.target.value))}
-                    className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                    className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                   />
                 </div>
                 <div className="flex items-end">
@@ -323,7 +323,7 @@ export default function AdminHero() {
                     className={
                       active
                         ? "bg-green-600 hover:bg-green-700"
-                        : "border-white/10 text-[var(--arvesta-text-muted)]"
+                        : "border-white/10 text-(--arvesta-text-muted)"
                     }
                   >
                     {active ? (
@@ -339,12 +339,12 @@ export default function AdminHero() {
               <Separator className="bg-white/5" />
 
               <Tabs defaultValue="fr">
-                <TabsList className="bg-[var(--arvesta-bg-elevated)] border border-white/5">
+                <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5">
                   {locales.map((l) => (
                     <TabsTrigger
                       key={l}
                       value={l}
-                      className="font-ui text-xs data-[state=active]:bg-[var(--arvesta-accent)] data-[state=active]:text-white"
+                      className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
                     >
                       {localeLabels[l]}
                     </TabsTrigger>
@@ -353,7 +353,7 @@ export default function AdminHero() {
                 {locales.map((l) => (
                   <TabsContent key={l} value={l} className="space-y-3 mt-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[var(--arvesta-text-secondary)] text-xs">
+                      <Label className="text-(--arvesta-text-secondary) text-xs">
                         Badge
                       </Label>
                       <Input
@@ -364,12 +364,12 @@ export default function AdminHero() {
                             [l]: { ...translations[l], badge: e.target.value },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                         placeholder="PREMIUM DESIGN"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[var(--arvesta-text-secondary)] text-xs">
+                      <Label className="text-(--arvesta-text-secondary) text-xs">
                         Titre
                       </Label>
                       <Input
@@ -380,11 +380,11 @@ export default function AdminHero() {
                             [l]: { ...translations[l], title: e.target.value },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[var(--arvesta-text-secondary)] text-xs">
+                      <Label className="text-(--arvesta-text-secondary) text-xs">
                         Sous-titre
                       </Label>
                       <Textarea
@@ -398,7 +398,7 @@ export default function AdminHero() {
                             },
                           })
                         }
-                        className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white resize-none"
+                        className="bg-(--arvesta-bg-elevated) border-white/5 text-white resize-none"
                         rows={2}
                       />
                     </div>
@@ -408,7 +408,7 @@ export default function AdminHero() {
 
               <Button
                 onClick={handleSave}
-                className="w-full bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui font-semibold"
+                className="w-full bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui font-semibold"
               >
                 <Save className="w-4 h-4 mr-2" /> Enregistrer
               </Button>

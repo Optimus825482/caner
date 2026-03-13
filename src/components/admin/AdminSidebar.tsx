@@ -48,7 +48,7 @@ export default function AdminSidebar() {
           <span className="font-ui text-sm font-bold text-white block leading-tight">
             Arvesta
           </span>
-          <span className="font-ui text-[0.65rem] text-[var(--arvesta-text-muted)]">
+          <span className="font-ui text-[0.65rem] text-(--arvesta-text-muted)">
             Admin Panel
           </span>
         </div>
@@ -69,8 +69,8 @@ export default function AdminSidebar() {
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-ui text-[0.85rem] font-medium transition-all ${
                 active
-                  ? "bg-[rgba(232,98,44,0.1)] text-[var(--arvesta-accent)] border border-[rgba(232,98,44,0.15)]"
-                  : "text-[var(--arvesta-text-secondary)] hover:bg-white/3 hover:text-white"
+                  ? "bg-[rgba(232,98,44,0.1)] text-(--arvesta-accent) border border-[rgba(232,98,44,0.15)]"
+                  : "text-(--arvesta-text-secondary) hover:bg-white/3 hover:text-white"
               }`}
             >
               <item.icon className="w-[18px] h-[18px]" />
@@ -87,7 +87,7 @@ export default function AdminSidebar() {
         <Button
           variant="ghost"
           onClick={() => signOut({ callbackUrl: "/admin/login" })}
-          className="w-full justify-start gap-3 text-[var(--arvesta-text-muted)] hover:text-red-400 hover:bg-red-500/5 font-ui text-[0.85rem]"
+          className="w-full justify-start gap-3 text-(--arvesta-text-muted) hover:text-red-400 hover:bg-red-500/5 font-ui text-[0.85rem]"
         >
           <LogOut className="w-[18px] h-[18px]" />
           {t("logout")}
@@ -102,7 +102,7 @@ export default function AdminSidebar() {
       <button
         type="button"
         onClick={() => setMobileOpen(true)}
-        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-[var(--arvesta-bg-card)] text-[var(--arvesta-text-secondary)] shadow-lg hover:text-white lg:hidden"
+        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg-card) text-(--arvesta-text-secondary) shadow-lg hover:text-white lg:hidden"
         aria-label="Open menu"
       >
         <Menu className="h-5 w-5" />
@@ -111,14 +111,14 @@ export default function AdminSidebar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-[998] bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-998 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 bottom-0 w-[260px] bg-[var(--arvesta-bg-card)] border-r border-white/5 flex flex-col z-[999] transition-transform duration-300 ${
+        className={`fixed left-0 top-0 bottom-0 w-[260px] bg-(--arvesta-bg-card) border-r border-white/5 flex flex-col z-999 transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >

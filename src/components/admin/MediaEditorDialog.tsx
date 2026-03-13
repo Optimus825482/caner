@@ -118,9 +118,78 @@ export function MediaEditorDialog({
     const b = 100 + brightness;
     const c = 100 + contrast;
     const s = 100 + saturation;
-    const blurPx = blur > 0 ? `blur(${blur}px)` : "";
-    return `brightness(${b}%) contrast(${c}%) saturate(${s}%) ${blurPx}`.trim();
+    const blurPx = blur > 0 ? `${blur}` : "0";
+    return `${b}-${c}-${s}-${blurPx}`;
   }, [brightness, contrast, saturation, blur]);
+
+  const transformClass = useMemo(() => {
+    const rotateClass =
+      rotate === 90
+        ? "rotate-90"
+        : rotate === 180
+          ? "rotate-180"
+          : rotate === 270
+            ? "rotate-270"
+            : "rotate-0";
+
+    return [
+      rotateClass,
+      flip ? "-scale-y-100" : "scale-y-100",
+      flop ? "-scale-x-100" : "scale-x-100",
+    ].join(" ");
+  }, [rotate, flip, flop]);
+
+  const watermarkPositionClass = useMemo(() => {
+    switch (watermarkPosition) {
+      case "top-left":
+        return "items-start justify-start";
+      case "top-right":
+        return "items-start justify-end";
+      case "bottom-left":
+        return "items-end justify-start";
+      case "center":
+        return "items-center justify-center";
+      default:
+        return "items-end justify-end";
+    }
+  }, [watermarkPosition]);
+
+  const watermarkOpacityClass = useMemo(() => {
+    if (watermarkOpacity >= 0.9) return "opacity-100";
+    if (watermarkOpacity >= 0.8) return "opacity-90";
+    if (watermarkOpacity >= 0.7) return "opacity-80";
+    if (watermarkOpacity >= 0.6) return "opacity-70";
+    if (watermarkOpacity >= 0.5) return "opacity-60";
+    if (watermarkOpacity >= 0.4) return "opacity-50";
+    if (watermarkOpacity >= 0.3) return "opacity-40";
+    return "opacity-30";
+  }, [watermarkOpacity]);
+
+  const watermarkLogoSizeClass = useMemo(() => {
+    if (watermarkScale >= 0.8) return "w-56";
+    if (watermarkScale >= 0.6) return "w-48";
+    if (watermarkScale >= 0.5) return "w-40";
+    if (watermarkScale >= 0.4) return "w-32";
+    if (watermarkScale >= 0.3) return "w-28";
+    return "w-24";
+  }, [watermarkScale]);
+
+  const watermarkTextSizeClass = useMemo(() => {
+    if (watermarkScale >= 0.8) return "text-4xl";
+    if (watermarkScale >= 0.6) return "text-3xl";
+    if (watermarkScale >= 0.5) return "text-2xl";
+    if (watermarkScale >= 0.4) return "text-xl";
+    if (watermarkScale >= 0.3) return "text-lg";
+    return "text-base";
+  }, [watermarkScale]);
+
+  const vignetteOpacityClass = useMemo(() => {
+    if (vignette >= 80) return "opacity-80";
+    if (vignette >= 60) return "opacity-60";
+    if (vignette >= 40) return "opacity-40";
+    if (vignette >= 20) return "opacity-25";
+    return "opacity-0";
+  }, [vignette]);
 
   function resetState() {
     setActiveTab("basic");
@@ -305,53 +374,23 @@ export function MediaEditorDialog({
                     watermarkOverlay={
                       watermarkEnabled ? (
                         <div
-                          className="absolute pointer-events-none"
-                          style={{
-                            inset: 0,
-                            display: "flex",
-                            padding: "3%",
-                            alignItems: watermarkPosition.includes("top")
-                              ? "flex-start"
-                              : watermarkPosition.includes("bottom")
-                                ? "flex-end"
-                                : "center",
-                            justifyContent: watermarkPosition.includes("left")
-                              ? "flex-start"
-                              : watermarkPosition.includes("right")
-                                ? "flex-end"
-                                : "center",
-                          }}
+                          className={`absolute inset-0 pointer-events-none flex p-[3%] ${watermarkPositionClass}`}
                         >
                           {watermarkType === "logo" ? (
                             <div
-                              className="flex items-center justify-center rounded-full flex-col shadow-xl"
-                              style={{
-                                width: `${Math.max(10, watermarkScale * 28)}%`,
-                                aspectRatio: "1/1",
-                                backgroundColor: `rgba(0,0,0,${watermarkOpacity * 0.45})`,
-                              }}
+                              className={`flex items-center justify-center rounded-full flex-col shadow-xl aspect-square bg-black/45 ${watermarkOpacityClass} ${watermarkLogoSizeClass}`}
                             >
                               <Image
                                 src="/logo.png"
                                 alt="Filigrane logo"
                                 width={220}
                                 height={220}
-                                className="h-auto w-[70%] object-contain"
-                                style={{ opacity: watermarkOpacity }}
+                                className={`h-auto w-[70%] object-contain ${watermarkOpacityClass}`}
                               />
                             </div>
                           ) : (
                             <div
-                              className="text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center"
-                              style={{
-                                backgroundColor: `rgba(0,0,0,${watermarkOpacity * 0.45})`,
-                                opacity: watermarkOpacity,
-                                fontSize: `${Math.max(12, watermarkScale * 42)}px`,
-                                maxWidth: "85%",
-                                whiteSpace: "normal",
-                                wordBreak: "break-word",
-                                letterSpacing: "2px",
-                              }}
+                                className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
                             >
                               {watermarkText || "ARVESTA"}
                             </div>
@@ -405,76 +444,38 @@ export function MediaEditorDialog({
                         width={0}
                         height={0}
                         sizes="100vw"
-                        className="max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl"
-                        style={{
-                          filter: previewFilter,
-                          transform: `rotate(${rotate}deg)${flip ? " scaleY(-1)" : ""}${flop ? " scaleX(-1)" : ""}`,
-                          transformOrigin: "center",
-                        }}
+                          className={`max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
+                          data-preview-filter={previewFilter}
                       />
                     </ReactCrop>
 
                     {/* Vignette preview */}
                     {vignette > 0 && (
                       <div
-                        className="absolute inset-0 pointer-events-none rounded-lg"
-                        style={{
-                          background: `radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,${vignette / 100}) 100%)`,
-                        }}
+                          className={`absolute inset-0 pointer-events-none rounded-lg bg-radial from-transparent via-transparent to-black ${vignetteOpacityClass}`}
                       />
                     )}
 
                     {/* Watermark Live Preview */}
                     {watermarkEnabled && (
                       <div
-                        className="absolute pointer-events-none"
-                        style={{
-                          inset: 0,
-                          transform: `rotate(${rotate}deg)`,
-                          display: "flex",
-                          padding: "3%",
-                          alignItems: watermarkPosition.includes("top")
-                            ? "flex-start"
-                            : watermarkPosition.includes("bottom")
-                              ? "flex-end"
-                              : "center",
-                          justifyContent: watermarkPosition.includes("left")
-                            ? "flex-start"
-                            : watermarkPosition.includes("right")
-                              ? "flex-end"
-                              : "center",
-                        }}
+                          className={`absolute inset-0 pointer-events-none flex p-[3%] ${watermarkPositionClass} ${transformClass}`}
                       >
                         {watermarkType === "logo" ? (
                           <div
-                            className="flex items-center justify-center rounded-full flex-col shadow-xl"
-                            style={{
-                              width: `${Math.max(10, watermarkScale * 28)}%`,
-                              aspectRatio: "1/1",
-                              backgroundColor: `rgba(0,0,0,${watermarkOpacity * 0.45})`,
-                            }}
+                              className={`flex items-center justify-center rounded-full flex-col shadow-xl aspect-square bg-black/45 ${watermarkOpacityClass} ${watermarkLogoSizeClass}`}
                           >
                             <Image
                               src="/logo.png"
                               alt="Aperçu du filigrane logo Arvesta"
                               width={220}
                               height={220}
-                              className="h-auto w-[70%] object-contain"
-                              style={{ opacity: watermarkOpacity }}
+                                className={`h-auto w-[70%] object-contain ${watermarkOpacityClass}`}
                             />
                           </div>
                         ) : (
                           <div
-                            className="text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center"
-                            style={{
-                              backgroundColor: `rgba(0,0,0,${watermarkOpacity * 0.45})`,
-                              opacity: watermarkOpacity,
-                              fontSize: `${Math.max(12, watermarkScale * 42)}px`,
-                              maxWidth: "85%",
-                              whiteSpace: "normal",
-                              wordBreak: "break-word",
-                              letterSpacing: "2px",
-                            }}
+                                className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
                           >
                             {watermarkText || "ARVESTA"}
                           </div>
@@ -485,7 +486,7 @@ export function MediaEditorDialog({
                 )}
               </div>
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-[var(--arvesta-text-muted)]">
+                <div className="h-full w-full flex items-center justify-center text-(--arvesta-text-muted)">
                 Aperçu non disponible
               </div>
             )}
@@ -632,7 +633,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="crop-x"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       X (%)
                     </Label>
@@ -662,7 +663,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="crop-y"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Y (%)
                     </Label>
@@ -692,7 +693,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="crop-width"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Largeur (%)
                     </Label>
@@ -722,7 +723,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="crop-height"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Hauteur (%)
                     </Label>
@@ -752,7 +753,7 @@ export function MediaEditorDialog({
                 </div>
                 <Button
                   type="button"
-                  className="w-full mt-4 bg-[var(--arvesta-accent)] text-black hover:bg-opacity-90"
+                  className="w-full mt-4 bg-(--arvesta-accent) text-black hover:bg-opacity-90"
                   onClick={() => {
                     setAppliedCrop({
                       x: clampPercent(cropX, 0, 100),
@@ -782,7 +783,7 @@ export function MediaEditorDialog({
                     type="button"
                     size="sm"
                     variant="ghost"
-                    className="text-xs text-[var(--arvesta-text-muted)] hover:text-white"
+                    className="text-xs text-(--arvesta-text-muted) hover:text-white"
                     onClick={resetStyleToDefaults}
                   >
                     Réinitialiser
@@ -792,7 +793,7 @@ export function MediaEditorDialog({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="brightness-range"
-                    className="text-xs text-[var(--arvesta-text-secondary)]"
+                    className="text-xs text-(--arvesta-text-secondary)"
                   >
                     Luminosité ({brightness})
                   </Label>
@@ -808,7 +809,7 @@ export function MediaEditorDialog({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="contrast-range"
-                    className="text-xs text-[var(--arvesta-text-secondary)]"
+                    className="text-xs text-(--arvesta-text-secondary)"
                   >
                     Contraste ({contrast})
                   </Label>
@@ -824,7 +825,7 @@ export function MediaEditorDialog({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="saturation-range"
-                    className="text-xs text-[var(--arvesta-text-secondary)]"
+                    className="text-xs text-(--arvesta-text-secondary)"
                   >
                     Saturation ({saturation})
                   </Label>
@@ -842,7 +843,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="sharpen-range"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Netteté ({sharpen})
                     </Label>
@@ -858,7 +859,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="blur-range"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Flou ({blur.toFixed(1)})
                     </Label>
@@ -875,7 +876,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="vignette-range"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Vignette ({vignette})
                     </Label>
@@ -894,7 +895,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="temperature-range"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Température (
                       {temperature > 0
@@ -916,7 +917,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="gamma-range"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Gamma ({gamma.toFixed(2)})
                     </Label>
@@ -943,11 +944,11 @@ export function MediaEditorDialog({
                     title="Activer le filigrane"
                     checked={watermarkEnabled}
                     onChange={(e) => setWatermarkEnabled(e.target.checked)}
-                    className="accent-[var(--arvesta-accent)]"
+                    className="accent-(--arvesta-accent)"
                   />
                   <Label
                     htmlFor="watermarkEnabled"
-                    className="text-sm text-[var(--arvesta-text-secondary)]"
+                    className="text-sm text-(--arvesta-text-secondary)"
                   >
                     Filigrane (Watermark)
                   </Label>
@@ -966,7 +967,7 @@ export function MediaEditorDialog({
                           title="Filigrane texte"
                           checked={watermarkType === "text"}
                           onChange={() => setWatermarkType("text")}
-                          className="accent-[var(--arvesta-accent)]"
+                          className="accent-(--arvesta-accent)"
                         />
                         <Label
                           htmlFor="wm-text"
@@ -985,7 +986,7 @@ export function MediaEditorDialog({
                           title="Filigrane logo"
                           checked={watermarkType === "logo"}
                           onChange={() => setWatermarkType("logo")}
-                          className="accent-[var(--arvesta-accent)]"
+                          className="accent-(--arvesta-accent)"
                         />
                         <Label
                           htmlFor="wm-logo"
@@ -998,7 +999,7 @@ export function MediaEditorDialog({
 
                     {watermarkType === "text" && (
                       <div className="space-y-1.5">
-                        <Label className="text-xs text-[var(--arvesta-text-secondary)]">
+                        <Label className="text-xs text-(--arvesta-text-secondary)">
                           Texte du filigrane
                         </Label>
                         <Input
@@ -1011,7 +1012,7 @@ export function MediaEditorDialog({
                     )}
                     <Label
                       htmlFor="watermark-position"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Position du filigrane
                     </Label>
@@ -1030,7 +1031,7 @@ export function MediaEditorDialog({
                             | "center",
                         )
                       }
-                      className="w-full h-10 px-3 bg-[var(--arvesta-bg-elevated)] border border-white/10 rounded-md text-sm"
+                      className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/10 rounded-md text-sm"
                     >
                       <option value="top-left">Haut gauche</option>
                       <option value="top-right">Haut droit</option>
@@ -1042,7 +1043,7 @@ export function MediaEditorDialog({
                     <div className="space-y-1">
                       <Label
                         htmlFor="watermark-opacity"
-                        className="text-xs text-[var(--arvesta-text-secondary)]"
+                        className="text-xs text-(--arvesta-text-secondary)"
                       >
                         Opacité du filigrane ({watermarkOpacity.toFixed(2)})
                       </Label>
@@ -1062,7 +1063,7 @@ export function MediaEditorDialog({
                     <div className="space-y-1">
                       <Label
                         htmlFor="watermark-scale"
-                        className="text-xs text-[var(--arvesta-text-secondary)]"
+                        className="text-xs text-(--arvesta-text-secondary)"
                       >
                         Taille du filigrane ({watermarkScale.toFixed(2)})
                       </Label>
@@ -1083,7 +1084,7 @@ export function MediaEditorDialog({
 
                 <div className="pt-2 border-t border-white/10">
                   <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm text-[var(--arvesta-text-secondary)]">
+                    <Label className="text-sm text-(--arvesta-text-secondary)">
                       Ajouter du texte
                     </Label>
                     <Button
@@ -1195,7 +1196,7 @@ export function MediaEditorDialog({
               <TabsContent value="depth" className="space-y-3 mt-3">
                 <Button
                   type="button"
-                  className="w-full bg-[var(--arvesta-accent)] text-black hover:bg-opacity-90"
+                  className="w-full bg-(--arvesta-accent) text-black hover:bg-opacity-90"
                   onClick={handleGenerateDepthMap}
                   disabled={depthLoading || !tempId}
                 >
@@ -1210,7 +1211,7 @@ export function MediaEditorDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="depth-intensity"
-                      className="text-xs text-[var(--arvesta-text-secondary)]"
+                      className="text-xs text-(--arvesta-text-secondary)"
                     >
                       Intensité parallax ({depthIntensity})
                     </Label>
@@ -1234,7 +1235,7 @@ export function MediaEditorDialog({
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="depth-zoom"
-                        className="text-xs text-[var(--arvesta-text-secondary)]"
+                        className="text-xs text-(--arvesta-text-secondary)"
                       >
                         Zoom ({depthZoom.toFixed(1)}×)
                       </Label>
@@ -1254,7 +1255,7 @@ export function MediaEditorDialog({
                       <div className="space-y-1.5">
                         <Label
                           htmlFor="depth-focus-x"
-                          className="text-xs text-[var(--arvesta-text-secondary)]"
+                          className="text-xs text-(--arvesta-text-secondary)"
                         >
                           Point focal X ({depthFocusX}%)
                         </Label>
@@ -1272,7 +1273,7 @@ export function MediaEditorDialog({
                       <div className="space-y-1.5">
                         <Label
                           htmlFor="depth-focus-y"
-                          className="text-xs text-[var(--arvesta-text-secondary)]"
+                          className="text-xs text-(--arvesta-text-secondary)"
                         >
                           Point focal Y ({depthFocusY}%)
                         </Label>
@@ -1301,11 +1302,11 @@ export function MediaEditorDialog({
                           onChange={(e) =>
                             setDepthRotationEnabled(e.target.checked)
                           }
-                          className="accent-[var(--arvesta-accent)]"
+                          className="accent-(--arvesta-accent)"
                         />
                         <Label
                           htmlFor="depth-rotation-toggle"
-                          className="text-sm text-[var(--arvesta-text-secondary)]"
+                          className="text-sm text-(--arvesta-text-secondary)"
                         >
                           Rotation 3D
                         </Label>
@@ -1315,7 +1316,7 @@ export function MediaEditorDialog({
                           <div className="space-y-1.5">
                             <Label
                               htmlFor="depth-rot-x"
-                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                              className="text-xs text-(--arvesta-text-secondary)"
                             >
                               Rotation X ({depthRotationX}°)
                             </Label>
@@ -1333,7 +1334,7 @@ export function MediaEditorDialog({
                           <div className="space-y-1.5">
                             <Label
                               htmlFor="depth-rot-y"
-                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                              className="text-xs text-(--arvesta-text-secondary)"
                             >
                               Rotation Y ({depthRotationY}°)
                             </Label>
@@ -1362,11 +1363,11 @@ export function MediaEditorDialog({
                           title="Activer le brouillard"
                           checked={depthFogEnabled}
                           onChange={(e) => setDepthFogEnabled(e.target.checked)}
-                          className="accent-[var(--arvesta-accent)]"
+                          className="accent-(--arvesta-accent)"
                         />
                         <Label
                           htmlFor="depth-fog-toggle"
-                          className="text-sm text-[var(--arvesta-text-secondary)]"
+                          className="text-sm text-(--arvesta-text-secondary)"
                         >
                           Brouillard
                         </Label>
@@ -1376,7 +1377,7 @@ export function MediaEditorDialog({
                           <div className="space-y-1.5">
                             <Label
                               htmlFor="depth-fog-density"
-                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                              className="text-xs text-(--arvesta-text-secondary)"
                             >
                               Densité ({depthFogDensity})
                             </Label>
@@ -1394,7 +1395,7 @@ export function MediaEditorDialog({
                           <div className="space-y-1.5">
                             <Label
                               htmlFor="depth-fog-color"
-                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                              className="text-xs text-(--arvesta-text-secondary)"
                             >
                               Couleur du brouillard
                             </Label>
@@ -1420,11 +1421,11 @@ export function MediaEditorDialog({
                           title="Activer la colorisation de profondeur"
                           checked={depthColorize}
                           onChange={(e) => setDepthColorize(e.target.checked)}
-                          className="accent-[var(--arvesta-accent)]"
+                          className="accent-(--arvesta-accent)"
                         />
                         <Label
                           htmlFor="depth-colorize-toggle"
-                          className="text-sm text-[var(--arvesta-text-secondary)]"
+                          className="text-sm text-(--arvesta-text-secondary)"
                         >
                           Colorisation profondeur
                         </Label>
@@ -1434,7 +1435,7 @@ export function MediaEditorDialog({
                           <div className="space-y-1.5">
                             <Label
                               htmlFor="depth-color-from"
-                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                              className="text-xs text-(--arvesta-text-secondary)"
                             >
                               Couleur proche
                             </Label>
@@ -1451,7 +1452,7 @@ export function MediaEditorDialog({
                           <div className="space-y-1.5">
                             <Label
                               htmlFor="depth-color-to"
-                              className="text-xs text-[var(--arvesta-text-secondary)]"
+                              className="text-xs text-(--arvesta-text-secondary)"
                             >
                               Couleur lointaine
                             </Label>
@@ -1473,11 +1474,11 @@ export function MediaEditorDialog({
           </div>
         </div>
 
-        <DialogFooter className="px-5 pb-5 pt-0 bg-transparent border-none -mx-0 -mb-0">
+        <DialogFooter className="px-5 pb-5 pt-0 bg-transparent border-none mx-0 mb-0">
           <Button
             type="button"
             variant="outline"
-            className="border-white/10 text-[var(--arvesta-text-secondary)]"
+            className="border-white/10 text-(--arvesta-text-secondary)"
             onClick={() => {
               onOpenChange(false);
               resetState();
@@ -1488,7 +1489,7 @@ export function MediaEditorDialog({
           </Button>
           <Button
             type="button"
-            className="bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)]"
+            className="bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover)"
             onClick={handlePublish}
             disabled={saving || !tempId}
           >

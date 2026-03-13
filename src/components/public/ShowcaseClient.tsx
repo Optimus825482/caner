@@ -103,23 +103,20 @@ export default function ShowcaseClient({
 
         <div ref={headerRef} className="mb-12 text-center md:mb-16">
           <span
-            className={`mb-3 block font-ui text-xs font-bold uppercase tracking-[0.24em] text-[var(--arvesta-gold)]/95 ${headerVisible ? "anim-title-reveal" : "opacity-0"}`}
+            className={`mb-3 block font-ui text-xs font-bold uppercase tracking-[0.24em] text-(--arvesta-gold)/95 ${headerVisible ? "anim-title-reveal" : "opacity-0"}`}
           >
             {t("showcase.tag")}
           </span>
           <h2
-            className={`mb-5 font-display text-4xl font-bold leading-tight text-white md:text-5xl ${headerVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.1s" }}
+            className={`mb-5 font-display text-4xl font-bold leading-tight text-white md:text-5xl ${headerVisible ? "anim-reveal-up anim-delay-100 anim-fill-both" : "opacity-0"}`}
           >
             {t("showcase.title")}
           </h2>
           <div
-            className={`mx-auto h-px w-24 bg-gradient-to-r from-transparent via-[var(--arvesta-gold)]/80 to-transparent ${headerVisible ? "anim-line-expand" : "opacity-0 scale-x-0"}`}
-            style={{ animationDelay: "0.25s" }}
+            className={`mx-auto h-px w-24 bg-linear-to-r from-transparent via-(--arvesta-gold)/80 to-transparent ${headerVisible ? "anim-line-expand anim-delay-250 anim-fill-both" : "opacity-0 scale-x-0"}`}
           />
           <p
-            className={`mx-auto mt-6 max-w-[680px] text-base leading-relaxed text-[var(--arvesta-text-secondary)] md:text-[1.02rem] ${headerVisible ? "anim-reveal-up" : "opacity-0"}`}
-            style={{ animationDelay: "0.2s" }}
+            className={`mx-auto mt-6 max-w-170 text-base leading-relaxed text-(--arvesta-text-secondary) md:text-[1.02rem] ${headerVisible ? "anim-reveal-up anim-delay-200 anim-fill-both" : "opacity-0"}`}
           >
             {t("showcase.desc")}
           </p>
@@ -127,18 +124,17 @@ export default function ShowcaseClient({
 
         <div
           ref={filterRef}
-          className={`mb-10 flex flex-wrap justify-center gap-2.5 md:mb-12 ${filterVisible ? "anim-reveal-up" : "opacity-0"}`}
-          style={{ animationDelay: "0.15s" }}
+          className={`mb-10 flex flex-wrap justify-center gap-2.5 md:mb-12 ${filterVisible ? "anim-reveal-up anim-delay-150 anim-fill-both" : "opacity-0"}`}
         >
           <button
             onClick={() => {
               setFilter("all");
               closeLightbox();
             }}
-            className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-[0.1em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-gold)]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
+            className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
               filter === "all"
-                ? "border-[var(--arvesta-gold)] bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-[var(--arvesta-gold)]"
-                : "border-[var(--arvesta-gold)]/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-[var(--arvesta-gold)]/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-[var(--arvesta-gold)]"
+              ? "border-(--arvesta-gold) bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-(--arvesta-gold)"
+              : "border-(--arvesta-gold)/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-(--arvesta-gold)/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-(--arvesta-gold)"
             }`}
           >
             {t("filter.all")}
@@ -151,10 +147,10 @@ export default function ShowcaseClient({
                 setFilter(cat.slug);
                 closeLightbox();
               }}
-              className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-[0.1em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-gold)]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
+              className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
                 filter === cat.slug
-                  ? "border-[var(--arvesta-gold)] bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-[var(--arvesta-gold)]"
-                  : "border-[var(--arvesta-gold)]/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-[var(--arvesta-gold)]/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-[var(--arvesta-gold)]"
+                ? "border-(--arvesta-gold) bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-(--arvesta-gold)"
+                : "border-(--arvesta-gold)/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-(--arvesta-gold)/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-(--arvesta-gold)"
               }`}
             >
               {cat.name}
@@ -172,14 +168,14 @@ export default function ShowcaseClient({
               key={item.id}
               onClick={() => openLightbox(i)}
               aria-label={`Open gallery image: ${item.title}`}
-              className={`tilt-card group relative aspect-[4/5] cursor-pointer overflow-hidden rounded-3xl border border-[var(--arvesta-gold)]/22 text-left shadow-[0_20px_46px_rgba(2,8,20,0.48)] transition-all duration-500 hover:border-[var(--arvesta-gold)]/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-gold)]/85 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] md:aspect-auto ${
+              className={`tilt-card group relative aspect-4/5 cursor-pointer overflow-hidden rounded-3xl border border-(--arvesta-gold)/22 text-left shadow-[0_20px_46px_rgba(2,8,20,0.48)] transition-all duration-500 hover:border-(--arvesta-gold)/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/85 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] md:aspect-auto ${
                 item.featured
                   ? "md:col-span-8 md:row-span-2"
                   : i % 3 === 0
                     ? "md:col-span-4 md:row-span-2"
                     : "md:col-span-4 md:row-span-1"
               } ${gridVisible ? "anim-reveal-scale" : "opacity-0"}`}
-              style={{ animationDelay: `${getDelay(i)}ms` }}
+              data-stagger-delay={getDelay(i)}
             >
               <ImageShimmer
                 src={item.image}
@@ -188,11 +184,11 @@ export default function ShowcaseClient({
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#030916]/95 via-[#030916]/34 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-[#030916]/95 via-[#030916]/34 to-transparent" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(200,168,110,0.24),transparent_45%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
               <div className="absolute bottom-6 left-6 right-6">
-                <span className="mb-2 block font-ui text-xs font-bold uppercase tracking-[0.16em] text-[var(--arvesta-gold)]">
+                <span className="mb-2 block font-ui text-xs font-bold uppercase tracking-[0.16em] text-(--arvesta-gold)">
                   {item.categoryName}
                 </span>
                 <h3 className="font-display text-2xl font-bold leading-tight text-white md:text-3xl">
@@ -209,7 +205,7 @@ export default function ShowcaseClient({
 
       {lightboxProductId !== null && activeLightboxItem && (
         <div
-          className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-[#02050c]/95 px-3 pb-4 pt-24 md:px-6 md:pt-28"
+          className="fixed inset-0 z-2147483647 flex items-center justify-center bg-[#02050c]/95 px-3 pb-4 pt-24 md:px-6 md:pt-28"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
@@ -218,7 +214,7 @@ export default function ShowcaseClient({
           <button
             onClick={closeLightbox}
             aria-label="Close lightbox"
-            className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-20 flex h-11 w-11 items-center justify-center rounded-full border border-[var(--arvesta-gold)]/25 bg-[rgba(7,16,37,0.76)] text-[var(--arvesta-text-secondary)] transition-all hover:rotate-90 hover:border-[var(--arvesta-gold)]/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-gold)]/85 md:right-5"
+            className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-20 flex h-11 w-11 items-center justify-center rounded-full border border-(--arvesta-gold)/25 bg-[rgba(7,16,37,0.76)] text-(--arvesta-text-secondary) transition-all hover:rotate-90 hover:border-(--arvesta-gold)/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/85 md:right-5"
           >
             <X className="h-6 w-6" />
           </button>
@@ -228,7 +224,7 @@ export default function ShowcaseClient({
               prevItem();
             }}
             aria-label="Previous image"
-            className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--arvesta-gold)]/25 bg-[#071026]/80 text-[var(--arvesta-text-secondary)] transition-all hover:border-[var(--arvesta-gold)] hover:text-[var(--arvesta-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-gold)]/85 md:left-5 md:h-12 md:w-12"
+            className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-(--arvesta-gold)/25 bg-[#071026]/80 text-(--arvesta-text-secondary) transition-all hover:border-(--arvesta-gold) hover:text-(--arvesta-gold) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/85 md:left-5 md:h-12 md:w-12"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -238,13 +234,13 @@ export default function ShowcaseClient({
               nextItem();
             }}
             aria-label="Next image"
-            className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--arvesta-gold)]/25 bg-[#071026]/80 text-[var(--arvesta-text-secondary)] transition-all hover:border-[var(--arvesta-gold)] hover:text-[var(--arvesta-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arvesta-gold)]/85 md:right-5 md:h-12 md:w-12"
+            className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-(--arvesta-gold)/25 bg-[#071026]/80 text-(--arvesta-text-secondary) transition-all hover:border-(--arvesta-gold) hover:text-(--arvesta-gold) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/85 md:right-5 md:h-12 md:w-12"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
 
           <div
-            className="max-h-[calc(100vh-9rem)] max-w-[96vw] rounded-2xl border border-[var(--arvesta-gold)]/32 bg-[linear-gradient(155deg,rgba(5,11,24,0.92),rgba(6,14,30,0.84))] p-3 text-center backdrop-blur-sm md:max-h-[85vh] md:max-w-[90%]"
+            className="max-h-[calc(100vh-9rem)] max-w-[96vw] rounded-2xl border border-(--arvesta-gold)/32 bg-[linear-gradient(155deg,rgba(5,11,24,0.92),rgba(6,14,30,0.84))] p-3 text-center backdrop-blur-sm md:max-h-[85vh] md:max-w-[90%]"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -258,7 +254,7 @@ export default function ShowcaseClient({
               <h3 className="mb-1 font-display text-xl text-white">
                 {activeLightboxItem.title}
               </h3>
-              <p className="text-sm text-[var(--arvesta-text-secondary)]">
+              <p className="text-sm text-(--arvesta-text-secondary)">
                 {activeLightboxItem.description}
               </p>
             </div>

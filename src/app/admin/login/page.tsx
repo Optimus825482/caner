@@ -78,8 +78,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--arvesta-bg)] px-4">
-      <Card className="w-full max-w-md border-white/5 bg-[var(--arvesta-bg-card)]">
+    <div className="min-h-screen flex items-center justify-center bg-(--arvesta-bg) px-4">
+      <Card className="w-full max-w-md border-white/5 bg-(--arvesta-bg-card)">
         <CardHeader className="text-center space-y-3">
           <Image
             src="/uploads/products/logo.png"
@@ -91,7 +91,7 @@ export default function AdminLoginPage() {
           <CardTitle className="font-display text-2xl text-white">
             {t.title}
           </CardTitle>
-          <CardDescription className="text-[var(--arvesta-text-muted)]">
+          <CardDescription className="text-(--arvesta-text-muted)">
             {t.description}
           </CardDescription>
         </CardHeader>
@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
             <div className="space-y-2">
               <Label
                 htmlFor="username"
-                className="text-[var(--arvesta-text-secondary)]"
+                className="text-(--arvesta-text-secondary)"
               >
                 {t.usernameLabel}
               </Label>
@@ -112,13 +112,13 @@ export default function AdminLoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder={t.usernamePlaceholder}
                 required
-                className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white h-11"
+                className="bg-(--arvesta-bg-elevated) border-white/5 text-white h-11"
               />
             </div>
             <div className="space-y-2">
               <Label
                 htmlFor="password"
-                className="text-[var(--arvesta-text-secondary)]"
+                className="text-(--arvesta-text-secondary)"
               >
                 {t.passwordLabel}
               </Label>
@@ -130,7 +130,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="bg-[var(--arvesta-bg-elevated)] border-white/5 text-white h-11"
+                className="bg-(--arvesta-bg-elevated) border-white/5 text-white h-11"
               />
             </div>
             {error && (
@@ -139,7 +139,7 @@ export default function AdminLoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 bg-[var(--arvesta-accent)] hover:bg-[var(--arvesta-accent-hover)] font-ui font-semibold"
+              className="w-full h-11 bg-(--arvesta-accent) hover:bg-(--arvesta-accent-hover) font-ui font-semibold"
             >
               <LogIn className="w-4 h-4 mr-2" />
               {loading ? t.loading : t.submit}

@@ -267,41 +267,41 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           <h1 className="font-display text-2xl font-semibold text-white">
             İletişim Talepleri
           </h1>
-          <p className="font-ui text-sm text-[var(--arvesta-text-muted)]">
+          <p className="font-ui text-sm text-(--arvesta-text-muted)">
             Müşterilerden gelen mesajları filtrele, oku ve yönet.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+        <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">Toplam</p>
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">Toplam</p>
               <p className="font-ui text-xl font-semibold text-white">{stats.total}</p>
             </div>
-            <Inbox className="h-5 w-5 text-[var(--arvesta-gold)]" />
+            <Inbox className="h-5 w-5 text-(--arvesta-gold)" />
           </CardContent>
         </Card>
 
-        <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+        <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">
                 Okunmamış
               </p>
-              <p className="font-ui text-xl font-semibold text-[var(--arvesta-accent)]">
+              <p className="font-ui text-xl font-semibold text-(--arvesta-accent)">
                 {stats.unread}
               </p>
             </div>
-            <MessageSquare className="h-5 w-5 text-[var(--arvesta-accent)]" />
+            <MessageSquare className="h-5 w-5 text-(--arvesta-accent)" />
           </CardContent>
         </Card>
 
-        <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+        <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">Okunan</p>
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">Okunan</p>
               <p className="font-ui text-xl font-semibold text-emerald-400">{stats.read}</p>
             </div>
             <CheckCircle2 className="h-5 w-5 text-emerald-400" />
@@ -309,16 +309,16 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
         </Card>
       </div>
 
-      <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+      <Card className="border-white/5 bg-(--arvesta-bg-card)">
         <CardContent className="space-y-3 p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--arvesta-text-muted)]" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-(--arvesta-text-muted)" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.currentTarget.value)}
                 placeholder="İsim, e-posta, proje tipi veya mesaj içinde ara..."
-                className="h-10 border-white/10 bg-[var(--arvesta-bg-elevated)] pl-9 text-white"
+                className="h-10 border-white/10 bg-(--arvesta-bg-elevated) pl-9 text-white"
               />
             </div>
 
@@ -331,8 +331,8 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                   onClick={() => setFilter(f)}
                   className={
                     filter === f
-                      ? "bg-[var(--arvesta-accent)] text-white hover:bg-[var(--arvesta-accent-hover)]"
-                      : "border-white/10 bg-[var(--arvesta-bg-elevated)] text-[var(--arvesta-text-secondary)]"
+                      ? "bg-(--arvesta-accent) text-white hover:bg-(--arvesta-accent-hover)"
+                      : "border-white/10 bg-(--arvesta-bg-elevated) text-(--arvesta-text-secondary)"
                   }
                 >
                   {f === "all" ? "Tümü" : f === "unread" ? "Okunmamış" : "Okunan"}
@@ -343,7 +343,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-xs text-[var(--arvesta-text-muted)]">
+              <span className="inline-flex items-center gap-1 text-xs text-(--arvesta-text-muted)">
                 <CalendarRange className="h-3.5 w-3.5" />
                 Tarih Aralığı
               </span>
@@ -351,21 +351,21 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.currentTarget.value)}
-                className="h-9 w-[170px] border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                className="h-9 w-42.5 border-white/10 bg-(--arvesta-bg-elevated) text-white"
               />
-              <span className="text-xs text-[var(--arvesta-text-muted)]">-</span>
+              <span className="text-xs text-(--arvesta-text-muted)">-</span>
               <Input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.currentTarget.value)}
-                className="h-9 w-[170px] border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                className="h-9 w-42.5 border-white/10 bg-(--arvesta-bg-elevated) text-white"
               />
               {(dateFrom || dateTo) && (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={clearDateFilter}
-                  className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                  className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                 >
                   Temizle
                 </Button>
@@ -378,7 +378,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 size="sm"
                 disabled={filteredIds.size === 0}
                 onClick={toggleSelectAllFiltered}
-                className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
               >
                 {allFilteredSelected ? (
                   <CheckSquare className="mr-1" />
@@ -391,8 +391,8 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           </div>
 
           {selectedCount > 0 && (
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--arvesta-accent)]/20 bg-[var(--arvesta-accent)]/5 p-2.5">
-              <Badge className="border-[var(--arvesta-accent)]/20 bg-[var(--arvesta-accent)]/10 text-[var(--arvesta-accent)]">
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-(--arvesta-accent)/20 bg-(--arvesta-accent)/5 p-2.5">
+              <Badge className="border-(--arvesta-accent)/20 bg-(--arvesta-accent)/10 text-(--arvesta-accent)">
                 {selectedCount} seçili
               </Badge>
 
@@ -400,7 +400,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                 size="sm"
                 disabled={bulkBusy}
                 onClick={bulkMarkRead}
-                className="bg-[var(--arvesta-accent)] text-white hover:bg-[var(--arvesta-accent-hover)]"
+                className="bg-(--arvesta-accent) text-white hover:bg-(--arvesta-accent-hover)"
               >
                 <CheckCheck className="mr-1" />
                 Toplu Okundu İşaretle
@@ -420,7 +420,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
           {feedback && (
             <p
-              className="rounded-lg border border-white/10 bg-[var(--arvesta-bg-elevated)] px-3 py-2 text-xs text-[var(--arvesta-text-secondary)]"
+              className="rounded-lg border border-white/10 bg-(--arvesta-bg-elevated) px-3 py-2 text-xs text-(--arvesta-text-secondary)"
               role="status"
             >
               {feedback}
@@ -436,9 +436,8 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           return (
             <Card
               key={sub.id}
-              className={`border-white/5 bg-[var(--arvesta-bg-card)] transition-all ${
-                !sub.isRead ? "border-l-2 border-l-[var(--arvesta-accent)]" : ""
-              } ${isSelected ? "ring-1 ring-[var(--arvesta-accent)]/40" : ""}`}
+              className={`border-white/5 bg-(--arvesta-bg-card) transition-all ${!sub.isRead ? "border-l-2 border-l-(--arvesta-accent)" : ""
+                } ${isSelected ? "ring-1 ring-(--arvesta-accent)/40" : ""}`}
             >
               <CardHeader className="pb-2">
                 <CardTitle className="flex flex-wrap items-center justify-between gap-2">
@@ -447,31 +446,31 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectOne(sub.id)}
-                      className="h-4 w-4 rounded border-white/20 bg-[var(--arvesta-bg-elevated)] accent-[var(--arvesta-accent)]"
+                      className="h-4 w-4 rounded border-white/20 bg-(--arvesta-bg-elevated) accent-(--arvesta-accent)"
                       aria-label={`${sub.fullName} seç`}
                     />
 
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(232,98,44,0.1)] text-sm font-bold text-[var(--arvesta-accent)]">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(232,98,44,0.1)] text-sm font-bold text-(--arvesta-accent)">
                       {sub.fullName.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate font-ui text-sm font-semibold text-white">
                         {sub.fullName}
                       </p>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--arvesta-text-muted)]">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-(--arvesta-text-muted)">
                         <span className="inline-flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {sub.email}
                         </span>
                         <Badge
                           variant="outline"
-                          className="border-white/10 text-[var(--arvesta-text-secondary)]"
+                          className="border-white/10 text-(--arvesta-text-secondary)"
                         >
                           {sub.projectType}
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="border-white/10 text-[var(--arvesta-text-muted)]"
+                          className="border-white/10 text-(--arvesta-text-muted)"
                         >
                           {sub.locale.toUpperCase()}
                         </Badge>
@@ -481,11 +480,11 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
                   <div className="flex items-center gap-2">
                     {!sub.isRead && (
-                      <Badge className="border-[var(--arvesta-accent)]/20 bg-[var(--arvesta-accent)]/10 text-[var(--arvesta-accent)]">
+                      <Badge className="border-(--arvesta-accent)/20 bg-(--arvesta-accent)/10 text-(--arvesta-accent)">
                         Yeni
                       </Badge>
                     )}
-                    <span className="inline-flex items-center gap-1 text-xs text-[var(--arvesta-text-muted)]">
+                    <span className="inline-flex items-center gap-1 text-xs text-(--arvesta-text-muted)">
                       <Clock className="h-3 w-3" />
                       {new Date(sub.createdAt).toLocaleString("tr-TR", {
                         day: "2-digit",
@@ -500,8 +499,8 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               </CardHeader>
 
               <CardContent className="space-y-3">
-                <div className="rounded-xl border border-white/5 bg-[var(--arvesta-bg-elevated)] p-3">
-                  <p className="whitespace-pre-wrap break-words font-ui text-sm leading-relaxed text-[var(--arvesta-text-secondary)]">
+                <div className="rounded-xl border border-white/5 bg-(--arvesta-bg-elevated) p-3">
+                  <p className="whitespace-pre-wrap wrap-break-word font-ui text-sm leading-relaxed text-(--arvesta-text-secondary)">
                     {sub.description}
                   </p>
                 </div>
@@ -512,7 +511,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     size="sm"
                     disabled={busyId === sub.id}
                     onClick={() => updateReadState(sub.id, !sub.isRead)}
-                    className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                    className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                   >
                     {sub.isRead ? <EyeOff className="mr-1" /> : <Eye className="mr-1" />}
                     {sub.isRead ? "Okunmamış Yap" : "Okundu İşaretle"}
@@ -522,7 +521,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     variant="outline"
                     size="sm"
                     onClick={() => copyEmail(sub.email)}
-                    className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                    className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                   >
                     <Copy className="mr-1" />
                     E-postayı Kopyala
@@ -530,7 +529,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
                   <a
                     href={`mailto:${sub.email}`}
-                    className="inline-flex h-7 items-center justify-center rounded-lg border border-white/10 bg-[var(--arvesta-bg-elevated)] px-2.5 text-[0.8rem] text-white transition hover:bg-white/5"
+                    className="inline-flex h-7 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg-elevated) px-2.5 text-[0.8rem] text-white transition hover:bg-white/5"
                   >
                     Yanıtla
                   </a>
@@ -551,10 +550,10 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
         })}
 
         {filtered.length === 0 && (
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+          <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardContent className="py-12 text-center">
-              <MessageSquare className="mx-auto mb-3 h-10 w-10 text-[var(--arvesta-text-muted)]" />
-              <p className="font-ui text-[var(--arvesta-text-muted)]">
+              <MessageSquare className="mx-auto mb-3 h-10 w-10 text-(--arvesta-text-muted)" />
+              <p className="font-ui text-(--arvesta-text-muted)">
                 Filtreye uygun talep bulunamadı.
               </p>
             </CardContent>
@@ -568,10 +567,10 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
           if (!open) setConfirmDeleteId(null);
         }}
       >
-        <DialogContent className="border-white/10 bg-[var(--arvesta-bg-card)] text-white">
+        <DialogContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
           <DialogHeader>
             <DialogTitle>Talep silinsin mi?</DialogTitle>
-            <DialogDescription className="text-[var(--arvesta-text-secondary)]">
+            <DialogDescription className="text-(--arvesta-text-secondary)">
               Bu işlem geri alınamaz.
             </DialogDescription>
           </DialogHeader>
@@ -597,10 +596,10 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       </Dialog>
 
       <Dialog open={confirmBulkDeleteOpen} onOpenChange={setConfirmBulkDeleteOpen}>
-        <DialogContent className="border-white/10 bg-[var(--arvesta-bg-card)] text-white">
+        <DialogContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
           <DialogHeader>
             <DialogTitle>Seçili talepler silinsin mi?</DialogTitle>
-            <DialogDescription className="text-[var(--arvesta-text-secondary)]">
+            <DialogDescription className="text-(--arvesta-text-secondary)">
               {selectedCount} kayıt kalıcı olarak silinecek.
             </DialogDescription>
           </DialogHeader>
