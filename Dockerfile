@@ -29,6 +29,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/models ./models
 # Keep a bootstrap copy of built-in uploads; named volume on /app/public/uploads
 # can mask image-layer files on first run.
 COPY --from=builder /app/public/uploads ./bootstrap-uploads

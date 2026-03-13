@@ -54,6 +54,8 @@ export function MediaEditorDialog({
   onPublished,
   onClose,
 }: Props) {
+  const isTempPreview = Boolean(previewUrl?.startsWith("/api/media/temp/"));
+
   const [saving, setSaving] = useState(false);
   const [rotate, setRotate] = useState<0 | 90 | 180 | 270>(0);
   const [flip, setFlip] = useState(false);
@@ -444,6 +446,7 @@ export function MediaEditorDialog({
                         width={0}
                         height={0}
                         sizes="100vw"
+                          unoptimized={isTempPreview}
                           className={`max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
                           data-preview-filter={previewFilter}
                       />
