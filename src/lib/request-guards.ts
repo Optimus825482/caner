@@ -16,6 +16,34 @@ type CachedRateLimitState = {
   expiresAt: number;
 };
 
+function normalizeOrigin(value: string): string | null {
+  try {
+    const parsed = new URL(value);
+    const protocol = parsed.protocol.toLowerCase();
+    const hostname = parsed.hostname.toLowerCase();
+    const isHttpsDefaultPort =
+      protocol === "https:" && (!parsed.port || parsed.port === "443");
+    const isHttpDefaultPort =
+      protocol === "http:" && (!parsed.port || parsed.port === "80");
+    const port =
+      isHttpsDefaultPort || isHttpDefaultPort || !parsed.port
+        ? ""
+        : `:${parsed.port}`;
+
+    return `${protocol}//${hostname}${port}`;
+  } catch {
+    return null;
+  }
+}
+
+function getOriginFromUrl(value: string): string | null {
+  try {
+    return normalizeOrigin(new URL(value).origin);
+  } catch {
+    return null;
+  }
+}
+
 export function enforceSameOrigin(req: NextRequest): NextResponse | null {
   const origin = req.headers.get("origin");
   const referer = req.headers.get("referer");
@@ -28,22 +56,28 @@ export function enforceSameOrigin(req: NextRequest): NextResponse | null {
   const forwardedProto =
     req.headers.get("x-forwarded-proto") ||
     req.nextUrl.protocol.replace(":", "");
-  const expectedOrigin = forwardedHost
+  const expectedOriginRaw = forwardedHost
     ? `${forwardedProto}://${forwardedHost.split(",")[0].trim()}`
     : req.nextUrl.origin;
+  const expectedOrigin = normalizeOrigin(expectedOriginRaw);
+  const requestOrigin = normalizeOrigin(req.nextUrl.origin);
+  const allowedOrigins = new Set(
+    [expectedOrigin, requestOrigin].filter(
+      (value): value is string => value !== null,
+    ),
+  );
 
   if (origin) {
-    if (origin !== expectedOrigin && origin !== req.nextUrl.origin) {
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (!normalizedOrigin || !allowedOrigins.has(normalizedOrigin)) {
       return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
     }
     return null;
   }
 
-  if (
-    !referer ||
-    (!referer.startsWith(expectedOrigin) &&
-      !referer.startsWith(req.nextUrl.origin))
-  ) {
+  const refererOrigin = referer ? getOriginFromUrl(referer) : null;
+
+  if (!refererOrigin || !allowedOrigins.has(refererOrigin)) {
     return NextResponse.json(
       { error: "Origin or referer header is required" },
       { status: 403 },

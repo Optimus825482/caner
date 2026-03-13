@@ -33,6 +33,15 @@ describe("enforceSameOrigin", () => {
     expect(enforceSameOrigin(req)).toBeNull();
   });
 
+  it("allows request when forwarded host contains default https port", () => {
+    const req = makeReq("/api/test", {
+      origin: "https://arvesta.com",
+      "x-forwarded-host": "arvesta.com:443",
+      "x-forwarded-proto": "https",
+    });
+    expect(enforceSameOrigin(req)).toBeNull();
+  });
+
   it("rejects request with mismatched origin", async () => {
     const req = makeReq("/api/test", {
       origin: "https://evil.com",
@@ -48,6 +57,15 @@ describe("enforceSameOrigin", () => {
   it("allows request with valid referer when no origin", () => {
     const req = makeReq("/api/test", {
       referer: "http://localhost:3018/admin",
+    });
+    expect(enforceSameOrigin(req)).toBeNull();
+  });
+
+  it("allows request with referer when forwarded host includes default port", () => {
+    const req = makeReq("/api/test", {
+      referer: "https://arvesta.com/admin",
+      "x-forwarded-host": "arvesta.com:443",
+      "x-forwarded-proto": "https",
     });
     expect(enforceSameOrigin(req)).toBeNull();
   });
