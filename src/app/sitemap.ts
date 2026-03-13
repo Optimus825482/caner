@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
@@ -7,14 +6,32 @@ const BASE_URL =
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = ["fr", "en", "tr"];
 
-  const [products, categories] = await Promise.all([
-    prisma.product.findMany({
-      select: { slug: true, updatedAt: true, createdAt: true },
-    }),
-    prisma.category.findMany({
-      select: { slug: true, updatedAt: true, createdAt: true },
-    }),
-  ]);
+  let products: Array<{
+    slug: string;
+    updatedAt: Date | null;
+    createdAt: Date;
+  }> = [];
+  let categories: Array<{
+    slug: string;
+    updatedAt: Date | null;
+    createdAt: Date;
+  }> = [];
+
+  if (process.env.DATABASE_URL) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      [products, categories] = await Promise.all([
+        prisma.product.findMany({
+          select: { slug: true, updatedAt: true, createdAt: true },
+        }),
+        prisma.category.findMany({
+          select: { slug: true, updatedAt: true, createdAt: true },
+        }),
+      ]);
+    } catch {
+      // Build ortamında DB erişimi yoksa yalnızca statik sayfalarla sitemap üretilir.
+    }
+  }
 
   const pages: MetadataRoute.Sitemap = locales.map((locale) => ({
     url: `${BASE_URL}/${locale}`,
