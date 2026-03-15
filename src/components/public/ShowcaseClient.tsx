@@ -27,11 +27,13 @@ export default function ShowcaseClient({
   products,
 }: {
   categories: Category[];
-    products: Product[];
+  products: Product[];
 }) {
   const t = useTranslations();
   const [filter, setFilter] = useState("all");
-  const [lightboxProductId, setLightboxProductId] = useState<string | null>(null);
+  const [lightboxProductId, setLightboxProductId] = useState<string | null>(
+    null,
+  );
 
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
   const { ref: filterRef, isVisible: filterVisible } = useScrollReveal();
@@ -49,37 +51,35 @@ export default function ShowcaseClient({
   const lightboxIndex = lightboxProductId
     ? filtered.findIndex((p) => p.id === lightboxProductId)
     : -1;
-  const activeLightboxItem = lightboxIndex >= 0 ? filtered[lightboxIndex] : null;
+  const activeLightboxItem =
+    lightboxIndex >= 0 ? filtered[lightboxIndex] : null;
 
-  const openLightbox = useCallback((i: number) => {
-    const item = filtered[i];
-    if (!item) return;
-    setLightboxProductId(item.id);
-    document.body.style.overflow = "hidden";
-  }, [filtered]);
+  const openLightbox = useCallback(
+    (i: number) => {
+      const item = filtered[i];
+      if (!item) return;
+      setLightboxProductId(item.id);
+      document.body.style.overflow = "hidden";
+    },
+    [filtered],
+  );
 
   const closeLightbox = useCallback(() => {
     setLightboxProductId(null);
     document.body.style.overflow = "";
   }, []);
 
-  const prevItem = useCallback(
-    () => {
-      if (!filtered.length || lightboxIndex < 0) return;
-      const nextIndex = (lightboxIndex - 1 + filtered.length) % filtered.length;
-      setLightboxProductId(filtered[nextIndex]?.id ?? null);
-    },
-    [filtered, lightboxIndex],
-  );
+  const prevItem = useCallback(() => {
+    if (!filtered.length || lightboxIndex < 0) return;
+    const nextIndex = (lightboxIndex - 1 + filtered.length) % filtered.length;
+    setLightboxProductId(filtered[nextIndex]?.id ?? null);
+  }, [filtered, lightboxIndex]);
 
-  const nextItem = useCallback(
-    () => {
-      if (!filtered.length || lightboxIndex < 0) return;
-      const nextIndex = (lightboxIndex + 1) % filtered.length;
-      setLightboxProductId(filtered[nextIndex]?.id ?? null);
-    },
-    [filtered, lightboxIndex],
-  );
+  const nextItem = useCallback(() => {
+    if (!filtered.length || lightboxIndex < 0) return;
+    const nextIndex = (lightboxIndex + 1) % filtered.length;
+    setLightboxProductId(filtered[nextIndex]?.id ?? null);
+  }, [filtered, lightboxIndex]);
 
   // Keyboard navigation for lightbox
   useEffect(() => {
@@ -133,8 +133,8 @@ export default function ShowcaseClient({
             }}
             className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
               filter === "all"
-              ? "border-(--arvesta-gold) bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-(--arvesta-gold)"
-              : "border-(--arvesta-gold)/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-(--arvesta-gold)/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-(--arvesta-gold)"
+                ? "border-(--arvesta-gold) bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-(--arvesta-gold)"
+                : "border-(--arvesta-gold)/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-(--arvesta-gold)/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-(--arvesta-gold)"
             }`}
           >
             {t("filter.all")}
@@ -149,8 +149,8 @@ export default function ShowcaseClient({
               }}
               className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
                 filter === cat.slug
-                ? "border-(--arvesta-gold) bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-(--arvesta-gold)"
-                : "border-(--arvesta-gold)/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-(--arvesta-gold)/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-(--arvesta-gold)"
+                  ? "border-(--arvesta-gold) bg-[linear-gradient(135deg,rgba(200,168,110,0.26),rgba(200,168,110,0.1))] text-(--arvesta-gold)"
+                  : "border-(--arvesta-gold)/25 bg-[rgba(255,255,255,0.02)] text-white/80 hover:border-(--arvesta-gold)/70 hover:bg-[rgba(200,168,110,0.09)] hover:text-(--arvesta-gold)"
               }`}
             >
               {cat.name}
@@ -212,9 +212,12 @@ export default function ShowcaseClient({
           aria-label="Product image lightbox"
         >
           <button
-            onClick={closeLightbox}
+            onClick={(e) => {
+              e.stopPropagation();
+              closeLightbox();
+            }}
             aria-label="Close lightbox"
-            className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-20 flex h-11 w-11 items-center justify-center rounded-full border border-(--arvesta-gold)/25 bg-[rgba(7,16,37,0.76)] text-(--arvesta-text-secondary) transition-all hover:rotate-90 hover:border-(--arvesta-gold)/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/85 md:right-5"
+            className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-(--arvesta-gold)/25 bg-[rgba(7,16,37,0.76)] text-(--arvesta-text-secondary) transition-all hover:rotate-90 hover:border-(--arvesta-gold)/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/85 md:right-5 md:top-5"
           >
             <X className="h-6 w-6" />
           </button>
