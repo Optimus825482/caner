@@ -11,11 +11,11 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
-# If uploads volume is empty on first boot, populate from image defaults.
-if [ ! -d "/app/public/uploads/products" ] || [ -z "$(ls -A /app/public/uploads/products 2>/dev/null || true)" ]; then
-  echo "Bootstrapping uploads volume from image defaults..."
+# Always sync bootstrap uploads — copy missing files without overwriting existing ones.
+if [ -d "/app/bootstrap-uploads" ]; then
+  echo "Syncing uploads from image defaults (skip existing)..."
   mkdir -p /app/public/uploads
-  cp -R /app/bootstrap-uploads/* /app/public/uploads/ 2>/dev/null || true
+  cp -Rn /app/bootstrap-uploads/* /app/public/uploads/ 2>/dev/null || true
 fi
 
 echo "Running Prisma migrations..."
