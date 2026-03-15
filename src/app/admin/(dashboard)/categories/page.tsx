@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ const localeLabels: Record<string, string> = {
 
 export default function AdminCategories() {
   const t = useTranslations("adminCategories");
+  const locale = useLocale();
   const [categories, setCategories] = useState<Cat[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Cat | null>(null);
@@ -217,8 +218,11 @@ export default function AdminCategories() {
                     </div>
                     <div className="flex-1">
                       <span className="text-sm font-semibold text-white block">
-                        {cat.translations.find((tr) => tr.locale === "fr")
-                          ?.name || cat.slug}
+                        {cat.translations.find((tr) => tr.locale === locale)
+                          ?.name ||
+                          cat.translations.find((tr) => tr.locale === "fr")
+                            ?.name ||
+                          cat.slug}
                       </span>
                       <Badge
                         variant="outline"

@@ -116,6 +116,23 @@
     "accept": "Kabul Et",
     "decline": "Reddet"
   },
+  "privacy": {
+    "backToHome": "Ana sayfaya dön",
+    "title": "Gizlilik Politikası",
+    "lastUpdated": "Son güncelleme: Mart 2026",
+    "s1Title": "1. Veri Toplama",
+    "s1Text": "İletişim formumuz aracılığıyla bize sağladığınız bilgileri topluyoruz: ad, e-posta adresi, telefon numarası, proje türü ve açıklama. Bu veriler talebinizi işlemek ve size geri dönüş yapmak için gereklidir.",
+    "s2Title": "2. Verilerin Kullanımı",
+    "s2Text": "Kişisel verileriniz yalnızca teklif ve bilgi taleplerinize yanıt vermek için kullanılır. Bilgilerinizi ticari amaçlarla üçüncü taraflarla satmıyor, kiralamıyor veya paylaşmıyoruz.",
+    "s3Title": "3. Depolama ve Güvenlik",
+    "s3Text": "Verileriniz korumalı sunucularda güvenli bir şekilde saklanır. Bilgilerinizi yetkisiz erişim, değişiklik veya silmeye karşı korumak için uygun teknik ve organizasyonel önlemler uyguluyoruz.",
+    "s4Title": "4. Çerezler",
+    "s4Text": "Bu site, sitenin işlevselliği için gerekli çerezleri kullanır. Ayrıca iletişim formu güvenlik doğrulaması için Cloudflare Turnstile kullanıyoruz. Reklam izleme çerezi kullanılmamaktadır.",
+    "s5Title": "5. Haklarınız",
+    "s5Text": "KVKK kapsamında kişisel verilerinize erişim, düzeltme, silme ve taşıma hakkına sahipsiniz. Bu haklarınızı kullanmak için iletişim formumuz veya e-posta aracılığıyla bize ulaşabilirsiniz.",
+    "s6Title": "6. İletişim",
+    "s6Text": "Bu gizlilik politikasıyla ilgili sorularınız için sitemizdeki iletişim formu veya iletişim bilgilerimizde belirtilen e-posta adresi aracılığıyla bize ulaşabilirsiniz."
+  },
   "common": {
     "readMore": "Devamını oku",
     "backToHome": "Ana sayfaya dön",

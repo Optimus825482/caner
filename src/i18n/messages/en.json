@@ -114,6 +114,23 @@
     "accept": "Accept",
     "decline": "Decline"
   },
+  "privacy": {
+    "backToHome": "Back to home",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: March 2026",
+    "s1Title": "1. Data Collection",
+    "s1Text": "We collect information you provide through our contact form: name, email address, phone number, project type and description. This data is necessary to process your request and get back to you.",
+    "s2Title": "2. Use of Data",
+    "s2Text": "Your personal data is used exclusively to respond to your quote and information requests. We do not sell, rent or share your information with third parties for commercial purposes.",
+    "s3Title": "3. Storage and Security",
+    "s3Text": "Your data is stored securely on protected servers. We implement appropriate technical and organizational measures to protect your information against unauthorized access, modification or deletion.",
+    "s4Title": "4. Cookies",
+    "s4Text": "This site uses essential cookies for site functionality. We also use Cloudflare Turnstile for contact form security verification. No advertising tracking cookies are used.",
+    "s5Title": "5. Your Rights",
+    "s5Text": "Under GDPR, you have the right to access, rectify, delete and port your personal data. To exercise these rights, contact us through our contact form or by email.",
+    "s6Title": "6. Contact",
+    "s6Text": "For any questions regarding this privacy policy, you can contact us via the contact form on our site or by email at the address listed in our contact information."
+  },
   "common": {
     "readMore": "Read more",
     "backToHome": "Back to home",

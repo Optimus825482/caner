@@ -56,7 +56,19 @@ function getFriendlyErrorMessage(
   return t("errors.generic");
 }
 
-export default function ContactForm({ locale }: { locale: string }) {
+interface ContactSettings {
+  address?: string;
+  phone?: string;
+  email?: string;
+}
+
+export default function ContactForm({
+  locale,
+  settings,
+}: {
+  locale: string;
+  settings?: ContactSettings;
+}) {
   const t = useTranslations("contact");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -198,7 +210,7 @@ export default function ContactForm({ locale }: { locale: string }) {
                   {t("office")}
                 </strong>
                 <span className="text-sm text-(--arvesta-text-secondary)">
-                  75001 Paris, France
+                  {settings?.address || "75001 Paris, France"}
                 </span>
               </div>
             </div>
@@ -211,7 +223,7 @@ export default function ContactForm({ locale }: { locale: string }) {
                   {t("call")}
                 </strong>
                 <span className="text-sm text-(--arvesta-text-secondary)">
-                  +33 (0) 1 43 67 88
+                  {settings?.phone || "+33 (0) 1 43 67 88"}
                 </span>
               </div>
             </div>
@@ -224,7 +236,7 @@ export default function ContactForm({ locale }: { locale: string }) {
                   Email
                 </strong>
                 <span className="text-sm text-(--arvesta-text-secondary)">
-                  contact@arvesta-france.com
+                  {settings?.email || "contact@arvesta-france.com"}
                 </span>
               </div>
             </div>

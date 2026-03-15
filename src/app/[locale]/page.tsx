@@ -5,6 +5,7 @@ import Collections from "@/components/public/Collections";
 import ExportSection from "@/components/public/ExportSection";
 import Marquee from "@/components/public/Marquee";
 import ContactForm from "@/components/public/ContactForm";
+import { getPublicSettings } from "@/lib/get-public-settings";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -78,6 +79,7 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const settings = await getPublicSettings();
 
   return (
     <div className="relative isolate overflow-x-clip">
@@ -89,7 +91,14 @@ export default async function HomePage({
         <Showcase locale={locale} />
         <ExportSection locale={locale} />
         <Marquee />
-        <ContactForm locale={locale} />
+        <ContactForm
+          locale={locale}
+          settings={{
+            address: settings.address,
+            phone: settings.phone,
+            email: settings.email,
+          }}
+        />
       </div>
     </div>
   );

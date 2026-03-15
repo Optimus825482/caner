@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { MediaEditorDialog } from "@/components/admin/MediaEditorDialog";
 
 interface Category {
@@ -51,6 +51,7 @@ export default function ProductFormPage({
 }) {
   const { id: productId } = React.use(params);
   const t = useTranslations("adminProductForm");
+  const currentLocale = useLocale();
   const isNew = productId === "new";
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -461,7 +462,9 @@ export default function ProductFormPage({
                     <option value="">{t("selectCategory")}</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.translations.find((t) => t.locale === "fr")?.name ||
+                        {c.translations.find((t) => t.locale === currentLocale)
+                          ?.name ||
+                          c.translations.find((t) => t.locale === "fr")?.name ||
                           c.slug}
                       </option>
                     ))}

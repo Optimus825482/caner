@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,7 @@ export default function AdminHero() {
     null,
   );
   const t = useTranslations("adminHero");
+  const locale = useLocale();
 
   const [image, setImage] = useState("");
   const [order, setOrder] = useState(0);
@@ -223,7 +224,10 @@ export default function AdminHero() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-white block truncate">
-                      {s.translations.find((tr) => tr.locale === "fr")?.title ||
+                      {s.translations.find((tr) => tr.locale === locale)
+                        ?.title ||
+                        s.translations.find((tr) => tr.locale === "fr")
+                          ?.title ||
                         t("untitled")}
                     </span>
                     <div className="flex items-center gap-2 mt-1">

@@ -3,10 +3,12 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Instagram } from "lucide-react";
 import FooterReveal from "./FooterReveal";
+import { getPublicSettings } from "@/lib/get-public-settings";
 
 export default async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "footer" });
   const tf = await getTranslations({ locale, namespace: "filter" });
+  const settings = await getPublicSettings();
 
   return (
     <footer className="relative overflow-hidden border-t border-(--arvesta-gold)/25 bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-6 pt-16">
@@ -68,7 +70,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 {t("contact")}
               </Link>
               <Link
-                href={`/${locale}`}
+                href={`/${locale}/privacy`}
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("privacy")}
@@ -83,7 +85,7 @@ export default async function Footer({ locale }: { locale: string }) {
             </span>
             <div className="flex gap-4">
               <a
-                href="https://instagram.com/arvesta"
+                href={settings.instagram || "https://instagram.com/arvesta"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -92,7 +94,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 <Instagram className="h-4 w-4" />
               </a>
               <a
-                href="https://wa.me/33143678800"
+                href={settings.whatsapp || "https://wa.me/33143678800"}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"

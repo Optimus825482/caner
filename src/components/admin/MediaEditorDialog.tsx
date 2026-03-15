@@ -353,12 +353,12 @@ export function MediaEditorDialog({
       </div>
 
       <div
-        className={`grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 ${mode === "inline" ? "" : "px-5 pb-5"} flex-1 overflow-hidden`}
+        className={`grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 ${mode === "inline" ? "" : "px-5 pb-5"} flex-1 min-h-0`}
       >
         {/* Preview Area */}
-        <div className="rounded-xl border border-white/10 bg-black/30 p-4 relative flex justify-center items-center overflow-hidden h-full">
+        <div className="rounded-xl border border-white/10 bg-black/30 p-4 relative flex justify-center items-center overflow-auto min-h-0">
           {previewUrl ? (
-            <div className="relative max-h-full flex items-center justify-center overflow-hidden">
+            <div className="relative flex items-center justify-center">
               {activeTab === "depth" && depthMapUrl ? (
                 <DepthParallaxViewer
                   imageUrl={previewUrl}
@@ -375,7 +375,7 @@ export function MediaEditorDialog({
                   depthColorize={depthColorize}
                   depthColorFrom={depthColorFrom}
                   depthColorTo={depthColorTo}
-                  className="max-w-full max-h-[calc(90vh-140px)] object-contain rounded-lg shadow-2xl"
+                  className="max-w-full max-h-[calc(90vh-180px)] object-contain rounded-lg shadow-2xl"
                   watermarkOverlay={
                     watermarkEnabled ? (
                       <div
@@ -448,7 +448,7 @@ export function MediaEditorDialog({
                       src={previewUrl}
                       alt={t("noPreview")}
                       style={previewStyle}
-                      className={`max-w-full max-h-[calc(90vh-140px)] w-auto h-auto object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
+                      className={`max-w-full max-h-[calc(90vh-180px)] w-auto h-auto object-contain rounded-lg shadow-2xl origin-center transition-transform ${transformClass}`}
                     />
                   </ReactCrop>
 

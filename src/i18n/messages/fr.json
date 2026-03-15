@@ -116,6 +116,23 @@
     "accept": "Accepter",
     "decline": "Refuser"
   },
+  "privacy": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Politique de Confidentialité",
+    "lastUpdated": "Dernière mise à jour : Mars 2026",
+    "s1Title": "1. Collecte des Données",
+    "s1Text": "Nous collectons les informations que vous nous fournissez via notre formulaire de contact : nom, adresse e-mail, numéro de téléphone, type de projet et description. Ces données sont nécessaires pour traiter votre demande et vous recontacter.",
+    "s2Title": "2. Utilisation des Données",
+    "s2Text": "Vos données personnelles sont utilisées exclusivement pour répondre à vos demandes de devis et de renseignements. Nous ne vendons, ne louons ni ne partageons vos informations avec des tiers à des fins commerciales.",
+    "s3Title": "3. Stockage et Sécurité",
+    "s3Text": "Vos données sont stockées de manière sécurisée sur des serveurs protégés. Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos informations contre tout accès non autorisé, modification ou suppression.",
+    "s4Title": "4. Cookies",
+    "s4Text": "Ce site utilise des cookies essentiels au fonctionnement du site. Nous utilisons également Cloudflare Turnstile pour la vérification de sécurité du formulaire de contact. Aucun cookie de suivi publicitaire n'est utilisé.",
+    "s5Title": "5. Vos Droits",
+    "s5Text": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données personnelles. Pour exercer ces droits, contactez-nous via notre formulaire de contact ou par e-mail.",
+    "s6Title": "6. Contact",
+    "s6Text": "Pour toute question relative à cette politique de confidentialité, vous pouvez nous contacter via le formulaire de contact disponible sur notre site ou par e-mail à l'adresse indiquée dans nos coordonnées."
+  },
   "common": {
     "readMore": "En savoir plus",
     "backToHome": "Retour à l'accueil",
