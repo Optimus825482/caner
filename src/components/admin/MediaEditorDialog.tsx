@@ -356,7 +356,7 @@ export function MediaEditorDialog({
         className={`grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 ${mode === "inline" ? "" : "px-5 pb-5"} flex-1 min-h-0`}
       >
         {/* Preview Area */}
-        <div className="rounded-xl border border-white/10 bg-black/30 p-4 relative flex justify-center items-center overflow-auto min-h-0">
+        <div className="rounded-xl border border-white/10 bg-black/30 p-4 relative flex justify-center items-start overflow-auto min-h-0">
           {previewUrl ? (
             <div className="relative flex items-center justify-center">
               {activeTab === "depth" && depthMapUrl ? (
@@ -441,7 +441,7 @@ export function MediaEditorDialog({
                       setCropW(nextW);
                       setCropH(nextH);
                     }}
-                    className="max-h-full flex justify-center"
+                    className="max-h-[calc(90vh-180px)] flex justify-center"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
