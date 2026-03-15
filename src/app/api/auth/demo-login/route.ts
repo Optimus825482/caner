@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signIn } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 
 const isDemoModeEnabled =
@@ -27,15 +26,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  try {
-    await signIn("credentials", {
-      username: demoUsername,
-      password: demoPassword,
-      redirect: false,
-    });
-
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Demo login failed" }, { status: 401 });
-  }
+  // Return demo credentials to client — client will call signIn() itself.
+  // This is safe because demo mode is explicitly opt-in and credentials
+  // are already public by design (demo accounts).
+  return NextResponse.json({
+    success: true,
+    username: demoUsername,
+    password: demoPassword,
+  });
 }

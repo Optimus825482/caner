@@ -28,7 +28,10 @@ export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  async function loginWithCredentials(inputUsername: string, inputPassword: string) {
+  async function loginWithCredentials(
+    inputUsername: string,
+    inputPassword: string,
+  ) {
     setLoading(true);
     setError("");
 
@@ -69,7 +72,12 @@ export default function AdminLoginPage() {
         return;
       }
 
-      router.push("/admin");
+      const { username: demoUser, password: demoPass } = (await res.json()) as {
+        username: string;
+        password: string;
+      };
+
+      await loginWithCredentials(demoUser, demoPass);
     } catch {
       setError("Demo giriş sırasında bir hata oluştu.");
     } finally {
