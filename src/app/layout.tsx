@@ -27,6 +27,9 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://arvestafrance.com",
+  ),
   title: "Arvesta Menuiserie France — Premium Interior Design",
   description:
     "Mobilier sur mesure de haute qualité. Cuisines, salles de bains, dressings et projets personnalisés. Fabriqué en Turquie, livré en Europe.",

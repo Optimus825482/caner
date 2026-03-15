@@ -13,11 +13,7 @@ interface Slide {
   subtitle: string;
 }
 
-export default function HeroClient({
-  slides,
-}: {
-    slides: Slide[];
-}) {
+export default function HeroClient({ slides }: { slides: Slide[] }) {
   const t = useTranslations("hero");
   const [current, setCurrent] = useState(0);
 
@@ -27,7 +23,7 @@ export default function HeroClient({
     return [
       {
         id: "fallback-hero",
-        image: "/uploads/hero/hero.jpg",
+        image: "/uploads/products/logo.png",
         badge: "",
         title: "",
         subtitle: "",
@@ -71,29 +67,21 @@ export default function HeroClient({
       <div className="animate-hero-shimmer pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-transparent via-[#f3c98b]/10 to-transparent mix-blend-soft-light" />
 
       <div className="animate-cinematic-in relative z-2 mx-auto max-w-5xl px-4 text-center sm:px-6">
-        <span
-          className="mb-6 inline-block rounded-full border border-[#f3c98b]/35 bg-black/30 px-5 py-2 font-ui text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[#f3c98b] backdrop-blur-md animate-fade-up anim-delay-500 anim-fill-both"
-        >
+        <span className="mb-6 inline-block rounded-full border border-[#f3c98b]/35 bg-black/30 px-5 py-2 font-ui text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[#f3c98b] backdrop-blur-md animate-fade-up anim-delay-500 anim-fill-both">
           {safeSlides[current]?.badge}
         </span>
 
         <h1 className="mb-8 text-shadow-hero">
-          <span
-            className="animate-fade-up anim-delay-700 anim-fill-both font-display text-[clamp(3.1rem,8.8vw,6.2rem)] font-bold leading-[1.05] tracking-[0.01em] text-white"
-          >
+          <span className="animate-fade-up anim-delay-700 anim-fill-both font-display text-[clamp(3.1rem,8.8vw,6.2rem)] font-bold leading-[1.05] tracking-[0.01em] text-white">
             {safeSlides[current]?.title}
           </span>
         </h1>
 
-        <p
-          className="mx-auto mb-12 max-w-2xl animate-fade-up anim-delay-1100 anim-fill-both text-[clamp(1.05rem,2.1vw,1.25rem)] font-light leading-relaxed text-white/78"
-        >
+        <p className="mx-auto mb-12 max-w-2xl animate-fade-up anim-delay-1100 anim-fill-both text-[clamp(1.05rem,2.1vw,1.25rem)] font-light leading-relaxed text-white/78">
           {safeSlides[current]?.subtitle}
         </p>
 
-        <div
-          className="flex animate-fade-up anim-delay-1300 anim-fill-both flex-col justify-center gap-4 sm:flex-row"
-        >
+        <div className="flex animate-fade-up anim-delay-1300 anim-fill-both flex-col justify-center gap-4 sm:flex-row">
           <a
             href="#collections"
             className="animate-pulse-glow rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-9 py-4 font-ui text-lg font-bold text-[#2b160a] shadow-[0_14px_34px_rgba(232,98,44,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
