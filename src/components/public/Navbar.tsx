@@ -73,7 +73,10 @@ export default function Navbar({ locale }: { locale: string }) {
               : "px-6 py-3"
           }`}
         >
-          <Link href={`/${locale}`} className="nav-logo relative -my-5 z-10">
+          <Link
+            href={`/${locale}`}
+            className="nav-logo relative -my-5 z-10 flex items-center gap-3"
+          >
             <Image
               src="/uploads/products/logo.png"
               alt="Arvesta"
@@ -81,9 +84,17 @@ export default function Navbar({ locale }: { locale: string }) {
               height={scrolled ? 100 : 115}
               className="object-contain transition-all duration-200 drop-shadow-[0_4px_16px_rgba(200,168,110,0.35)]"
             />
+            <span className="hidden leading-tight sm:block">
+              <span className="block font-display text-[2rem] font-semibold italic tracking-wide text-[#f3c98b] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                Arvesta
+              </span>
+              <span className="-mt-0.5 block font-ui text-[1rem] font-medium uppercase tracking-[0.25em] text-white/75 drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)]">
+                Menuiserie France
+              </span>
+            </span>
           </Link>
 
-          <ul className="hidden items-center gap-9 lg:flex">
+          <ul className="hidden items-center gap-7 lg:flex lg:ml-auto lg:mr-6">
             {navLinks.map((link) => {
               const sectionId = link.anchor ? link.href.replace("#", "") : "";
               const isActive = link.anchor
@@ -116,32 +127,35 @@ export default function Navbar({ locale }: { locale: string }) {
           </ul>
 
           <div className="flex items-center gap-4">
-            <div className="hidden items-center gap-2 md:flex">
-              {locales.map((l, i) => (
-                <span key={l.code} className="flex items-center gap-2">
-                  <button
-                    onClick={() => switchLocale(l.code)}
-                    className={`rounded-full px-2 py-1 font-ui text-[0.68rem] font-bold tracking-[0.14em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] ${
-                      locale === l.code
-                        ? "bg-[#f3c98b]/12 text-[#f3c98b]"
-                        : "text-white/60 hover:text-[#f3c98b]"
-                    }`}
-                  >
-                    {l.label}
-                  </button>
-                  {i < locales.length - 1 && (
-                    <span className="text-xs text-white/30 opacity-70">|</span>
-                  )}
-                </span>
-              ))}
+            <div className="hidden flex-col items-center gap-1.5 md:flex">
+              <a
+                href="#contact"
+                className="rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-4 py-1.5 font-ui text-xs font-bold text-[#2b160a] shadow-[0_8px_24px_rgba(232,98,44,0.3)] transition-all duration-200 hover:-translate-y-px hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111]"
+              >
+                {t("quote")}
+              </a>
+              <div className="flex items-center gap-1.5">
+                {locales.map((l, i) => (
+                  <span key={l.code} className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => switchLocale(l.code)}
+                      className={`rounded-full px-1.5 py-0.5 font-ui text-[0.62rem] font-bold tracking-[0.14em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] ${
+                        locale === l.code
+                          ? "bg-[#f3c98b]/12 text-[#f3c98b]"
+                          : "text-white/60 hover:text-[#f3c98b]"
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                    {i < locales.length - 1 && (
+                      <span className="text-[0.6rem] text-white/30 opacity-70">
+                        |
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </div>
             </div>
-
-            <a
-              href="#contact"
-              className="hidden rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-6 py-2.5 font-ui text-sm font-bold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)] transition-all duration-200 hover:-translate-y-px hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] lg:inline-flex"
-            >
-              {t("quote")}
-            </a>
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -196,7 +210,7 @@ export default function Navbar({ locale }: { locale: string }) {
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                        className={`${linkCls} ${delayClass} ${stateClass}`}
+                      className={`${linkCls} ${delayClass} ${stateClass}`}
                     >
                       {link.label}
                     </Link>

@@ -23,11 +23,12 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${DB_PASSWORD}@db:5432/${POSTGRES_DB:-arvesta_db}
       AUTH_SECRET: ${AUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://arvestafrance.com}
+      AUTH_TRUST_HOST: "true"
     volumes:
       - uploads:/app/public/uploads
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:
