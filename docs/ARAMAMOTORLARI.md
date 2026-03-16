@@ -183,28 +183,22 @@
 
 ## 6. İçerik Stratejisi Önerileri
 
-### 6.1 Blog / Inspirasyon Sayfası ✅
+### 6.1 Blog / Inspirasyon Sayfası (Gelecek)
 
-Blog ve inspirasyon sayfası oluşturuldu:
+Organik trafik için en etkili yöntem düzenli içerik üretimi:
 
-- Admin panelinde CRUD yönetimi (liste + form sayfası)
-- Çoklu dil desteği (fr, en, tr) — her yazı için ayrı çeviriler
-- Görsel yükleme (MediaEditorDialog entegrasyonu)
-- Public blog listesi ve detay sayfası
-- Article + BreadcrumbList JSON-LD schema
-- Hreflang ve canonical URL'ler
-- Sitemap'e blog URL'leri eklendi
-- Navbar ve Footer'a blog linki eklendi
+- "Comment choisir sa cuisine sur mesure" (Nasıl özel mutfak seçilir)
+- "Tendances aménagement intérieur 2026" (2026 iç mekan trendleri)
+- "Guide du dressing sur mesure" (Özel giyinme odası rehberi)
+- "Matériaux nobles pour votre mobilier" (Mobilyanız için kaliteli malzemeler)
 
-### 6.2 FAQ Sayfası ✅
+### 6.2 FAQ Sayfası (Gelecek)
 
-Google FAQ rich snippet'ları için 10 soru-cevap ile `/faq` sayfası oluşturuldu:
+Google FAQ rich snippet'ları için:
 
-- FAQPage + BreadcrumbList JSON-LD schema
-- 3 dilde tam çeviri (fr, en, tr)
-- Navbar ve Footer'a link eklendi
-- Native `<details>/<summary>` accordion (JS gerektirmez)
-- CTA bölümü iletişim formuna yönlendiriyor
+- "Quel est le délai de livraison ?" (Teslimat süresi nedir?)
+- "Livrez-vous dans toute l'Europe ?" (Tüm Avrupa'ya teslim ediyor musunuz?)
+- "Comment se déroule un projet sur mesure ?" (Özel proje süreci nasıl işler?)
 
 ### 6.3 Proje Portföyü (Gelecek)
 
@@ -234,8 +228,8 @@ Tamamlanmış projelerin detaylı case study'leri:
 - [ ] Google Search Console kurulumu (manuel)
 - [ ] Bing Webmaster Tools kurulumu (manuel)
 - [ ] Google Business Profile oluşturma (manuel)
-- [x] Blog/içerik sayfası ekleme (admin CRUD, çoklu dil, görsel yükleme, Article JSON-LD)
-- [x] FAQ sayfası ekleme (10 soru-cevap, FAQPage JSON-LD, navbar + footer linkleri)
+- [ ] Blog/içerik sayfası ekleme (gelecek sprint)
+- [ ] FAQ sayfası ekleme (gelecek sprint)
 
 ---
 

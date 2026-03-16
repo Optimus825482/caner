@@ -3,9 +3,123 @@ import path from "path";
 import { randomUUID } from "crypto";
 
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+/** Soft limit: files above this are auto-compressed instead of rejected */
+export const UPLOAD_SOFT_LIMIT_BYTES = 20 * 1024 * 1024;
 export const MAX_IMAGE_WIDTH = 4096;
 export const MAX_IMAGE_HEIGHT = 4096;
 export const MAX_IMAGE_PIXELS = 16_000_000;
+
+/**
+ * Progressively compress an image buffer until it fits under targetBytes.
+ * Strategy: first reduce quality, then resize if still too large.
+ * Returns the compressed buffer + metadata about what was done.
+ */
+export async function compressToFit(
+  buffer: Buffer,
+  ext: SupportedExt,
+  targetBytes: number = MAX_FILE_SIZE_BYTES,
+): Promise<{
+  buffer: Buffer;
+  ext: SupportedExt;
+  wasCompressed: boolean;
+  finalQuality?: number;
+  wasResized?: boolean;
+}> {
+  if (buffer.length <= targetBytes) {
+    return { buffer, ext, wasCompressed: false };
+  }
+
+  const sharpModule = await import("sharp");
+  const sharp = sharpModule.default;
+
+  // Phase 1: Quality reduction (only for lossy formats)
+  const qualitySteps =
+    ext === ".png"
+      ? [
+          { q: 90, fmt: "webp" as const },
+          { q: 80, fmt: "webp" as const },
+          { q: 70, fmt: "webp" as const },
+          { q: 60, fmt: "webp" as const },
+        ]
+      : [85, 75, 65, 55, 45].map((q) => ({
+          q,
+          fmt: ext === ".webp" ? ("webp" as const) : ("jpg" as const),
+        }));
+
+  let currentExt = ext;
+
+  for (const step of qualitySteps) {
+    let pipeline = sharp(buffer, {
+      limitInputPixels: MAX_IMAGE_PIXELS,
+    }).autoOrient();
+
+    if (step.fmt === "webp") {
+      pipeline = pipeline.webp({ quality: step.q });
+      currentExt = ".webp";
+    } else {
+      pipeline = pipeline.jpeg({ quality: step.q, mozjpeg: true });
+      currentExt = ".jpg";
+    }
+
+    const result = await pipeline.toBuffer();
+    if (result.length <= targetBytes) {
+      return {
+        buffer: result,
+        ext: currentExt,
+        wasCompressed: true,
+        finalQuality: step.q,
+      };
+    }
+  }
+
+  // Phase 2: Resize progressively (80%, 60%, 50% of original dimensions)
+  const meta = await sharp(buffer, {
+    limitInputPixels: MAX_IMAGE_PIXELS,
+  }).metadata();
+  const origW = meta.width ?? MAX_IMAGE_WIDTH;
+  const scaleSteps = [0.8, 0.6, 0.5];
+
+  for (const scale of scaleSteps) {
+    const newW = Math.round(origW * scale);
+    let pipeline = sharp(buffer, { limitInputPixels: MAX_IMAGE_PIXELS })
+      .autoOrient()
+      .resize(newW, undefined, { withoutEnlargement: true });
+
+    if (currentExt === ".webp" || ext === ".png") {
+      pipeline = pipeline.webp({ quality: 75 });
+      currentExt = ".webp";
+    } else {
+      pipeline = pipeline.jpeg({ quality: 75, mozjpeg: true });
+      currentExt = ".jpg";
+    }
+
+    const result = await pipeline.toBuffer();
+    if (result.length <= targetBytes) {
+      return {
+        buffer: result,
+        ext: currentExt,
+        wasCompressed: true,
+        finalQuality: 75,
+        wasResized: true,
+      };
+    }
+  }
+
+  // Last resort: aggressive resize + low quality
+  const lastResort = await sharp(buffer, { limitInputPixels: MAX_IMAGE_PIXELS })
+    .autoOrient()
+    .resize(1920, undefined, { withoutEnlargement: true })
+    .webp({ quality: 60 })
+    .toBuffer();
+
+  return {
+    buffer: lastResort,
+    ext: ".webp",
+    wasCompressed: true,
+    finalQuality: 60,
+    wasResized: true,
+  };
+}
 
 export const ALLOWED_FILE_TYPES: Record<
   string,

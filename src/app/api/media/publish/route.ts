@@ -8,6 +8,8 @@ import { randomUUID } from "crypto";
 import {
   getPublicUploadDir,
   resolveTempFileById,
+  compressToFit,
+  MAX_FILE_SIZE_BYTES,
 } from "@/lib/media-preprocess";
 import type { MediaEditRecipe, MediaTextOverlay } from "@/types/media";
 
@@ -479,7 +481,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const finalBuffer = await pipeline.toBuffer();
+    let finalBuffer = await pipeline.toBuffer();
+
+    // Auto-compress if output exceeds 5MB
+    if (finalBuffer.length > MAX_FILE_SIZE_BYTES) {
+      const compressed = await compressToFit(
+        finalBuffer,
+        finalExt,
+        MAX_FILE_SIZE_BYTES,
+      );
+      finalBuffer = compressed.buffer;
+      finalExt = compressed.ext;
+    }
 
     const filename = `${Date.now()}-${randomUUID()}${finalExt}`;
     const uploadDir = getPublicUploadDir();

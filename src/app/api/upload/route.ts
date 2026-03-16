@@ -15,7 +15,9 @@ import {
   MAX_IMAGE_PIXELS,
   MAX_IMAGE_WIDTH,
   SNIFFED_TYPE_MIME,
+  UPLOAD_SOFT_LIMIT_BYTES,
   cleanupOldTempMedia,
+  compressToFit,
   getSafeExt,
   saveTempMedia,
   sniffImageType,
@@ -73,10 +75,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (uploaded.size > MAX_FILE_SIZE_BYTES) {
+  if (uploaded.size > UPLOAD_SOFT_LIMIT_BYTES) {
     return NextResponse.json(
       {
-        error: `File too large. Max allowed size is ${Math.floor(MAX_FILE_SIZE_BYTES / (1024 * 1024))}MB`,
+        error: `File too large. Max allowed size is ${Math.floor(UPLOAD_SOFT_LIMIT_BYTES / (1024 * 1024))}MB`,
       },
       { status: 413 },
     );
@@ -188,6 +190,17 @@ export async function POST(req: NextRequest) {
         .toBuffer();
       finalExt = ".webp";
     }
+  }
+
+  // Auto-compress if still over 5MB after re-encode
+  if (finalBuffer.length > MAX_FILE_SIZE_BYTES) {
+    const compressed = await compressToFit(
+      finalBuffer,
+      finalExt,
+      MAX_FILE_SIZE_BYTES,
+    );
+    finalBuffer = compressed.buffer;
+    finalExt = compressed.ext;
   }
 
   const saved = await saveTempMedia(finalBuffer, finalExt);
