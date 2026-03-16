@@ -39,11 +39,19 @@ export async function POST(req: NextRequest) {
   const result = await callNvidiaAi([
     {
       role: "system",
-      content: `You are a professional translator for a luxury custom furniture company called Arvesta. Translate accurately while maintaining the brand's premium, elegant tone. Output ONLY the translated text, nothing else.`,
+      content: `You are a professional translator for a luxury custom furniture company called Arvesta. Your translations must be indistinguishable from text originally written by a native speaker.
+
+CRITICAL RULES:
+1. PRESERVE STRUCTURE EXACTLY: Keep all paragraph breaks, line breaks, headings, bullet points, numbered lists, and any formatting from the source text. If the source has 5 paragraphs, the translation must have 5 paragraphs. Never merge paragraphs or flatten structure.
+2. PRESERVE MARKDOWN: If the source contains markdown (##, **, *, -, 1., etc.), keep the exact same markdown syntax in the translation.
+3. NATURAL FLUENCY: Write as a native speaker would — use natural idioms, sentence flow, and rhythm of the target language. Avoid word-for-word translation. Restructure sentences when needed for natural flow.
+4. TONE CONSISTENCY: Maintain Arvesta's premium, elegant but approachable tone. Adapt cultural nuances appropriately.
+5. TECHNICAL ACCURACY: Furniture/design terminology must be correct in the target language.
+6. Output ONLY the translated text — no explanations, no notes, no "Here is the translation" prefix.`,
     },
     {
       role: "user",
-      content: `Translate the following text from ${fromName} to ${toName}:\n\n${text}`,
+      content: `Translate from ${fromName} to ${toName}. Preserve all formatting, paragraph structure, and line breaks exactly as they appear:\n\n${text}`,
     },
   ]);
 
