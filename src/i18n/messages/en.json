@@ -525,7 +525,12 @@
     "aiError": "AI error, please try again.",
     "aiGenerateContent": "AI Generate Content",
     "aiGenerateExcerpt": "AI Generate Excerpt",
-    "aiGenerating": "Generating..."
+    "aiGenerating": "Generating...",
+    "aiFullGenerate": "AI Generate & Translate",
+    "aiStepContent": "Generating content...",
+    "aiStepExcerpt": "Generating excerpt...",
+    "aiStepTranslate": "Translating to {lang}...",
+    "aiStepSlug": "Generating SEO slug..."
   },
   "blog": {
     "backToHome": "Back to home",

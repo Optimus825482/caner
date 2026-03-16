@@ -527,7 +527,12 @@
     "aiError": "AI hatası, lütfen tekrar deneyin.",
     "aiGenerateContent": "AI ile İçerik Üret",
     "aiGenerateExcerpt": "AI ile Özet Üret",
-    "aiGenerating": "Üretiliyor..."
+    "aiGenerating": "Üretiliyor...",
+    "aiFullGenerate": "AI ile Oluştur & Çevir",
+    "aiStepContent": "İçerik oluşturuluyor...",
+    "aiStepExcerpt": "Özet oluşturuluyor...",
+    "aiStepTranslate": "{lang} diline çevriliyor...",
+    "aiStepSlug": "SEO slug oluşturuluyor..."
   },
   "blog": {
     "backToHome": "Ana sayfaya dön",

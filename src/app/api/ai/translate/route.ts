@@ -51,7 +51,13 @@ CRITICAL RULES:
     },
     {
       role: "user",
-      content: `Translate from ${fromName} to ${toName}. Preserve all formatting, paragraph structure, and line breaks exactly as they appear:\n\n${text}`,
+      content: `Translate from ${fromName} to ${toName}.
+
+IMPORTANT: The source text below contains specific formatting (paragraph breaks, markdown headings like ##, bold markers **, lists with - or 1., etc.). You MUST reproduce the EXACT SAME structure in your translation. Count the paragraphs — your output must have the same number. Count the headings — your output must have the same headings. Do NOT merge anything into a single block of text.
+
+SOURCE TEXT:
+
+${text}`,
     },
   ]);
 

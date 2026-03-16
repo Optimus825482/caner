@@ -527,7 +527,12 @@
     "aiError": "Erreur IA, veuillez réessayer.",
     "aiGenerateContent": "Générer le contenu par IA",
     "aiGenerateExcerpt": "Générer l'extrait par IA",
-    "aiGenerating": "Génération..."
+    "aiGenerating": "Génération...",
+    "aiFullGenerate": "Générer & Traduire par IA",
+    "aiStepContent": "Génération du contenu...",
+    "aiStepExcerpt": "Génération de l'extrait...",
+    "aiStepTranslate": "Traduction en {lang}...",
+    "aiStepSlug": "Génération du slug SEO..."
   },
   "blog": {
     "backToHome": "Retour à l'accueil",

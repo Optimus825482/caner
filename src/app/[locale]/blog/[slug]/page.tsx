@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import MarkdownContent from "@/components/public/MarkdownContent";
 import {
   generateAlternates,
   generateOgMeta,
@@ -142,8 +143,8 @@ export default async function BlogPostPage({
           </div>
         )}
 
-        <div className="prose-arvesta text-base leading-relaxed text-(--arvesta-text-secondary) whitespace-pre-line">
-          {tr?.content}
+        <div className="prose-arvesta text-base leading-relaxed">
+          {tr?.content && <MarkdownContent content={tr.content} />}
         </div>
 
         {/* CTA */}

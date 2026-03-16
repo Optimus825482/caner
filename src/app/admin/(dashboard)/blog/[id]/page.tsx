@@ -42,6 +42,25 @@ const localeLabels: Record<string, string> = {
   tr: "Türkçe",
 };
 
+/** Generate SEO-friendly slug from text */
+function toSeoSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+    .replace(/[ğ]/g, "g")
+    .replace(/[ü]/g, "u")
+    .replace(/[ş]/g, "s")
+    .replace(/[ı]/g, "i")
+    .replace(/[ö]/g, "o")
+    .replace(/[ç]/g, "c")
+    .replace(/[^a-z0-9\s-]/g, "") // remove non-alphanumeric
+    .trim()
+    .replace(/\s+/g, "-") // spaces to hyphens
+    .replace(/-+/g, "-") // collapse multiple hyphens
+    .slice(0, 80); // max 80 chars for SEO
+}
+
 export default function BlogFormPage({
   params,
 }: {
@@ -64,11 +83,126 @@ export default function BlogFormPage({
   const [errorMessage, setErrorMessage] = useState("");
   const [aiTranslating, setAiTranslating] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiFullProgress, setAiFullProgress] = useState("");
+
+  /** One-click: generate content + excerpt for current locale, then translate to all others */
+  async function handleAiFullGenerate(locale: string) {
+    const title = translations[locale]?.title?.trim();
+    if (!title) {
+      alert(t("aiNoSource"));
+      return;
+    }
+    setAiGenerating(true);
+    let generatedContent = "";
+    let generatedExcerpt = "";
+    try {
+      // Step 1: Generate content
+      setAiFullProgress(t("aiStepContent"));
+      const contentRes = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "blog_content", prompt: title, locale }),
+      });
+      if (contentRes.ok) {
+        const contentData = await contentRes.json();
+        if (contentData.generated) {
+          generatedContent = contentData.generated;
+          setTranslations((prev) => ({
+            ...prev,
+            [locale]: { ...prev[locale], content: generatedContent },
+          }));
+        }
+      }
+
+      // Step 2: Generate excerpt
+      setAiFullProgress(t("aiStepExcerpt"));
+      const excerptRes = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "blog_excerpt", prompt: title, locale }),
+      });
+      if (excerptRes.ok) {
+        const excerptData = await excerptRes.json();
+        if (excerptData.generated) {
+          generatedExcerpt = excerptData.generated;
+          setTranslations((prev) => ({
+            ...prev,
+            [locale]: { ...prev[locale], excerpt: generatedExcerpt },
+          }));
+        }
+      }
+
+      // Step 3: Translate to other locales
+      const otherLocales = locales.filter((l) => l !== locale);
+      const sourceTexts = {
+        title,
+        excerpt:
+          generatedExcerpt || translations[locale]?.excerpt?.trim() || "",
+        content:
+          generatedContent || translations[locale]?.content?.trim() || "",
+      };
+
+      let translatedEnTitle = locale === "en" ? title : "";
+
+      for (const targetLocale of otherLocales) {
+        setAiFullProgress(
+          t("aiStepTranslate", { lang: localeLabels[targetLocale] }),
+        );
+        const fields = ["title", "excerpt", "content"] as const;
+        for (const field of fields) {
+          const text = sourceTexts[field];
+          if (!text) continue;
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              text,
+              fromLocale: locale,
+              toLocale: targetLocale,
+            }),
+          });
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data.translated) {
+            if (targetLocale === "en" && field === "title") {
+              translatedEnTitle = data.translated;
+            }
+            setTranslations((prev) => ({
+              ...prev,
+              [targetLocale]: {
+                ...prev[targetLocale],
+                [field]: data.translated,
+              },
+            }));
+          }
+        }
+      }
+
+      // Step 4: Auto-generate SEO slug from English title (fallback to source locale)
+      setAiFullProgress(t("aiStepSlug"));
+      const slugSource = translatedEnTitle || title;
+      if (slugSource && !slug) {
+        setSlug(toSeoSlug(slugSource));
+      }
+    } catch {
+      alert(t("aiError"));
+    } finally {
+      setAiGenerating(false);
+      setAiFullProgress("");
+    }
+  }
 
   async function handleAiTranslate(targetLocale: string) {
-    const sourceLocale = locales.find(
-      (l) => l !== targetLocale && translations[l]?.title?.trim(),
-    );
+    // Pick source locale with the richest content (longest content field)
+    const candidates = locales
+      .filter((l) => l !== targetLocale && translations[l]?.title?.trim())
+      .map((l) => ({
+        locale: l,
+        contentLength: (translations[l]?.content || "").length,
+      }))
+      .sort((a, b) => b.contentLength - a.contentLength);
+
+    const sourceLocale = candidates[0]?.locale;
     if (!sourceLocale) {
       alert(t("aiNoSource"));
       return;
@@ -101,41 +235,6 @@ export default function BlogFormPage({
       alert(t("aiError"));
     } finally {
       setAiTranslating(false);
-    }
-  }
-
-  async function handleAiGenerate(
-    type: "blog_content" | "blog_excerpt",
-    locale: string,
-  ) {
-    const title = translations[locale]?.title?.trim();
-    if (!title) {
-      alert(t("aiNoSource"));
-      return;
-    }
-    setAiGenerating(true);
-    try {
-      const res = await fetch("/api/ai/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, prompt: title, locale }),
-      });
-      if (!res.ok) {
-        alert(t("aiError"));
-        return;
-      }
-      const data = await res.json();
-      if (data.generated) {
-        const field = type === "blog_content" ? "content" : "excerpt";
-        setTranslations((prev) => ({
-          ...prev,
-          [locale]: { ...prev[locale], [field]: data.generated },
-        }));
-      }
-    } catch {
-      alert(t("aiError"));
-    } finally {
-      setAiGenerating(false);
     }
   }
 
@@ -299,44 +398,38 @@ export default function BlogFormPage({
               </TabsList>
               {locales.map((l) => (
                 <TabsContent key={l} value={l} className="space-y-4">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={aiGenerating}
-                      onClick={() => handleAiGenerate("blog_excerpt", l)}
-                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      {aiGenerating
-                        ? t("aiGenerating")
-                        : t("aiGenerateExcerpt")}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={aiGenerating}
-                      onClick={() => handleAiGenerate("blog_content", l)}
-                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      {aiGenerating
-                        ? t("aiGenerating")
-                        : t("aiGenerateContent")}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={aiTranslating}
-                      onClick={() => handleAiTranslate(l)}
-                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
-                    >
-                      <Languages className="w-3.5 h-3.5" />
-                      {aiTranslating ? t("aiTranslating") : t("aiTranslate")}
-                    </Button>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1">
+                      {aiGenerating && aiFullProgress && (
+                        <span className="text-xs text-purple-300 animate-pulse">
+                          {aiFullProgress}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={aiGenerating || aiTranslating}
+                        onClick={() => handleAiFullGenerate(l)}
+                        className="border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 text-xs gap-1.5"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        {aiGenerating ? t("aiGenerating") : t("aiFullGenerate")}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={aiTranslating || aiGenerating}
+                        onClick={() => handleAiTranslate(l)}
+                        className="text-zinc-400 hover:text-purple-300 text-xs gap-1.5"
+                      >
+                        <Languages className="w-3.5 h-3.5" />
+                        {aiTranslating ? t("aiTranslating") : t("aiTranslate")}
+                      </Button>
+                    </div>
                   </div>
                   <div>
                     <Label>{t("title")}</Label>
