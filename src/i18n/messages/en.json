@@ -6,6 +6,7 @@
     "contact": "Contact",
     "about": "About",
     "faq": "FAQ",
+    "blog": "Blog",
     "quote": "Free Quote"
   },
   "hero": {
@@ -78,7 +79,8 @@
     "about": "About",
     "contact": "Contact",
     "privacy": "Privacy",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "blog": "Blog"
   },
   "about": {
     "title": "About Arvesta",
@@ -193,6 +195,7 @@
     "products": "Products",
     "categories": "Categories",
     "heroSlider": "Hero Slider",
+    "blog": "Blog",
     "submissions": "Submissions",
     "settings": "Settings",
     "logout": "Logout"
@@ -413,6 +416,64 @@
     "featured": "Featured",
     "save": "Save",
     "saving": "Saving..."
+  },
+  "adminBlog": {
+    "title": "Blog Posts",
+    "countLabel": "posts",
+    "newPost": "New Post",
+    "noPosts": "No posts yet.",
+    "published": "Published",
+    "draft": "Draft",
+    "editAriaLabel": "Edit post",
+    "deleteAriaLabel": "Delete post",
+    "table": {
+      "image": "Image",
+      "title": "Title",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "deleteDialog": {
+      "title": "Delete post?",
+      "descriptionPrefix": "You are about to delete",
+      "descriptionSuffix": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "adminBlogForm": {
+    "newPost": "New Post",
+    "editPost": "Edit Post",
+    "multiLangContent": "Multi-Language Content",
+    "title": "Title",
+    "titlePlaceholder": "Post title",
+    "excerpt": "Excerpt",
+    "excerptPlaceholder": "Short summary of the post",
+    "content": "Content",
+    "contentPlaceholder": "Post content...",
+    "image": "Image",
+    "uploadImage": "Upload Image",
+    "uploading": "Uploading...",
+    "editExisting": "Edit Existing Image",
+    "preparing": "Preparing...",
+    "details": "Details",
+    "slug": "Slug",
+    "slugPlaceholder": "post-title",
+    "order": "Order",
+    "published": "Published",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "blog": {
+    "backToHome": "Back to home",
+    "title": "Blog & Inspirations",
+    "subtitle": "Discover our inspiration articles, furniture trends and interior design tips.",
+    "noPosts": "No posts yet.",
+    "readMore": "Read more",
+    "backToBlog": "Back to blog",
+    "ctaTitle": "Ready to bring your project to life?",
+    "ctaDesc": "Contact us for a free consultation and personalised quote.",
+    "ctaBtn": "Contact us"
   },
   "faq": {
     "backToHome": "Back to home",

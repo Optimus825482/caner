@@ -6,6 +6,7 @@
     "contact": "İletişim",
     "about": "Hakkımızda",
     "faq": "SSS",
+    "blog": "Blog",
     "quote": "Ücretsiz Teklif"
   },
   "hero": {
@@ -80,7 +81,8 @@
     "about": "Hakkımızda",
     "contact": "İletişim",
     "privacy": "Gizlilik",
-    "faq": "SSS"
+    "faq": "SSS",
+    "blog": "Blog"
   },
   "about": {
     "title": "Arvesta Hakkında",
@@ -195,6 +197,7 @@
     "products": "Ürünler",
     "categories": "Kategoriler",
     "heroSlider": "Hero Slider",
+    "blog": "Blog",
     "submissions": "Talepler",
     "settings": "Ayarlar",
     "logout": "Çıkış Yap"
@@ -415,6 +418,64 @@
     "featured": "Öne Çıkan",
     "save": "Kaydet",
     "saving": "Kaydediliyor..."
+  },
+  "adminBlog": {
+    "title": "Blog Yazıları",
+    "countLabel": "yazı",
+    "newPost": "Yeni Yazı",
+    "noPosts": "Henüz yazı yok.",
+    "published": "Yayında",
+    "draft": "Taslak",
+    "editAriaLabel": "Yazıyı düzenle",
+    "deleteAriaLabel": "Yazıyı sil",
+    "table": {
+      "image": "Görsel",
+      "title": "Başlık",
+      "status": "Durum",
+      "date": "Tarih",
+      "actions": "İşlemler"
+    },
+    "deleteDialog": {
+      "title": "Yazı silinsin mi?",
+      "descriptionPrefix": "Şu yazıyı silmek üzeresiniz",
+      "descriptionSuffix": "Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "confirm": "Sil"
+    }
+  },
+  "adminBlogForm": {
+    "newPost": "Yeni Yazı",
+    "editPost": "Yazıyı Düzenle",
+    "multiLangContent": "Çoklu Dil İçerik",
+    "title": "Başlık",
+    "titlePlaceholder": "Yazı başlığı",
+    "excerpt": "Özet",
+    "excerptPlaceholder": "Yazının kısa özeti",
+    "content": "İçerik",
+    "contentPlaceholder": "Yazı içeriği...",
+    "image": "Görsel",
+    "uploadImage": "Görsel Yükle",
+    "uploading": "Yükleniyor...",
+    "editExisting": "Mevcut Görseli Düzenle",
+    "preparing": "Hazırlanıyor...",
+    "details": "Detaylar",
+    "slug": "Slug",
+    "slugPlaceholder": "yazi-basligi",
+    "order": "Sıra",
+    "published": "Yayında",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor..."
+  },
+  "blog": {
+    "backToHome": "Ana sayfaya dön",
+    "title": "Blog & İlham",
+    "subtitle": "İlham yazıları, mobilya trendleri ve iç mekan tasarım ipuçları keşfedin.",
+    "noPosts": "Henüz yazı yok.",
+    "readMore": "Devamını oku",
+    "backToBlog": "Bloga dön",
+    "ctaTitle": "Projenizi hayata geçirmeye hazır mısınız?",
+    "ctaDesc": "Ücretsiz danışmanlık ve kişiselleştirilmiş teklif için bize ulaşın.",
+    "ctaBtn": "Bize ulaşın"
   },
   "faq": {
     "backToHome": "Ana sayfaya dön",

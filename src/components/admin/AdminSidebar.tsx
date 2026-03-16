@@ -15,6 +15,7 @@ import {
   Settings,
   LogOut,
   Menu,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -25,6 +26,7 @@ const menuKeys = [
   { href: "/admin/products", icon: Package, key: "products" },
   { href: "/admin/categories", icon: Grid3X3, key: "categories" },
   { href: "/admin/hero", icon: ImageIcon, key: "heroSlider" },
+  { href: "/admin/blog", icon: FileText, key: "blog" },
   { href: "/admin/submissions", icon: MessageSquare, key: "submissions" },
   { href: "/admin/settings", icon: Settings, key: "settings" },
 ] as const;

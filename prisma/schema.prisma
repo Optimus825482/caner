@@ -130,3 +130,30 @@ model AdminUser {
 
   @@map("admin_users")
 }
+
+model BlogPost {
+  id           String                  @id @default(cuid())
+  slug         String                  @unique
+  image        String?
+  published    Boolean                 @default(false)
+  order        Int                     @default(0)
+  translations BlogPostTranslation[]
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  @@index([published, createdAt])
+  @@map("blog_posts")
+}
+
+model BlogPostTranslation {
+  id          String   @id @default(cuid())
+  locale      String
+  title       String
+  excerpt     String?
+  content     String   @db.Text
+  post        BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      String
+
+  @@unique([postId, locale])
+  @@map("blog_post_translations")
+}

@@ -25,15 +25,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     updatedAt: Date | null;
     createdAt: Date;
   }> = [];
+  let blogPosts: Array<{
+    slug: string;
+    updatedAt: Date | null;
+    createdAt: Date;
+  }> = [];
 
   if (process.env.DATABASE_URL) {
     try {
       const { prisma } = await import("@/lib/prisma");
-      [products, categories] = await Promise.all([
+      [products, categories, blogPosts] = await Promise.all([
         prisma.product.findMany({
           select: { slug: true, updatedAt: true, createdAt: true },
         }),
         prisma.category.findMany({
+          select: { slug: true, updatedAt: true, createdAt: true },
+        }),
+        prisma.blogPost.findMany({
+          where: { published: true },
           select: { slug: true, updatedAt: true, createdAt: true },
         }),
       ]);
@@ -43,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Static pages
-  const staticPages = ["", "/about", "/privacy", "/faq"];
+  const staticPages = ["", "/about", "/privacy", "/faq", "/blog"];
   const pages: MetadataRoute.Sitemap = staticPages.flatMap((path) =>
     LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}${path}`,
@@ -77,5 +86,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
   );
 
-  return [...pages, ...productPages, ...collectionPages];
+  // Blog post pages
+  const blogPages: MetadataRoute.Sitemap = blogPosts.flatMap((post) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}/blog/${post.slug}`,
+      lastModified: post.updatedAt ?? post.createdAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+      alternates: alternates(`/blog/${post.slug}`),
+    })),
+  );
+
+  return [...pages, ...productPages, ...collectionPages, ...blogPages];
 }

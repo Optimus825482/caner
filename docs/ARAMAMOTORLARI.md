@@ -183,14 +183,18 @@
 
 ## 6. İçerik Stratejisi Önerileri
 
-### 6.1 Blog / Inspirasyon Sayfası (Gelecek)
+### 6.1 Blog / Inspirasyon Sayfası ✅
 
-Organik trafik için en etkili yöntem düzenli içerik üretimi:
+Blog ve inspirasyon sayfası oluşturuldu:
 
-- "Comment choisir sa cuisine sur mesure" (Nasıl özel mutfak seçilir)
-- "Tendances aménagement intérieur 2026" (2026 iç mekan trendleri)
-- "Guide du dressing sur mesure" (Özel giyinme odası rehberi)
-- "Matériaux nobles pour votre mobilier" (Mobilyanız için kaliteli malzemeler)
+- Admin panelinde CRUD yönetimi (liste + form sayfası)
+- Çoklu dil desteği (fr, en, tr) — her yazı için ayrı çeviriler
+- Görsel yükleme (MediaEditorDialog entegrasyonu)
+- Public blog listesi ve detay sayfası
+- Article + BreadcrumbList JSON-LD schema
+- Hreflang ve canonical URL'ler
+- Sitemap'e blog URL'leri eklendi
+- Navbar ve Footer'a blog linki eklendi
 
 ### 6.2 FAQ Sayfası ✅
 
@@ -230,7 +234,7 @@ Tamamlanmış projelerin detaylı case study'leri:
 - [ ] Google Search Console kurulumu (manuel)
 - [ ] Bing Webmaster Tools kurulumu (manuel)
 - [ ] Google Business Profile oluşturma (manuel)
-- [ ] Blog/içerik sayfası ekleme (gelecek sprint)
+- [x] Blog/içerik sayfası ekleme (admin CRUD, çoklu dil, görsel yükleme, Article JSON-LD)
 - [x] FAQ sayfası ekleme (10 soru-cevap, FAQPage JSON-LD, navbar + footer linkleri)
 
 ---

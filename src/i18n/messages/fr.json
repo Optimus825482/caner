@@ -6,6 +6,7 @@
     "contact": "Contact",
     "about": "À Propos",
     "faq": "FAQ",
+    "blog": "Blog",
     "quote": "Devis Gratuit"
   },
   "hero": {
@@ -80,7 +81,8 @@
     "about": "À Propos",
     "contact": "Contact",
     "privacy": "Confidentialité",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "blog": "Blog"
   },
   "about": {
     "title": "À Propos d'Arvesta",
@@ -195,6 +197,7 @@
     "products": "Produits",
     "categories": "Catégories",
     "heroSlider": "Hero Slider",
+    "blog": "Blog",
     "submissions": "Demandes",
     "settings": "Paramètres",
     "logout": "Déconnexion"
@@ -415,6 +418,64 @@
     "featured": "Mis en avant",
     "save": "Enregistrer",
     "saving": "Enregistrement..."
+  },
+  "adminBlog": {
+    "title": "Articles de Blog",
+    "countLabel": "articles",
+    "newPost": "Nouvel article",
+    "noPosts": "Aucun article pour le moment.",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "editAriaLabel": "Modifier l'article",
+    "deleteAriaLabel": "Supprimer l'article",
+    "table": {
+      "image": "Image",
+      "title": "Titre",
+      "status": "Statut",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "deleteDialog": {
+      "title": "Supprimer l'article ?",
+      "descriptionPrefix": "Vous êtes sur le point de supprimer",
+      "descriptionSuffix": "Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    }
+  },
+  "adminBlogForm": {
+    "newPost": "Nouvel article",
+    "editPost": "Modifier l'article",
+    "multiLangContent": "Contenu multilingue",
+    "title": "Titre",
+    "titlePlaceholder": "Titre de l'article",
+    "excerpt": "Extrait",
+    "excerptPlaceholder": "Résumé court de l'article",
+    "content": "Contenu",
+    "contentPlaceholder": "Contenu de l'article...",
+    "image": "Image",
+    "uploadImage": "Charger une image",
+    "uploading": "Chargement...",
+    "editExisting": "Modifier l'image existante",
+    "preparing": "Préparation...",
+    "details": "Détails",
+    "slug": "Slug",
+    "slugPlaceholder": "titre-de-larticle",
+    "order": "Ordre",
+    "published": "Publié",
+    "save": "Enregistrer",
+    "saving": "Enregistrement..."
+  },
+  "blog": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Blog & Inspirations",
+    "subtitle": "Découvrez nos articles d'inspiration, tendances mobilier et conseils d'aménagement intérieur.",
+    "noPosts": "Aucun article pour le moment.",
+    "readMore": "Lire la suite",
+    "backToBlog": "Retour au blog",
+    "ctaTitle": "Envie de concrétiser votre projet ?",
+    "ctaDesc": "Contactez-nous pour une consultation gratuite et un devis personnalisé.",
+    "ctaBtn": "Nous contacter"
   },
   "faq": {
     "backToHome": "Retour à l'accueil",
