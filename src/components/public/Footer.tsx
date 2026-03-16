@@ -75,6 +75,12 @@ export default async function Footer({ locale }: { locale: string }) {
               >
                 {t("privacy")}
               </Link>
+              <Link
+                href={`/${locale}/faq`}
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
+              >
+                {t("faq")}
+              </Link>
             </div>
           </div>
 

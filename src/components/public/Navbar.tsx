@@ -52,6 +52,7 @@ export default function Navbar({ locale }: { locale: string }) {
     { href: "#collections", label: t("collections"), anchor: true },
     { href: "#export", label: t("export"), anchor: true },
     { href: `/${locale}/about`, label: t("about"), anchor: false },
+    { href: `/${locale}/faq`, label: t("faq"), anchor: false },
     { href: "#contact", label: t("contact"), anchor: true },
   ];
 

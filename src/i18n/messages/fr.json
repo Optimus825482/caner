@@ -5,6 +5,7 @@
     "export": "Export",
     "contact": "Contact",
     "about": "À Propos",
+    "faq": "FAQ",
     "quote": "Devis Gratuit"
   },
   "hero": {
@@ -78,7 +79,8 @@
     "rights": "Tous droits réservés.",
     "about": "À Propos",
     "contact": "Contact",
-    "privacy": "Confidentialité"
+    "privacy": "Confidentialité",
+    "faq": "FAQ"
   },
   "about": {
     "title": "À Propos d'Arvesta",
@@ -413,5 +415,33 @@
     "featured": "Mis en avant",
     "save": "Enregistrer",
     "saving": "Enregistrement..."
+  },
+  "faq": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Questions Fréquentes",
+    "subtitle": "Tout ce que vous devez savoir sur nos services de mobilier sur mesure.",
+    "deliveryQ": "Quel est le délai de livraison ?",
+    "deliveryA": "Le délai de livraison varie entre 6 et 10 semaines selon la complexité du projet. Nos meubles sont fabriqués sur mesure dans nos ateliers d'Aksaray, puis expédiés directement à votre adresse en Europe. Nous vous tenons informé à chaque étape de la production.",
+    "countriesQ": "Livrez-vous dans toute l'Europe ?",
+    "countriesA": "Oui, nous livrons principalement en France, Belgique, Allemagne et Pays-Bas. D'autres pays européens sont également desservis sur demande. Les frais de livraison sont inclus dans le devis personnalisé que nous vous fournissons.",
+    "processQ": "Comment se déroule un projet sur mesure ?",
+    "processA": "Le processus commence par une consultation gratuite où nous discutons de vos besoins et de votre vision. Ensuite, nous réalisons les plans et les rendus 3D pour validation. Une fois approuvé, la fabrication démarre dans nos ateliers. Enfin, nous assurons la livraison et l'installation chez vous.",
+    "materialsQ": "Quels matériaux utilisez-vous ?",
+    "materialsA": "Nous utilisons exclusivement des matériaux de haute qualité : bois massif, placages naturels, quincaillerie européenne premium et finitions laquées. Chaque matériau est sélectionné pour sa durabilité et son esthétique. Nous pouvons vous présenter des échantillons lors de la consultation.",
+    "warrantyQ": "Offrez-vous une garantie ?",
+    "warrantyA": "Oui, tous nos meubles sont couverts par une garantie de 5 ans sur la structure et la fabrication. Cette garantie couvre les défauts de matériaux et de main-d'œuvre dans des conditions normales d'utilisation.",
+    "paymentQ": "Quelles sont les modalités de paiement ?",
+    "paymentA": "Nous demandons un acompte de 40% à la commande, 30% au début de la fabrication et le solde de 30% à la livraison. Nous acceptons les virements bancaires. Un devis détaillé vous est fourni avant tout engagement.",
+    "timelineQ": "Puis-je suivre l'avancement de mon projet ?",
+    "timelineA": "Absolument. Nous envoyons des photos et des mises à jour régulières pendant la fabrication. Vous avez un interlocuteur dédié qui vous accompagne du début à la fin du projet.",
+    "customQ": "Puis-je personnaliser entièrement mon meuble ?",
+    "customA": "C'est notre spécialité. Dimensions, matériaux, couleurs, finitions, quincaillerie — tout est personnalisable selon vos souhaits. Nous n'avons pas de catalogue standard : chaque pièce est unique et conçue spécifiquement pour votre espace.",
+    "installationQ": "Assurez-vous l'installation ?",
+    "installationA": "Oui, nous proposons un service d'installation clé en main. Notre équipe professionnelle se déplace chez vous pour monter et installer vos meubles. L'installation est incluse dans nos prestations pour la France métropolitaine.",
+    "quoteQ": "Comment obtenir un devis gratuit ?",
+    "quoteA": "Remplissez simplement notre formulaire de contact en décrivant votre projet. Vous pouvez également nous appeler ou nous envoyer un message WhatsApp. Nous vous répondons sous 24 heures avec une première estimation, puis nous affinons le devis après la consultation détaillée.",
+    "ctaTitle": "Vous avez d'autres questions ?",
+    "ctaDesc": "Notre équipe est à votre disposition pour répondre à toutes vos interrogations.",
+    "ctaBtn": "Contactez-nous"
   }
 }

@@ -5,6 +5,7 @@
     "export": "Export",
     "contact": "Contact",
     "about": "About",
+    "faq": "FAQ",
     "quote": "Free Quote"
   },
   "hero": {
@@ -76,7 +77,8 @@
     "rights": "All rights reserved.",
     "about": "About",
     "contact": "Contact",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "faq": "FAQ"
   },
   "about": {
     "title": "About Arvesta",
@@ -411,5 +413,33 @@
     "featured": "Featured",
     "save": "Save",
     "saving": "Saving..."
+  },
+  "faq": {
+    "backToHome": "Back to home",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about our custom furniture services.",
+    "deliveryQ": "What is the delivery time?",
+    "deliveryA": "Delivery time varies between 6 and 10 weeks depending on the complexity of the project. Our furniture is custom-made in our Aksaray workshops, then shipped directly to your address in Europe. We keep you informed at every stage of production.",
+    "countriesQ": "Do you deliver throughout Europe?",
+    "countriesA": "Yes, we primarily deliver to France, Belgium, Germany and the Netherlands. Other European countries are also served upon request. Delivery costs are included in the personalised quote we provide.",
+    "processQ": "How does a custom project work?",
+    "processA": "The process begins with a free consultation where we discuss your needs and vision. Then we create plans and 3D renders for approval. Once approved, manufacturing begins in our workshops. Finally, we handle delivery and installation at your home.",
+    "materialsQ": "What materials do you use?",
+    "materialsA": "We exclusively use high-quality materials: solid wood, natural veneers, premium European hardware and lacquered finishes. Each material is selected for its durability and aesthetics. We can show you samples during the consultation.",
+    "warrantyQ": "Do you offer a warranty?",
+    "warrantyA": "Yes, all our furniture is covered by a 5-year warranty on structure and craftsmanship. This warranty covers material and workmanship defects under normal conditions of use.",
+    "paymentQ": "What are the payment terms?",
+    "paymentA": "We require a 40% deposit at order, 30% at the start of manufacturing and the remaining 30% upon delivery. We accept bank transfers. A detailed quote is provided before any commitment.",
+    "timelineQ": "Can I track my project's progress?",
+    "timelineA": "Absolutely. We send photos and regular updates during manufacturing. You have a dedicated contact person who accompanies you from start to finish.",
+    "customQ": "Can I fully customise my furniture?",
+    "customA": "That's our speciality. Dimensions, materials, colours, finishes, hardware — everything is customisable to your wishes. We don't have a standard catalogue: each piece is unique and designed specifically for your space.",
+    "installationQ": "Do you handle installation?",
+    "installationA": "Yes, we offer a turnkey installation service. Our professional team comes to your home to assemble and install your furniture. Installation is included in our services for mainland France.",
+    "quoteQ": "How do I get a free quote?",
+    "quoteA": "Simply fill in our contact form describing your project. You can also call us or send a WhatsApp message. We respond within 24 hours with an initial estimate, then refine the quote after a detailed consultation.",
+    "ctaTitle": "Have more questions?",
+    "ctaDesc": "Our team is available to answer all your questions.",
+    "ctaBtn": "Contact us"
   }
 }

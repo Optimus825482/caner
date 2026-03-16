@@ -5,6 +5,7 @@
     "export": "İhracat",
     "contact": "İletişim",
     "about": "Hakkımızda",
+    "faq": "SSS",
     "quote": "Ücretsiz Teklif"
   },
   "hero": {
@@ -78,7 +79,8 @@
     "rights": "Tüm hakları saklıdır.",
     "about": "Hakkımızda",
     "contact": "İletişim",
-    "privacy": "Gizlilik"
+    "privacy": "Gizlilik",
+    "faq": "SSS"
   },
   "about": {
     "title": "Arvesta Hakkında",
@@ -413,5 +415,33 @@
     "featured": "Öne Çıkan",
     "save": "Kaydet",
     "saving": "Kaydediliyor..."
+  },
+  "faq": {
+    "backToHome": "Ana sayfaya dön",
+    "title": "Sıkça Sorulan Sorular",
+    "subtitle": "Özel mobilya hizmetlerimiz hakkında bilmeniz gereken her şey.",
+    "deliveryQ": "Teslimat süresi ne kadar?",
+    "deliveryA": "Teslimat süresi projenin karmaşıklığına göre 6 ile 10 hafta arasında değişir. Mobilyalarımız Aksaray'daki atölyelerimizde özel olarak üretilir, ardından doğrudan Avrupa'daki adresinize gönderilir. Üretimin her aşamasında sizi bilgilendiririz.",
+    "countriesQ": "Tüm Avrupa'ya teslimat yapıyor musunuz?",
+    "countriesA": "Evet, başlıca Fransa, Belçika, Almanya ve Hollanda'ya teslimat yapıyoruz. Diğer Avrupa ülkelerine de talep üzerine hizmet verilmektedir. Teslimat ücretleri size sunduğumuz kişiselleştirilmiş teklife dahildir.",
+    "processQ": "Özel tasarım proje süreci nasıl işler?",
+    "processA": "Süreç, ihtiyaçlarınızı ve vizyonunuzu tartıştığımız ücretsiz bir danışmanlıkla başlar. Ardından onay için planlar ve 3D görseller hazırlarız. Onaylandıktan sonra atölyelerimizde üretim başlar. Son olarak evinize teslimat ve montajı gerçekleştiririz.",
+    "materialsQ": "Hangi malzemeleri kullanıyorsunuz?",
+    "materialsA": "Yalnızca yüksek kaliteli malzemeler kullanıyoruz: masif ahşap, doğal kaplamalar, premium Avrupa donanımı ve lake kaplamalar. Her malzeme dayanıklılığı ve estetiği için seçilir. Danışmanlık sırasında size numuneler gösterebiliriz.",
+    "warrantyQ": "Garanti sunuyor musunuz?",
+    "warrantyA": "Evet, tüm mobilyalarımız yapı ve işçilik üzerinde 5 yıl garantilidir. Bu garanti, normal kullanım koşullarında malzeme ve işçilik kusurlarını kapsar.",
+    "paymentQ": "Ödeme koşulları nelerdir?",
+    "paymentA": "Siparişte %40, üretim başlangıcında %30 ve teslimatta kalan %30 ödeme talep ediyoruz. Banka havalesi kabul ediyoruz. Herhangi bir taahhütten önce detaylı bir teklif sunulur.",
+    "timelineQ": "Projemin ilerleyişini takip edebilir miyim?",
+    "timelineA": "Kesinlikle. Üretim süresince fotoğraflar ve düzenli güncellemeler gönderiyoruz. Baştan sona size eşlik eden özel bir iletişim kişiniz olur.",
+    "customQ": "Mobilyamı tamamen özelleştirebilir miyim?",
+    "customA": "Bu bizim uzmanlık alanımız. Boyutlar, malzemeler, renkler, kaplamalar, donanım — her şey isteklerinize göre özelleştirilebilir. Standart bir kataloğumuz yoktur: her parça benzersizdir ve özellikle sizin mekanınız için tasarlanır.",
+    "installationQ": "Montaj hizmeti sunuyor musunuz?",
+    "installationA": "Evet, anahtar teslim montaj hizmeti sunuyoruz. Profesyonel ekibimiz evinize gelerek mobilyalarınızı monte eder ve kurar. Fransa anakarası için montaj hizmetlerimize dahildir.",
+    "quoteQ": "Ücretsiz teklif nasıl alabilirim?",
+    "quoteA": "Projenizi açıklayan iletişim formumuzu doldurmanız yeterli. Bizi arayabilir veya WhatsApp mesajı da gönderebilirsiniz. 24 saat içinde ilk tahmini ile yanıt veririz, ardından detaylı danışmanlık sonrası teklifi netleştiririz.",
+    "ctaTitle": "Başka sorularınız mı var?",
+    "ctaDesc": "Ekibimiz tüm sorularınızı yanıtlamak için hazır.",
+    "ctaBtn": "Bize ulaşın"
   }
 }

@@ -192,13 +192,15 @@ Organik trafik için en etkili yöntem düzenli içerik üretimi:
 - "Guide du dressing sur mesure" (Özel giyinme odası rehberi)
 - "Matériaux nobles pour votre mobilier" (Mobilyanız için kaliteli malzemeler)
 
-### 6.2 FAQ Sayfası (Gelecek)
+### 6.2 FAQ Sayfası ✅
 
-Google FAQ rich snippet'ları için:
+Google FAQ rich snippet'ları için 10 soru-cevap ile `/faq` sayfası oluşturuldu:
 
-- "Quel est le délai de livraison ?" (Teslimat süresi nedir?)
-- "Livrez-vous dans toute l'Europe ?" (Tüm Avrupa'ya teslim ediyor musunuz?)
-- "Comment se déroule un projet sur mesure ?" (Özel proje süreci nasıl işler?)
+- FAQPage + BreadcrumbList JSON-LD schema
+- 3 dilde tam çeviri (fr, en, tr)
+- Navbar ve Footer'a link eklendi
+- Native `<details>/<summary>` accordion (JS gerektirmez)
+- CTA bölümü iletişim formuna yönlendiriyor
 
 ### 6.3 Proje Portföyü (Gelecek)
 
@@ -229,7 +231,7 @@ Tamamlanmış projelerin detaylı case study'leri:
 - [ ] Bing Webmaster Tools kurulumu (manuel)
 - [ ] Google Business Profile oluşturma (manuel)
 - [ ] Blog/içerik sayfası ekleme (gelecek sprint)
-- [ ] FAQ sayfası ekleme (gelecek sprint)
+- [x] FAQ sayfası ekleme (10 soru-cevap, FAQPage JSON-LD, navbar + footer linkleri)
 
 ---
 
