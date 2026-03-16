@@ -6,6 +6,12 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
+import {
+  generateAlternates,
+  generateOgMeta,
+  collectionJsonLd,
+  breadcrumbJsonLd,
+} from "@/lib/seo";
 
 interface Props {
   params: Promise<{ locale: string; slug: string }>;
@@ -23,9 +29,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = await getCategoryBySlug(slug, locale);
   if (!category) return {};
   const name = category.translations[0]?.name || slug;
+  const description = category.translations[0]?.description || "";
   return {
     title: `${name} — Arvesta Menuiserie France`,
-    description: category.translations[0]?.description || "",
+    description,
+    alternates: generateAlternates(locale, `/collections/${slug}`),
+    openGraph: generateOgMeta(
+      locale,
+      `${name} — Arvesta Menuiserie France`,
+      description,
+      `/collections/${slug}`,
+      category.image ? [category.image] : undefined,
+    ),
   };
 }
 
@@ -51,6 +66,29 @@ export default async function CollectionPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-(--arvesta-bg)">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            collectionJsonLd(locale, {
+              name,
+              description: desc,
+              slug,
+              image: category.image || undefined,
+              productCount: products.length,
+            }),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd(locale, [{ name: "Arvesta", url: "" }, { name }]),
+          ),
+        }}
+      />
       {/* Hero Banner */}
       <section className="relative flex h-[50vh] min-h-90 items-end overflow-hidden">
         <Image

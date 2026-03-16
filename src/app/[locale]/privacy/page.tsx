@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
+import { generateAlternates } from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -26,7 +27,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const m = meta[locale] || meta.fr;
-  return { title: m.title, description: m.description };
+  return {
+    title: m.title,
+    description: m.description,
+    alternates: generateAlternates(locale, "/privacy"),
+  };
 }
 
 export default async function PrivacyPage({

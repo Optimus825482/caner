@@ -3,9 +3,18 @@ import type { MetadataRoute } from "next";
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const locales = ["fr", "en", "tr"];
+const LOCALES = ["fr", "en", "tr"];
 
+function alternates(path: string) {
+  const languages: Record<string, string> = {};
+  for (const loc of LOCALES) {
+    languages[loc] = `${BASE_URL}/${loc}${path}`;
+  }
+  languages["x-default"] = `${BASE_URL}/fr${path}`;
+  return { languages };
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let products: Array<{
     slug: string;
     updatedAt: Date | null;
@@ -33,29 +42,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const pages: MetadataRoute.Sitemap = locales.map((locale) => ({
-    url: `${BASE_URL}/${locale}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 1,
-  }));
+  // Static pages
+  const staticPages = ["", "/about", "/privacy"];
+  const pages: MetadataRoute.Sitemap = staticPages.flatMap((path) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}${path}`,
+      lastModified: new Date(),
+      changeFrequency: path === "" ? ("weekly" as const) : ("monthly" as const),
+      priority: path === "" ? 1 : 0.6,
+      alternates: alternates(path),
+    })),
+  );
 
-  const productPages: MetadataRoute.Sitemap = locales.flatMap((locale) =>
-    products.map((product) => ({
+  // Product pages
+  const productPages: MetadataRoute.Sitemap = products.flatMap((product) =>
+    LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}/products/${product.slug}`,
       lastModified: product.updatedAt ?? product.createdAt,
       changeFrequency: "weekly" as const,
       priority: 0.8,
+      alternates: alternates(`/products/${product.slug}`),
     })),
   );
 
-  const collectionPages: MetadataRoute.Sitemap = locales.flatMap((locale) =>
-    categories.map((category) => ({
-      url: `${BASE_URL}/${locale}/collections/${category.slug}`,
-      lastModified: category.updatedAt ?? category.createdAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    })),
+  // Collection pages
+  const collectionPages: MetadataRoute.Sitemap = categories.flatMap(
+    (category) =>
+      LOCALES.map((locale) => ({
+        url: `${BASE_URL}/${locale}/collections/${category.slug}`,
+        lastModified: category.updatedAt ?? category.createdAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+        alternates: alternates(`/collections/${category.slug}`),
+      })),
   );
 
   return [...pages, ...productPages, ...collectionPages];

@@ -66,8 +66,34 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = await getLocale();
+
+  let verificationMeta: Record<string, string> = {};
+  if (process.env.DATABASE_URL) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      const settings = await prisma.siteSetting.findMany({
+        where: {
+          key: { in: ["seo_google_verification", "seo_bing_verification"] },
+        },
+      });
+      for (const s of settings) {
+        if (s.key === "seo_google_verification" && s.value)
+          verificationMeta["google-site-verification"] = s.value;
+        if (s.key === "seo_bing_verification" && s.value)
+          verificationMeta["msvalidate.01"] = s.value;
+      }
+    } catch {
+      // DB not available at build time
+    }
+  }
+
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        {Object.entries(verificationMeta).map(([name, content]) => (
+          <meta key={name} name={name} content={content} />
+        ))}
+      </head>
       <body
         className={`${manrope.variable} ${cormorant.variable} ${sora.variable} font-sans antialiased`}
       >

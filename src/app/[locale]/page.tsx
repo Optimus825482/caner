@@ -6,6 +6,12 @@ import ExportSection from "@/components/public/ExportSection";
 import Marquee from "@/components/public/Marquee";
 import ContactForm from "@/components/public/ContactForm";
 import { getPublicSettings } from "@/lib/get-public-settings";
+import {
+  generateAlternates,
+  generateOgMeta,
+  furnitureStoreJsonLd,
+  organizationJsonLd,
+} from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -36,40 +42,27 @@ export async function generateMetadata({
   return {
     title: m.title,
     description: m.description,
-    openGraph: {
-      title: m.title,
-      description: m.description,
-      type: "website",
-      locale: locale === "fr" ? "fr_FR" : locale === "tr" ? "tr_TR" : "en_US",
-      siteName: "Arvesta Menuiserie France",
-    },
+    alternates: generateAlternates(locale),
+    openGraph: generateOgMeta(locale, m.title, m.description),
   };
 }
 
 function JsonLd({ locale }: { locale: string }) {
   const m = meta[locale] || meta.fr;
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FurnitureStore",
-    name: "Arvesta Menuiserie France",
-    description: m.description,
-    url: `https://arvesta-france.com/${locale}`,
-    logo: "https://arvesta-france.com/uploads/products/logo.png",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Paris",
-      postalCode: "75001",
-      addressCountry: "FR",
-    },
-    areaServed: ["FR", "BE", "DE", "NL"],
-    priceRange: "€€€",
-  };
+  const store = furnitureStoreJsonLd(locale, m.description);
+  const org = organizationJsonLd();
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(store) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(org) }}
+      />
+    </>
   );
 }
 

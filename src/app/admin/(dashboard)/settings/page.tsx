@@ -25,6 +25,7 @@ import {
   Shield,
   CheckCircle2,
   AlertTriangle,
+  Search,
 } from "lucide-react";
 
 type FieldType = "text" | "email" | "url" | "number" | "password" | "boolean";
@@ -80,6 +81,47 @@ const generalSettingKeys: SettingField[] = [
     icon: Phone,
     placeholder: "https://wa.me/33143678800",
     type: "url",
+  },
+];
+
+const seoSettingKeys: SettingField[] = [
+  {
+    key: "seo_google_verification",
+    label: "seoGoogleVerification",
+    icon: Search,
+    placeholder: "Google Search Console verification code",
+    type: "text",
+    help: "seoGoogleVerificationHelp",
+  },
+  {
+    key: "seo_bing_verification",
+    label: "seoBingVerification",
+    icon: Search,
+    placeholder: "Bing Webmaster Tools verification code",
+    type: "text",
+    help: "seoBingVerificationHelp",
+  },
+  {
+    key: "seo_default_description_fr",
+    label: "seoDefaultDescFr",
+    icon: Globe,
+    placeholder: "Mobilier sur mesure de haute qualité...",
+    type: "text",
+  },
+  {
+    key: "seo_default_description_en",
+    label: "seoDefaultDescEn",
+    icon: Globe,
+    placeholder: "High-quality custom furniture...",
+    type: "text",
+  },
+  {
+    key: "seo_ga_id",
+    label: "seoGaId",
+    icon: Search,
+    placeholder: "G-XXXXXXXXXX",
+    type: "text",
+    help: "seoGaIdHelp",
   },
 ];
 
@@ -280,6 +322,12 @@ export default function AdminSettings() {
               >
                 {t("smtpTab")}
               </TabsTrigger>
+              <TabsTrigger
+                value="seo"
+                className="flex-1 h-9 rounded-lg px-4 text-sm data-[selected]:bg-(--arvesta-gold)/15 data-[selected]:text-(--arvesta-gold) data-active:bg-(--arvesta-gold)/15 data-active:text-(--arvesta-gold)"
+              >
+                {t("seoTab")}
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="pt-1">
@@ -330,6 +378,17 @@ export default function AdminSettings() {
                     <span>{smtpTestResult.message}</span>
                   </div>
                 ) : null}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="seo" className="pt-1">
+              <div className="rounded-xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.01)] p-4">
+                <p className="font-ui text-xs leading-relaxed text-(--arvesta-text-muted) mb-4">
+                  {t("seoInfo")}
+                </p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {seoSettingKeys.map(renderField)}
+                </div>
               </div>
             </TabsContent>
           </Tabs>

@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import AboutClient from "@/components/public/AboutClient";
+import {
+  generateAlternates,
+  generateOgMeta,
+  breadcrumbJsonLd,
+} from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -29,13 +34,8 @@ export async function generateMetadata({
   return {
     title: m.title,
     description: m.description,
-    openGraph: {
-      title: m.title,
-      description: m.description,
-      type: "website",
-      locale: locale === "fr" ? "fr_FR" : locale === "tr" ? "tr_TR" : "en_US",
-      siteName: "Arvesta Menuiserie France",
-    },
+    alternates: generateAlternates(locale, "/about"),
+    openGraph: generateOgMeta(locale, m.title, m.description, "/about"),
   };
 }
 
@@ -45,5 +45,17 @@ export default async function AboutPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <AboutClient locale={locale} />;
+  const bc = breadcrumbJsonLd(locale, [
+    { name: "Arvesta", url: "" },
+    { name: meta[locale]?.title.split(" — ")[0] || "About" },
+  ]);
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+      />
+      <AboutClient locale={locale} />
+    </>
+  );
 }

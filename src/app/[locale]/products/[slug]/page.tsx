@@ -7,6 +7,12 @@ import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import ProductGallery from "./ProductGallery";
+import {
+  generateAlternates,
+  generateOgMeta,
+  productJsonLd,
+  breadcrumbJsonLd,
+} from "@/lib/seo";
 
 interface Props {
   params: Promise<{ locale: string; slug: string }>;
@@ -28,12 +34,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug(slug, locale);
   if (!product) return {};
   const title = product.translations[0]?.title || slug;
+  const description = product.translations[0]?.description || "";
   return {
     title: `${title} — Arvesta Menuiserie France`,
-    description: product.translations[0]?.description || "",
-    openGraph: {
-      images: product.images[0]?.url ? [product.images[0].url] : [],
-    },
+    description,
+    alternates: generateAlternates(locale, `/products/${slug}`),
+    openGraph: generateOgMeta(
+      locale,
+      `${title} — Arvesta Menuiserie France`,
+      description,
+      `/products/${slug}`,
+      product.images[0]?.url ? [product.images[0].url] : undefined,
+    ),
   };
 }
 
@@ -67,6 +79,36 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-(--arvesta-bg)">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            productJsonLd(locale, {
+              name: title,
+              description,
+              slug,
+              image: images[0]?.url,
+              category: catName,
+            }),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd(locale, [
+              { name: "Arvesta", url: "" },
+              {
+                name: catName,
+                url: `/collections/${product.category.slug}`,
+              },
+              { name: title },
+            ]),
+          ),
+        }}
+      />
       {/* Breadcrumb */}
       <div className="mx-auto max-w-7xl px-4 pb-4 pt-28">
         <div className="flex items-center gap-2 font-ui text-xs text-(--arvesta-text-muted)">
