@@ -15,6 +15,8 @@ import {
   Image as ImageIcon,
   Star,
   ArrowLeft,
+  Sparkles,
+  Languages,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -64,6 +66,46 @@ export default function ProductFormPage({
     null,
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [aiTranslating, setAiTranslating] = useState(false);
+
+  async function handleAiTranslate(targetLocale: string) {
+    const sourceLocale = locales.find(
+      (l) => l !== targetLocale && translations[l]?.title?.trim(),
+    );
+    if (!sourceLocale) {
+      alert(t("aiNoSource"));
+      return;
+    }
+    setAiTranslating(true);
+    try {
+      const fields = ["title", "description"] as const;
+      for (const field of fields) {
+        const text = translations[sourceLocale]?.[field]?.trim();
+        if (!text) continue;
+        const res = await fetch("/api/ai/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            fromLocale: sourceLocale,
+            toLocale: targetLocale,
+          }),
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.translated) {
+          setTranslations((prev) => ({
+            ...prev,
+            [targetLocale]: { ...prev[targetLocale], [field]: data.translated },
+          }));
+        }
+      }
+    } catch {
+      alert(t("aiError"));
+    } finally {
+      setAiTranslating(false);
+    }
+  }
 
   const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -329,6 +371,21 @@ export default function ProductFormPage({
                   </TabsList>
                   {locales.map((l) => (
                     <TabsContent key={l} value={l} className="space-y-4">
+                      <div className="flex items-center justify-end">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={aiTranslating}
+                          onClick={() => handleAiTranslate(l)}
+                          className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
+                        >
+                          <Languages className="w-3.5 h-3.5" />
+                          {aiTranslating
+                            ? t("aiTranslating")
+                            : t("aiTranslate")}
+                        </Button>
+                      </div>
                       <div className="space-y-2">
                         <Label className="text-(--arvesta-text-secondary)">
                           {t("title")} ({l.toUpperCase()})

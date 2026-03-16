@@ -196,9 +196,57 @@
     "categories": "Categories",
     "heroSlider": "Hero Slider",
     "blog": "Blog",
+    "faq": "FAQ",
     "submissions": "Submissions",
     "settings": "Settings",
     "logout": "Logout"
+  },
+  "adminFaq": {
+    "title": "FAQ Management",
+    "countLabel": "questions",
+    "newItem": "New Question",
+    "loading": "Loading...",
+    "noItems": "No questions yet.",
+    "untitled": "Untitled",
+    "published": "Published",
+    "draft": "Draft",
+    "editAriaLabel": "Edit question",
+    "deleteAriaLabel": "Delete question",
+    "table": {
+      "question": "Question",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "deleteDialog": {
+      "title": "Delete question?",
+      "descriptionPrefix": "You are about to delete",
+      "descriptionSuffix": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "adminFaqForm": {
+    "newItem": "New Question",
+    "editItem": "Edit Question",
+    "multiLangContent": "Multi-Language Content",
+    "question": "Question",
+    "questionPlaceholder": "Enter the question",
+    "answer": "Answer",
+    "answerPlaceholder": "Enter the answer",
+    "details": "Details",
+    "order": "Order",
+    "published": "Published",
+    "save": "Save",
+    "saving": "Saving...",
+    "aiTranslate": "AI Translate",
+    "aiTranslating": "Translating...",
+    "aiTranslateFrom": "Translate from:",
+    "aiGenerate": "AI Generate",
+    "aiGenerating": "Generating...",
+    "aiGenerateContent": "AI Generate Content",
+    "aiGenerateExcerpt": "AI Generate Excerpt",
+    "aiError": "AI error, please try again.",
+    "aiNoSource": "Enter content in source language first."
   },
   "adminHero": {
     "title": "Hero Slider",
@@ -415,7 +463,14 @@
     "order": "Order",
     "featured": "Featured",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "aiTranslate": "AI Translate",
+    "aiTranslating": "Translating...",
+    "aiTranslateFrom": "Translate from:",
+    "aiNoSource": "Enter content in source language first.",
+    "aiError": "AI error, please try again.",
+    "aiGenerate": "AI Generate Answer",
+    "aiGenerating": "Generating..."
   },
   "adminBlog": {
     "title": "Blog Posts",
@@ -462,7 +517,15 @@
     "order": "Order",
     "published": "Published",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "aiTranslate": "AI Translate",
+    "aiTranslating": "Translating...",
+    "aiTranslateFrom": "Translate from:",
+    "aiNoSource": "Enter content in source language first.",
+    "aiError": "AI error, please try again.",
+    "aiGenerateContent": "AI Generate Content",
+    "aiGenerateExcerpt": "AI Generate Excerpt",
+    "aiGenerating": "Generating..."
   },
   "blog": {
     "backToHome": "Back to home",

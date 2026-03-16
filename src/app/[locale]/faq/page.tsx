@@ -8,6 +8,7 @@ import {
   breadcrumbJsonLd,
   faqJsonLd,
 } from "@/lib/seo";
+import { prisma } from "@/lib/prisma";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -50,23 +51,52 @@ export default async function FaqPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "faq" });
 
-  const faqKeys = [
-    "delivery",
-    "countries",
-    "process",
-    "materials",
-    "warranty",
-    "payment",
-    "timeline",
-    "custom",
-    "installation",
-    "quote",
-  ] as const;
+  // Fetch FAQ items from database
+  const dbItems = (await (prisma as any).faqItem.findMany({
+    where: { published: true },
+    include: { translations: true },
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  })) as Array<{
+    id: string;
+    order: number;
+    published: boolean;
+    translations: Array<{ locale: string; question: string; answer: string }>;
+  }>;
 
-  const faqs = faqKeys.map((key) => ({
-    question: t(`${key}Q` as Parameters<typeof t>[0]),
-    answer: t(`${key}A` as Parameters<typeof t>[0]),
-  }));
+  // Build FAQ list: DB items first, then fallback to static i18n keys if DB is empty
+  let faqs: { question: string; answer: string }[];
+
+  if (dbItems.length > 0) {
+    faqs = dbItems
+      .map((item) => {
+        const tr =
+          item.translations.find((t) => t.locale === locale) ||
+          item.translations.find((t) => t.locale === "fr") ||
+          item.translations[0];
+        if (!tr) return null;
+        return { question: tr.question, answer: tr.answer };
+      })
+      .filter(Boolean) as { question: string; answer: string }[];
+  } else {
+    // Fallback to static i18n translations when no DB items exist
+    const faqKeys = [
+      "delivery",
+      "countries",
+      "process",
+      "materials",
+      "warranty",
+      "payment",
+      "timeline",
+      "custom",
+      "installation",
+      "quote",
+    ] as const;
+
+    faqs = faqKeys.map((key) => ({
+      question: t(`${key}Q` as Parameters<typeof t>[0]),
+      answer: t(`${key}A` as Parameters<typeof t>[0]),
+    }));
+  }
 
   const bc = breadcrumbJsonLd(locale, [
     { name: "Arvesta", url: "" },

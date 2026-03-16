@@ -8,7 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, Upload, ArrowLeft, Image as ImageIcon } from "lucide-react";
+import {
+  Save,
+  Upload,
+  ArrowLeft,
+  Image as ImageIcon,
+  Sparkles,
+  Languages,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
@@ -55,6 +62,82 @@ export default function BlogFormPage({
     null,
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [aiTranslating, setAiTranslating] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
+
+  async function handleAiTranslate(targetLocale: string) {
+    const sourceLocale = locales.find(
+      (l) => l !== targetLocale && translations[l]?.title?.trim(),
+    );
+    if (!sourceLocale) {
+      alert(t("aiNoSource"));
+      return;
+    }
+    setAiTranslating(true);
+    try {
+      const fields = ["title", "excerpt", "content"] as const;
+      for (const field of fields) {
+        const text = translations[sourceLocale]?.[field]?.trim();
+        if (!text) continue;
+        const res = await fetch("/api/ai/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            fromLocale: sourceLocale,
+            toLocale: targetLocale,
+          }),
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.translated) {
+          setTranslations((prev) => ({
+            ...prev,
+            [targetLocale]: { ...prev[targetLocale], [field]: data.translated },
+          }));
+        }
+      }
+    } catch {
+      alert(t("aiError"));
+    } finally {
+      setAiTranslating(false);
+    }
+  }
+
+  async function handleAiGenerate(
+    type: "blog_content" | "blog_excerpt",
+    locale: string,
+  ) {
+    const title = translations[locale]?.title?.trim();
+    if (!title) {
+      alert(t("aiNoSource"));
+      return;
+    }
+    setAiGenerating(true);
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, prompt: title, locale }),
+      });
+      if (!res.ok) {
+        alert(t("aiError"));
+        return;
+      }
+      const data = await res.json();
+      if (data.generated) {
+        const field = type === "blog_content" ? "content" : "excerpt";
+        setTranslations((prev) => ({
+          ...prev,
+          [locale]: { ...prev[locale], [field]: data.generated },
+        }));
+      }
+    } catch {
+      alert(t("aiError"));
+    } finally {
+      setAiGenerating(false);
+    }
+  }
 
   const [slug, setSlug] = useState("");
   const [published, setPublished] = useState(false);
@@ -216,6 +299,45 @@ export default function BlogFormPage({
               </TabsList>
               {locales.map((l) => (
                 <TabsContent key={l} value={l} className="space-y-4">
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={aiGenerating}
+                      onClick={() => handleAiGenerate("blog_excerpt", l)}
+                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      {aiGenerating
+                        ? t("aiGenerating")
+                        : t("aiGenerateExcerpt")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={aiGenerating}
+                      onClick={() => handleAiGenerate("blog_content", l)}
+                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      {aiGenerating
+                        ? t("aiGenerating")
+                        : t("aiGenerateContent")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={aiTranslating}
+                      onClick={() => handleAiTranslate(l)}
+                      className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
+                    >
+                      <Languages className="w-3.5 h-3.5" />
+                      {aiTranslating ? t("aiTranslating") : t("aiTranslate")}
+                    </Button>
+                  </div>
                   <div>
                     <Label>{t("title")}</Label>
                     <Input

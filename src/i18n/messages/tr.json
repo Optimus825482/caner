@@ -198,9 +198,57 @@
     "categories": "Kategoriler",
     "heroSlider": "Hero Slider",
     "blog": "Blog",
+    "faq": "SSS",
     "submissions": "Talepler",
     "settings": "Ayarlar",
     "logout": "Çıkış Yap"
+  },
+  "adminFaq": {
+    "title": "SSS Yönetimi",
+    "countLabel": "soru",
+    "newItem": "Yeni Soru",
+    "loading": "Yükleniyor...",
+    "noItems": "Henüz soru eklenmemiş.",
+    "untitled": "Başlıksız",
+    "published": "Yayında",
+    "draft": "Taslak",
+    "editAriaLabel": "Soruyu düzenle",
+    "deleteAriaLabel": "Soruyu sil",
+    "table": {
+      "question": "Soru",
+      "status": "Durum",
+      "actions": "İşlemler"
+    },
+    "deleteDialog": {
+      "title": "Soru silinsin mi?",
+      "descriptionPrefix": "Şu soruyu silmek üzeresiniz",
+      "descriptionSuffix": "Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "confirm": "Sil"
+    }
+  },
+  "adminFaqForm": {
+    "newItem": "Yeni Soru",
+    "editItem": "Soruyu Düzenle",
+    "multiLangContent": "Çoklu Dil İçerik",
+    "question": "Soru",
+    "questionPlaceholder": "Soru metnini girin",
+    "answer": "Cevap",
+    "answerPlaceholder": "Cevap metnini girin",
+    "details": "Detaylar",
+    "order": "Sıra",
+    "published": "Yayında",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "aiTranslate": "AI ile Çevir",
+    "aiTranslating": "Çevriliyor...",
+    "aiTranslateFrom": "Şuradan çevir:",
+    "aiGenerate": "AI ile Üret",
+    "aiGenerating": "Üretiliyor...",
+    "aiGenerateContent": "AI ile İçerik Üret",
+    "aiGenerateExcerpt": "AI ile Özet Üret",
+    "aiError": "AI hatası, lütfen tekrar deneyin.",
+    "aiNoSource": "Önce kaynak dilde içerik girin."
   },
   "adminHero": {
     "title": "Hero Slider",
@@ -417,7 +465,14 @@
     "order": "Sıra",
     "featured": "Öne Çıkan",
     "save": "Kaydet",
-    "saving": "Kaydediliyor..."
+    "saving": "Kaydediliyor...",
+    "aiTranslate": "AI ile Çevir",
+    "aiTranslating": "Çevriliyor...",
+    "aiTranslateFrom": "Şuradan çevir:",
+    "aiNoSource": "Önce kaynak dilde içerik girin.",
+    "aiError": "AI hatası, lütfen tekrar deneyin.",
+    "aiGenerate": "AI ile Cevap Üret",
+    "aiGenerating": "Üretiliyor..."
   },
   "adminBlog": {
     "title": "Blog Yazıları",
@@ -464,7 +519,15 @@
     "order": "Sıra",
     "published": "Yayında",
     "save": "Kaydet",
-    "saving": "Kaydediliyor..."
+    "saving": "Kaydediliyor...",
+    "aiTranslate": "AI ile Çevir",
+    "aiTranslating": "Çevriliyor...",
+    "aiTranslateFrom": "Şuradan çevir:",
+    "aiNoSource": "Önce kaynak dilde içerik girin.",
+    "aiError": "AI hatası, lütfen tekrar deneyin.",
+    "aiGenerateContent": "AI ile İçerik Üret",
+    "aiGenerateExcerpt": "AI ile Özet Üret",
+    "aiGenerating": "Üretiliyor..."
   },
   "blog": {
     "backToHome": "Ana sayfaya dön",

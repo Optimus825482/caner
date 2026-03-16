@@ -157,3 +157,27 @@ model BlogPostTranslation {
   @@unique([postId, locale])
   @@map("blog_post_translations")
 }
+
+model FaqItem {
+  id           String               @id @default(cuid())
+  order        Int                  @default(0)
+  published    Boolean              @default(true)
+  translations FaqItemTranslation[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([published, order])
+  @@map("faq_items")
+}
+
+model FaqItemTranslation {
+  id       String  @id @default(cuid())
+  locale   String
+  question String
+  answer   String  @db.Text
+  faqItem  FaqItem @relation(fields: [faqItemId], references: [id], onDelete: Cascade)
+  faqItemId String
+
+  @@unique([faqItemId, locale])
+  @@map("faq_item_translations")
+}

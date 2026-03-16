@@ -198,9 +198,57 @@
     "categories": "Catégories",
     "heroSlider": "Hero Slider",
     "blog": "Blog",
+    "faq": "FAQ",
     "submissions": "Demandes",
     "settings": "Paramètres",
     "logout": "Déconnexion"
+  },
+  "adminFaq": {
+    "title": "Gestion FAQ",
+    "countLabel": "questions",
+    "newItem": "Nouvelle question",
+    "loading": "Chargement...",
+    "noItems": "Aucune question pour le moment.",
+    "untitled": "Sans titre",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "editAriaLabel": "Modifier la question",
+    "deleteAriaLabel": "Supprimer la question",
+    "table": {
+      "question": "Question",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "deleteDialog": {
+      "title": "Supprimer la question ?",
+      "descriptionPrefix": "Vous êtes sur le point de supprimer",
+      "descriptionSuffix": "Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    }
+  },
+  "adminFaqForm": {
+    "newItem": "Nouvelle question",
+    "editItem": "Modifier la question",
+    "multiLangContent": "Contenu multilingue",
+    "question": "Question",
+    "questionPlaceholder": "Saisissez la question",
+    "answer": "Réponse",
+    "answerPlaceholder": "Saisissez la réponse",
+    "details": "Détails",
+    "order": "Ordre",
+    "published": "Publié",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "aiTranslate": "Traduire par IA",
+    "aiTranslating": "Traduction...",
+    "aiTranslateFrom": "Traduire depuis :",
+    "aiGenerate": "Générer par IA",
+    "aiGenerating": "Génération...",
+    "aiGenerateContent": "Générer le contenu par IA",
+    "aiGenerateExcerpt": "Générer l'extrait par IA",
+    "aiError": "Erreur IA, veuillez réessayer.",
+    "aiNoSource": "Saisissez d'abord le contenu dans la langue source."
   },
   "adminHero": {
     "title": "Hero Slider",
@@ -417,7 +465,14 @@
     "order": "Ordre",
     "featured": "Mis en avant",
     "save": "Enregistrer",
-    "saving": "Enregistrement..."
+    "saving": "Enregistrement...",
+    "aiTranslate": "Traduire par IA",
+    "aiTranslating": "Traduction...",
+    "aiTranslateFrom": "Traduire depuis :",
+    "aiNoSource": "Saisissez d'abord le contenu dans la langue source.",
+    "aiError": "Erreur IA, veuillez réessayer.",
+    "aiGenerate": "Générer par IA",
+    "aiGenerating": "Génération..."
   },
   "adminBlog": {
     "title": "Articles de Blog",
@@ -464,7 +519,15 @@
     "order": "Ordre",
     "published": "Publié",
     "save": "Enregistrer",
-    "saving": "Enregistrement..."
+    "saving": "Enregistrement...",
+    "aiTranslate": "Traduire par IA",
+    "aiTranslating": "Traduction...",
+    "aiTranslateFrom": "Traduire depuis :",
+    "aiNoSource": "Saisissez d'abord le contenu dans la langue source.",
+    "aiError": "Erreur IA, veuillez réessayer.",
+    "aiGenerateContent": "Générer le contenu par IA",
+    "aiGenerateExcerpt": "Générer l'extrait par IA",
+    "aiGenerating": "Génération..."
   },
   "blog": {
     "backToHome": "Retour à l'accueil",
