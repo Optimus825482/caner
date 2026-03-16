@@ -120,8 +120,13 @@ export async function testSmtpConnection() {
   try {
     await transport.transporter.verify();
     return { ok: true as const };
-  } catch {
-    return { ok: false as const, error: "SMTP verification failed." };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[SMTP verify]", message);
+    return {
+      ok: false as const,
+      error: `SMTP verification failed: ${message}`,
+    };
   }
 }
 
@@ -139,8 +144,13 @@ export async function sendSmtpTestMail() {
       text: "SMTP ayarları başarıyla çalışıyor. Bu bir test mesajıdır.",
     });
     return { ok: true as const };
-  } catch {
-    return { ok: false as const, error: "Failed to send test email." };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[SMTP sendTest]", message);
+    return {
+      ok: false as const,
+      error: `Failed to send test email: ${message}`,
+    };
   }
 }
 
