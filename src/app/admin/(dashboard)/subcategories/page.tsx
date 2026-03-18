@@ -207,7 +207,24 @@ export default function AdminSubCategories() {
   }
 
   async function handleDelete(id: string) {
-    await fetch(`/api/subcategories/${id}`, { method: "DELETE" });
+    const sub = subCategories.find((s) => s.id === id);
+    const name =
+      sub?.translations.find((tr) => tr.locale === locale)?.name ||
+      sub?.translations.find((tr) => tr.locale === "fr")?.name ||
+      sub?.slug ||
+      "";
+    if (!window.confirm(t("confirmDelete", { name }))) return;
+    try {
+      const res = await fetch(`/api/subcategories/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || t("deleteError"));
+        return;
+      }
+    } catch {
+      alert(t("deleteError"));
+      return;
+    }
     load();
   }
 

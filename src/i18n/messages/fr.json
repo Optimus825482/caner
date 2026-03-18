@@ -353,10 +353,10 @@
     "cancel": "Annuler",
     "productCount": "produits",
     "subCategoryCount": "sous-catégories",
-    "noImageLabel": "Pas d'image"
+    "noImageLabel": "Pas d'image",
+    "confirmDeleteCategory": "Êtes-vous sûr de vouloir supprimer \"{name}\" ? Cette action est irréversible.",
+    "deleteError": "Échec de la suppression. Vérifiez s'il y a des sous-catégories ou des produits liés."
   },
-  "adminSettings": {
-    "title": "Paramètres du site",
     "subtitle": "Paramètres généraux et configuration SMTP de transfert d'e-mails",
     "settingsCenter": "Centre de paramètres",
     "generalTab": "Informations générales",
@@ -821,6 +821,8 @@
     "untitled": "Sans titre",
     "editAriaLabel": "Modifier la sous-catégorie",
     "deleteAriaLabel": "Supprimer la sous-catégorie",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer \"{name}\" ? Cette action est irréversible.",
+    "deleteError": "Échec de la suppression. Vérifiez s'il y a des produits liés à cette sous-catégorie.",
     "table": {
       "image": "Image",
       "name": "Nom",

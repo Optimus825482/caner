@@ -284,12 +284,37 @@ export default function AdminCategories() {
   }
 
   async function handleDeleteCategory(id: string) {
-    await fetch(`/api/categories/${id}`, { method: "DELETE" });
+    const name = getName(categories.find((c) => c.id === id) as Cat);
+    if (!window.confirm(t("confirmDeleteCategory", { name }))) return;
+    try {
+      const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || t("deleteError"));
+        return;
+      }
+    } catch {
+      alert(t("deleteError"));
+      return;
+    }
     load();
   }
 
   async function handleDeleteSubCategory(id: string) {
-    await fetch(`/api/subcategories/${id}`, { method: "DELETE" });
+    const sub = subCategories.find((s) => s.id === id);
+    const name = sub ? getName(sub) : "";
+    if (!window.confirm(tSub("confirmDelete", { name }))) return;
+    try {
+      const res = await fetch(`/api/subcategories/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || tSub("deleteError"));
+        return;
+      }
+    } catch {
+      alert(tSub("deleteError"));
+      return;
+    }
     load();
   }
 

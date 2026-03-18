@@ -94,6 +94,20 @@ export async function DELETE(
   const { id } = await params;
 
   try {
+    // Check for child subcategories (onDelete: Restrict prevents cascade)
+    const subCount = await (prisma as any).subCategory.count({
+      where: { categoryId: id },
+    });
+    if (subCount > 0) {
+      return NextResponse.json(
+        {
+          error: "HAS_CHILDREN",
+          message: `Bu kategorinin ${subCount} alt kategorisi var. Önce alt kategorileri silin.`,
+        },
+        { status: 409 },
+      );
+    }
+
     await prisma.category.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

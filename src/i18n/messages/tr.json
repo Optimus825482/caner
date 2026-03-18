@@ -353,10 +353,10 @@
     "cancel": "İptal",
     "productCount": "ürün",
     "subCategoryCount": "alt kategori",
-    "noImageLabel": "No image"
+    "noImageLabel": "No image",
+    "confirmDeleteCategory": "\"{name}\" kategorisini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "deleteError": "Silme başarısız. Bu öğeye bağlı alt kategoriler veya ürünler olup olmadığını kontrol edin."
   },
-  "adminSettings": {
-    "title": "Site Ayarları",
     "subtitle": "Genel ayarlar ve SMTP e-posta yönlendirme yapılandırması",
     "settingsCenter": "Ayar Merkezi",
     "generalTab": "Genel Bilgiler",
@@ -825,6 +825,8 @@
     "untitled": "Başlıksız",
     "editAriaLabel": "Alt kategoriyi düzenle",
     "deleteAriaLabel": "Alt kategoriyi sil",
+    "confirmDelete": "\"{name}\" alt kategorisini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "deleteError": "Silme başarısız. Bu alt kategoriye bağlı ürünler olup olmadığını kontrol edin.",
     "table": {
       "image": "Görsel",
       "name": "Ad",
