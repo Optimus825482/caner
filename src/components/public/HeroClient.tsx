@@ -40,7 +40,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
 
   return (
     <section
-      className="relative flex h-screen min-h-175 w-full items-center justify-center overflow-hidden"
+      className="relative flex h-[70vh] min-h-[480px] w-full items-center justify-center overflow-hidden md:h-screen md:min-h-[700px]"
       id="hero"
     >
       <div className="absolute inset-0">
@@ -48,7 +48,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-1500 ${
-              i === current ? "opacity-100" : "opacity-0"
+              i === current ? "opacity-100 animate-hero-zoom" : "opacity-0"
             }`}
           >
             <Image
@@ -56,7 +56,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
               alt={slide.title || "Hero image"}
               fill
               priority={i === current}
-              className="object-contain"
+              className="object-cover object-center"
               sizes="100vw"
             />
           </div>
