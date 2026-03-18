@@ -7,6 +7,7 @@ const PUBLIC_KEYS = [
   "address",
   "instagram",
   "whatsapp",
+  "site_logo",
 ] as const;
 
 export type PublicSettings = Record<(typeof PUBLIC_KEYS)[number], string>;
@@ -27,6 +28,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     address: "",
     instagram: "",
     whatsapp: "",
+    site_logo: "/uploads/products/logo.png",
   };
 
   for (const row of rows) {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-export default function Preloader() {
+export default function Preloader({ logoUrl }: { logoUrl?: string }) {
   const [loaded, setLoaded] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [skip, setSkip] = useState(false);
@@ -39,7 +39,7 @@ export default function Preloader() {
     >
       <div className="animate-preloader-pulse mb-10">
         <Image
-          src="/uploads/products/logo.png"
+          src={logoUrl || "/uploads/products/logo.png"}
           alt="Arvesta"
           width={180}
           height={180}

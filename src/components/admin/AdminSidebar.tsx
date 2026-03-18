@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -48,7 +48,17 @@ const catalogChildren = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("/uploads/products/logo.png");
   const t = useTranslations("adminSidebar");
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((data: Record<string, string>) => {
+        if (data.site_logo) setLogoUrl(data.site_logo);
+      })
+      .catch(() => {});
+  }, []);
 
   const isCatalogPath = catalogChildren.some(
     (c) => pathname === c.href || pathname.startsWith(c.href + "/"),
@@ -60,7 +70,7 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="p-5 flex items-center gap-3">
         <Image
-          src="/uploads/products/logo.png"
+          src={logoUrl}
           alt="Arvesta"
           width={36}
           height={36}

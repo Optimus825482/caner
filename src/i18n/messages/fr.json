@@ -397,6 +397,9 @@
     "saveSettings": "Enregistrer les paramètres",
     "saving": "Enregistrement...",
     "saved": "✓ Enregistré",
+    "siteLogo": "Logo du site",
+    "uploadLogo": "Changer le logo",
+    "uploading": "Téléchargement...",
     "kurumsalTab": "Entreprise",
     "kurumsalInfo": "Modifiez le contenu de la page Entreprise ici. Chaque champ est éditable en 3 langues (FR, EN, TR)."
   },

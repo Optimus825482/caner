@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -27,6 +27,16 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [logoUrl, setLogoUrl] = useState("/uploads/products/logo.png");
+
+  useEffect(() => {
+    fetch("/api/public-settings")
+      .then((r) => r.json())
+      .then((data: Record<string, string>) => {
+        if (data.site_logo) setLogoUrl(data.site_logo);
+      })
+      .catch(() => {});
+  }, []);
 
   async function loginWithCredentials(
     inputUsername: string,
@@ -90,7 +100,7 @@ export default function AdminLoginPage() {
       <Card className="w-full max-w-md border-white/5 bg-(--arvesta-bg-card)">
         <CardHeader className="text-center space-y-3">
           <Image
-            src="/uploads/products/logo.png"
+            src={logoUrl}
             alt="Arvesta"
             width={60}
             height={60}

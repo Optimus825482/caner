@@ -395,6 +395,9 @@
     "saveSettings": "Save Settings",
     "saving": "Saving...",
     "saved": "✓ Saved",
+    "siteLogo": "Site Logo",
+    "uploadLogo": "Change Logo",
+    "uploading": "Uploading...",
     "kurumsalTab": "Corporate",
     "kurumsalInfo": "Edit the Corporate page content here. Each field is editable in 3 languages (FR, EN, TR)."
   },

@@ -9,6 +9,7 @@ import WhatsAppFloat from "@/components/public/WhatsAppFloat";
 import BackToTop from "@/components/public/BackToTop";
 import CookieConsent from "@/components/public/CookieConsent";
 import Analytics from "@/components/public/Analytics";
+import { getPublicSettings } from "@/lib/get-public-settings";
 
 export default async function LocaleLayout({
   children,
@@ -23,6 +24,8 @@ export default async function LocaleLayout({
   }
 
   const messages = (await import(`@/i18n/messages/${locale}.json`)).default;
+  const settings = await getPublicSettings();
+  const logoUrl = settings.site_logo || "/uploads/products/logo.png";
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -32,10 +35,10 @@ export default async function LocaleLayout({
       >
         Skip to content
       </a>
-      <Preloader />
+      <Preloader logoUrl={logoUrl} />
       <CustomCursor />
       <div className="flex min-h-dvh flex-col bg-(--arvesta-bg) text-(--arvesta-text)">
-        <Navbar locale={locale} />
+        <Navbar locale={locale} logoUrl={logoUrl} />
         <main id="main-content" className="flex-1 overflow-x-clip">
           {children}
         </main>

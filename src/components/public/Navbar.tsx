@@ -13,7 +13,13 @@ const locales = [
   { code: "tr", label: "TR" },
 ];
 
-export default function Navbar({ locale }: { locale: string }) {
+export default function Navbar({
+  locale,
+  logoUrl,
+}: {
+  locale: string;
+  logoUrl?: string;
+}) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const router = useRouter();
@@ -63,7 +69,7 @@ export default function Navbar({ locale }: { locale: string }) {
             className="nav-logo relative z-10 flex items-center gap-3 -my-8"
           >
             <Image
-              src="/uploads/products/logo.png"
+              src={logoUrl || "/uploads/products/logo.png"}
               alt="Arvesta"
               width={115}
               height={115}

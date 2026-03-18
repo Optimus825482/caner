@@ -18,7 +18,7 @@ export default async function Footer({ locale }: { locale: string }) {
         <FooterReveal>
           <div className="mb-12 text-center">
             <Image
-              src="/uploads/products/logo.png"
+              src={settings.site_logo || "/uploads/products/logo.png"}
               alt="Arvesta"
               width={200}
               height={200}

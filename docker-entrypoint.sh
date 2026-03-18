@@ -16,6 +16,12 @@ if [ -d "/app/bootstrap-uploads" ]; then
   echo "Syncing uploads from image defaults (skip existing)..."
   mkdir -p /app/public/uploads
   cp -Rn /app/bootstrap-uploads/* /app/public/uploads/ 2>/dev/null || true
+  # Force-update branding assets on every deploy (logo changes must propagate)
+  for f in logo.png favicon.ico; do
+    if [ -f "/app/bootstrap-uploads/products/$f" ]; then
+      cp -f "/app/bootstrap-uploads/products/$f" "/app/public/uploads/products/$f" 2>/dev/null || true
+    fi
+  done
 fi
 
 echo "Running Prisma migrations..."

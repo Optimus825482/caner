@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Search,
+  Upload,
+  ImageIcon,
 } from "lucide-react";
 
 type FieldType = "text" | "email" | "url" | "number" | "password" | "boolean";
@@ -196,6 +199,7 @@ export default function AdminSettings() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -214,6 +218,31 @@ export default function AdminSettings() {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload-logo", {
+        method: "POST",
+        body: formData,
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) {
+        alert(data.error || "Logo upload failed");
+        return;
+      }
+      setValues((prev) => ({ ...prev, site_logo: data.url! }));
+    } catch {
+      alert("Logo upload failed");
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = "";
+    }
   }
 
   async function handleTestSmtp() {
@@ -331,6 +360,46 @@ export default function AdminSettings() {
             </TabsList>
 
             <TabsContent value="general" className="pt-1">
+              {/* Logo Upload */}
+              <div className="mb-4 rounded-xl border border-(--arvesta-gold)/10 bg-[rgba(255,255,255,0.015)] p-4">
+                <Label className="mb-3 flex items-center gap-2 text-sm text-(--arvesta-text-secondary)">
+                  <ImageIcon className="h-3.5 w-3.5 text-(--arvesta-gold)/90" />
+                  {t("siteLogo")}
+                </Label>
+                <div className="flex items-center gap-4">
+                  {values.site_logo ? (
+                    <Image
+                      src={values.site_logo}
+                      alt="Logo"
+                      width={64}
+                      height={64}
+                      unoptimized
+                      className="h-16 w-16 rounded-lg border border-white/10 bg-black/20 object-contain p-1"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-white/10 bg-black/20">
+                      <ImageIcon className="h-6 w-6 text-(--arvesta-text-muted)" />
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-2">
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-(--arvesta-gold)/25 bg-transparent px-4 py-2 text-sm text-(--arvesta-gold) transition-colors hover:bg-(--arvesta-gold)/10">
+                      <Upload className="h-4 w-4" />
+                      {uploadingLogo ? t("uploading") : t("uploadLogo")}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={handleLogoUpload}
+                        disabled={uploadingLogo}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-xs text-(--arvesta-text-muted)">
+                      PNG, JPG, WebP — max 2MB
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 {generalSettingKeys.map(renderField)}
               </div>
@@ -391,7 +460,6 @@ export default function AdminSettings() {
                 </div>
               </div>
             </TabsContent>
-
           </Tabs>
 
           <div className="border-t border-(--arvesta-gold)/15 pt-4">
