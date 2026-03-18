@@ -126,6 +126,11 @@ export function CatalogFlipbook({ pages, title }: Props) {
             useMouseEvents={true}
             swipeDistance={30}
             showPageCorners={true}
+            startZIndex={0}
+            autoSize={true}
+            maxShadowOpacity={0.5}
+            clickEventForward={true}
+            disableFlipByClick={false}
             className=""
             style={{}}
             onFlip={onFlip}
