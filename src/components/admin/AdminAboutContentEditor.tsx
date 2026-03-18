@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import {
   Factory,
   Wrench,
   PackageCheck,
-  Upload,
   ImageIcon,
 } from "lucide-react";
 import ImageShimmer from "@/components/public/ImageShimmer";
@@ -31,17 +30,14 @@ interface Props {
   values: Values;
   setValues: React.Dispatch<React.SetStateAction<Values>>;
   activeLocale: string;
-  aiTranslating: string | null;
+  aiTranslating?: string | null;
   autoTranslateField: (baseKey: string) => void;
 }
-
-const LOCALES = ["tr", "fr", "en"] as const;
 
 export function AdminAboutContentEditor({
   values,
   setValues,
   activeLocale,
-  aiTranslating,
   autoTranslateField,
 }: Props) {
   // --- helpers ---
@@ -370,6 +366,39 @@ export function AdminAboutContentEditor({
             </div>
           </div>
         </section>
+
+        {/* ═══ CTA ═══ */}
+        <section className="relative px-6 py-16 md:py-20">
+          <div className="mx-auto max-w-2xl">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 text-center backdrop-blur-sm md:p-12">
+              <div className="group relative inline-block">
+                <h2 className="mb-4 font-display text-2xl font-semibold text-white md:text-3xl">
+                  {v("ctaTitle") || "Projenizi Konuşalım"}
+                </h2>
+                <EditBtn
+                  onClick={() =>
+                    openEdit("CTA", [
+                      { baseKey: "ctaTitle", label: "Başlık" },
+                      {
+                        baseKey: "ctaDesc",
+                        label: "Açıklama",
+                        type: "textarea",
+                      },
+                      { baseKey: "ctaBtn", label: "Buton Metni" },
+                    ])
+                  }
+                  className="absolute -right-9 top-1"
+                />
+              </div>
+              <p className="mb-8 text-[0.9375rem] leading-[1.75] text-(--arvesta-text-secondary)">
+                {v("ctaDesc") || ""}
+              </p>
+              <span className="inline-flex items-center gap-2 rounded-full border border-(--arvesta-gold)/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-8 py-3.5 font-ui text-sm font-bold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)]">
+                {v("ctaBtn") || "İletişime Geçin"} <span aria-hidden>→</span>
+              </span>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* ═══ Edit Dialog ═══ */}
@@ -404,14 +433,13 @@ export function AdminAboutContentEditor({
             ))}
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                variant="ghost"
-                className="text-(--arvesta-text-secondary)"
-              >
-                Kapat
-              </Button>
-            </DialogClose>
+            <Button
+              variant="ghost"
+              className="text-(--arvesta-text-secondary)"
+              onClick={() => setEditOpen(false)}
+            >
+              Kapat
+            </Button>
             <Button
               onClick={handleTranslateAndClose}
               disabled={translating}
