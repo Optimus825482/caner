@@ -7,7 +7,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 function normalizeImageUrl(url: string): string {
   if (!url?.trim()) return "";
   const s = url.trim();
-  if (s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/")) return s;
+  if (s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/"))
+    return s;
   return `/${s}`;
 }
 
@@ -40,8 +41,15 @@ const Page = React.forwardRef<
 
 Page.displayName = "Page";
 
+interface Props {
+  pages: string[];
+  title?: string;
+}
+
 export function CatalogFlipbook({ pages, title }: Props) {
-  const bookRef = useRef<{ pageFlip: () => { flip: (p: number, c?: string) => void } } | null>(null);
+  const bookRef = useRef<{
+    pageFlip: () => { flip: (p: number, c?: string) => void };
+  } | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
   const onFlip = useCallback((e: { data?: number }) => {
