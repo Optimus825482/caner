@@ -48,7 +48,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-1500 ${
-              i === current ? "opacity-100 animate-hero-zoom" : "opacity-0"
+              i === current ? "opacity-100" : "opacity-0"
             }`}
           >
             <Image
@@ -56,7 +56,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
               alt={slide.title || "Hero image"}
               fill
               priority={i === current}
-              className="object-cover"
+              className="object-contain"
               sizes="100vw"
             />
           </div>

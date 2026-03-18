@@ -141,30 +141,10 @@ export default async function ServicesPage({
             ))}
           </div>
         ) : (
-          /* Fallback to static i18n when no DB services */
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {(
-              [
-                "customDesign",
-                "materialSelection",
-                "delivery",
-                "installation",
-                "warranty",
-                "support",
-              ] as const
-            ).map((key) => (
-              <div
-                key={key}
-                className="rounded-2xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.015)] p-8 transition-all duration-300 hover:border-(--arvesta-gold)/40"
-              >
-                <h3 className="mb-3 font-display text-lg font-bold text-white">
-                  {t(`${key}.title`)}
-                </h3>
-                <p className="text-sm leading-relaxed text-(--arvesta-text-secondary)">
-                  {t(`${key}.desc`)}
-                </p>
-              </div>
-            ))}
+          <div className="rounded-2xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.015)] p-12 text-center">
+            <p className="text-sm text-(--arvesta-text-secondary)">
+              {t("subtitle")}
+            </p>
           </div>
         )}
 

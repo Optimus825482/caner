@@ -48,6 +48,44 @@ interface TeamMember {
   createdAt: string;
 }
 
+// i18n keys used in the about page — used to pre-fill admin form when DB is empty
+const ABOUT_I18N_KEYS = [
+  "heroTag",
+  "heroTitle",
+  "heroDesc",
+  "storyTag",
+  "storyTitle",
+  "storyP1",
+  "storyP2",
+  "processTag",
+  "processTitle",
+  "step1Title",
+  "step1Desc",
+  "step1Location",
+  "step2Title",
+  "step2Desc",
+  "step2Location",
+  "step3Title",
+  "step3Desc",
+  "step3Location",
+  "step4Title",
+  "step4Desc",
+  "step4Location",
+  "craftTag",
+  "craftTitle",
+  "craft1Title",
+  "craft1Desc",
+  "craft2Title",
+  "craft2Desc",
+  "craft3Title",
+  "craft3Desc",
+  "ctaTitle",
+  "ctaDesc",
+  "ctaBtn",
+] as const;
+
+const LOCALES_LIST = ["fr", "en", "tr"] as const;
+
 export default function AdminAbout() {
   const t = useTranslations("adminAbout");
   const tTeam = useTranslations("adminTeam");
@@ -150,9 +188,37 @@ export default function AdminAbout() {
   }
 
   useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then(setValues);
+    // Load i18n defaults for all locales to pre-fill empty fields
+    Promise.all([
+      fetch("/api/settings").then((r) => r.json()),
+      import("@/i18n/messages/tr.json").then((m) => m.default),
+      import("@/i18n/messages/fr.json").then((m) => m.default),
+      import("@/i18n/messages/en.json").then((m) => m.default),
+    ]).then(
+      ([dbValues, trMsgs, frMsgs, enMsgs]: [
+        Record<string, string>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        any,
+        any,
+        any,
+      ]) => {
+        const merged = { ...dbValues };
+        const i18nMap: Record<string, Record<string, string>> = {
+          tr: trMsgs.about || {},
+          fr: frMsgs.about || {},
+          en: enMsgs.about || {},
+        };
+        for (const key of ABOUT_I18N_KEYS) {
+          for (const loc of LOCALES_LIST) {
+            const settingKey = `about_${key}_${loc}`;
+            if (!merged[settingKey]?.trim() && i18nMap[loc]?.[key]) {
+              merged[settingKey] = i18nMap[loc][key];
+            }
+          }
+        }
+        setValues(merged);
+      },
+    );
   }, []);
 
   useEffect(() => {
