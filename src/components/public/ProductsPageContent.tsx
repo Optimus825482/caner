@@ -64,13 +64,13 @@ export function ProductsPageContent({
   >(null);
 
   const filteredProducts = products.filter((p) => {
+    // Cross-category mode: when a subcategory name is selected, show products
+    // from ALL categories that have that same subcategory name
+    if (crossCategoryMode && selectedSubCategoryName) {
+      return p.subCategoryName === selectedSubCategoryName;
+    }
     if (selectedCategoryId && p.categoryId !== selectedCategoryId) return false;
     if (selectedSubCategoryId) {
-      // Cross-category mode: filter by subcategory NAME across all categories
-      if (crossCategoryMode && selectedSubCategoryName) {
-        return p.subCategoryName === selectedSubCategoryName;
-      }
-      // Normal mode: filter by exact subcategory ID
       return p.subCategoryId === selectedSubCategoryId;
     }
     return true;
