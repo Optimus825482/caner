@@ -22,7 +22,7 @@ model Category {
 
 model SubCategory {
   id           String                     @id @default(cuid())
-  slug         String                     @unique
+  slug         String
   order        Int                        @default(0)
   image        String?
   category     Category                   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
@@ -32,6 +32,7 @@ model SubCategory {
   createdAt    DateTime                   @default(now())
   updatedAt    DateTime                   @updatedAt
 
+  @@unique([categoryId, slug])
   @@index([categoryId])
   @@map("sub_categories")
 }

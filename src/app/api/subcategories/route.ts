@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { categoryId, order, image, translations } = parsed.data;
-  const slug = resolveSlug(parsed.data.slug, translations);
+  let slug = resolveSlug(parsed.data.slug, translations);
 
   if (!slug) {
     return NextResponse.json(
@@ -91,6 +91,15 @@ export async function POST(req: NextRequest) {
       },
       { status: 400 },
     );
+  }
+
+  // Compound unique: same slug allowed across different categories
+  const existing = await prisma.subCategory.findUnique({
+    where: { categoryId_slug: { categoryId, slug } },
+  });
+  if (existing) {
+    // Same category already has this slug — append timestamp suffix
+    slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
   }
 
   try {
