@@ -9,6 +9,7 @@ import {
   enforceRateLimit,
   enforceSameOrigin,
 } from "@/lib/request-guards";
+import { resolveSlug } from "@/lib/slugify";
 
 const productTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -23,15 +24,17 @@ const productImageSchema = z.object({
 });
 
 const createProductSchema = z.object({
-  slug: z.string().trim().min(1),
-  categoryId: z.string().trim().min(1),
+  slug: z.string().trim().optional(),
+  subCategoryId: z.string().trim().min(1),
   featured: z.boolean().default(false),
   order: z.coerce.number().int().default(0),
   translations: z.array(productTranslationSchema).min(1),
   images: z.array(productImageSchema).default([]),
 });
 
-const productRateLimitAdapter = createSiteSettingRateLimitAdapter(prisma.siteSetting);
+const productRateLimitAdapter = createSiteSettingRateLimitAdapter(
+  prisma.siteSetting,
+);
 const PRODUCT_MUTATION_RATE_LIMIT_WINDOW_MS = 60_000;
 const PRODUCT_MUTATION_RATE_LIMIT_MAX_REQUESTS = 30;
 
@@ -71,7 +74,12 @@ export async function GET() {
     include: {
       translations: true,
       images: { orderBy: { order: "asc" } },
-      category: { include: { translations: true } },
+      subCategory: {
+        include: {
+          translations: true,
+          category: { include: { translations: true } },
+        },
+      },
     },
     orderBy: { order: "asc" },
   });
@@ -111,13 +119,24 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { slug, categoryId, featured, order, translations, images } = parsed.data;
+  const { subCategoryId, featured, order, translations, images } = parsed.data;
+  const slug = resolveSlug(parsed.data.slug, translations);
+
+  if (!slug) {
+    return NextResponse.json(
+      {
+        error:
+          "Could not generate slug. Provide a title in at least one language.",
+      },
+      { status: 400 },
+    );
+  }
 
   try {
     const product = await prisma.product.create({
       data: {
         slug,
-        categoryId,
+        subCategoryId,
         featured,
         order,
         translations: {

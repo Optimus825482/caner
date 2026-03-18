@@ -24,7 +24,12 @@ const getProductBySlug = cache(async (slug: string, locale: string) => {
     include: {
       translations: { where: { locale } },
       images: { orderBy: { order: "asc" } },
-      category: { include: { translations: { where: { locale } } } },
+      subCategory: {
+        include: {
+          translations: { where: { locale } },
+          category: { include: { translations: { where: { locale } } } },
+        },
+      },
     },
   });
 });
@@ -59,16 +64,16 @@ export default async function ProductPage({ params }: Props) {
 
   const title = product.translations[0]?.title || slug;
   const description = product.translations[0]?.description || "";
-  const catName =
-    product.category.translations[0]?.name || product.category.slug;
+  const category = product.subCategory.category;
+  const catName = category.translations[0]?.name || category.slug;
   const images = product.images.map((img: (typeof product.images)[number]) => ({
     url: img.url,
     alt: img.alt || title,
   }));
 
-  // Related products from same category
+  // Related products from same subcategory
   const related = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, id: { not: product.id } },
+    where: { subCategoryId: product.subCategoryId, id: { not: product.id } },
     include: {
       translations: { where: { locale } },
       images: { orderBy: { order: "asc" }, take: 1 },
@@ -102,7 +107,7 @@ export default async function ProductPage({ params }: Props) {
               { name: "Arvesta", url: "" },
               {
                 name: catName,
-                url: `/collections/${product.category.slug}`,
+                url: `/collections/${category.slug}`,
               },
               { name: title },
             ]),
@@ -120,7 +125,7 @@ export default async function ProductPage({ params }: Props) {
           </Link>
           <span>/</span>
           <Link
-            href={`/${locale}/collections/${product.category.slug}`}
+            href={`/${locale}/collections/${category.slug}`}
             className="transition-colors hover:text-(--arvesta-gold)"
           >
             {catName}
@@ -132,13 +137,10 @@ export default async function ProductPage({ params }: Props) {
 
       {/* Product Content */}
       <section className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 pb-20 lg:grid-cols-2 lg:gap-16">
-        {/* Gallery */}
-        <ProductGallery images={images} title={title} />
-
         {/* Info */}
         <div className="flex flex-col justify-center">
           <Link
-            href={`/${locale}/collections/${product.category.slug}`}
+            href={`/${locale}/collections/${category.slug}`}
             className="mb-4 inline-flex w-fit items-center gap-2 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold) transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" /> {t("backToCollection")}
@@ -164,8 +166,10 @@ export default async function ProductPage({ params }: Props) {
             {t("requestQuote")}
           </a>
         </div>
-      </section>
 
+        {/* Gallery */}
+        <ProductGallery images={images} title={title} />
+      </section>
       {/* Related Products */}
       {related.length > 0 && (
         <section className="border-t border-(--arvesta-gold)/20 px-4 py-16 md:py-24">

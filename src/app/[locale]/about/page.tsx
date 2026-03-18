@@ -5,6 +5,7 @@ import {
   generateOgMeta,
   breadcrumbJsonLd,
 } from "@/lib/seo";
+import { prisma } from "@/lib/prisma";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -49,13 +50,23 @@ export default async function AboutPage({
     { name: "Arvesta", url: "" },
     { name: meta[locale]?.title.split(" — ")[0] || "About" },
   ]);
+
+  // Fetch about_* settings from DB for admin-editable kurumsal content
+  const aboutRows = await prisma.siteSetting.findMany({
+    where: { key: { startsWith: "about_" } },
+  });
+  const aboutSettings: Record<string, string> = {};
+  for (const row of aboutRows) {
+    if (row.value) aboutSettings[row.key] = row.value;
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
       />
-      <AboutClient locale={locale} />
+      <AboutClient locale={locale} settings={aboutSettings} />
     </>
   );
 }

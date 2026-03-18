@@ -90,6 +90,10 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+        />
         {Object.entries(verificationMeta).map(([name, content]) => (
           <meta key={name} name={name} content={content} />
         ))}

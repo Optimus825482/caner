@@ -20,15 +20,18 @@ export default function imageLoader({
   width,
   quality,
 }: ImageLoaderParams): string {
-  // Uploaded images — serve directly (already optimised by sharp)
+  // Uploaded images — serve directly (already optimised by sharp).
   if (src.startsWith("/uploads/")) {
-    return src;
+    return `${src}?w=${width}`;
   }
 
-  // Default: use Next.js built-in optimiser
-  const params = new URLSearchParams();
-  params.set("url", src);
-  params.set("w", String(width));
-  params.set("q", String(quality || 75));
-  return `/_next/image?${params.toString()}`;
+  // External URLs (e.g. ui-avatars.com) — pass through with width hint.
+  // Appending w= satisfies Next.js loader width requirement check.
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    const separator = src.includes("?") ? "&" : "?";
+    return `${src}${separator}w=${width}`;
+  }
+
+  // Local non-upload images — serve as-is with width hint
+  return `${src}?w=${width}&q=${quality || 75}`;
 }

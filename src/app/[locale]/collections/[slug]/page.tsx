@@ -53,7 +53,9 @@ export default async function CollectionPage({ params }: Props) {
   if (!category) notFound();
 
   const products = await prisma.product.findMany({
-    where: { categoryId: category.id },
+    where: {
+      subCategory: { categoryId: category.id },
+    },
     include: {
       translations: { where: { locale } },
       images: { orderBy: { order: "asc" }, take: 1 },

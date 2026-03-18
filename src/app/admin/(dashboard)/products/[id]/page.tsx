@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ import {
   Star,
   ArrowLeft,
   Sparkles,
-  Languages,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,12 +26,17 @@ interface Category {
   id: string;
   slug: string;
   translations: { locale: string; name: string }[];
+  subCategories: {
+    id: string;
+    slug: string;
+    translations: { locale: string; name: string }[];
+  }[];
 }
 
 interface ProductResponse {
   id: string;
   slug: string;
-  categoryId: string;
+  subCategoryId: string;
   featured: boolean;
   order: number;
   images?: { url: string }[];
@@ -58,6 +62,7 @@ export default function ProductFormPage({
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
+  const [activeLocale, setActiveLocale] = useState("fr");
   const [uploading, setUploading] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -67,6 +72,77 @@ export default function ProductFormPage({
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [aiTranslating, setAiTranslating] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const lastTranslatedRef = useRef<Record<string, string>>({});
+
+  async function autoTranslateFromTr(field: "title" | "description") {
+    const text = translations.tr?.[field]?.trim();
+    if (!text) return;
+    const cacheKey = `${field}:${text}`;
+    if (lastTranslatedRef.current[cacheKey]) return;
+    lastTranslatedRef.current[cacheKey] = text;
+    setAiTranslating(true);
+    try {
+      for (const targetLocale of ["fr", "en"]) {
+        const res = await fetch("/api/ai/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            fromLocale: "tr",
+            toLocale: targetLocale,
+          }),
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.translated) {
+          setTranslations((prev) => ({
+            ...prev,
+            [targetLocale]: { ...prev[targetLocale], [field]: data.translated },
+          }));
+        }
+      }
+    } catch {
+      // silent
+    } finally {
+      setAiTranslating(false);
+    }
+  }
+
+  async function handleAiGenerate(locale: string) {
+    const title = translations[locale]?.title?.trim();
+    if (!title) {
+      alert(t("aiNoSource"));
+      return;
+    }
+    setAiGenerating(true);
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "product_description",
+          prompt: title,
+          locale,
+        }),
+      });
+      if (!res.ok) {
+        alert(t("aiError"));
+        return;
+      }
+      const data = await res.json();
+      if (data.generated) {
+        setTranslations((prev) => ({
+          ...prev,
+          [locale]: { ...prev[locale], description: data.generated },
+        }));
+      }
+    } catch {
+      alert(t("aiError"));
+    } finally {
+      setAiGenerating(false);
+    }
+  }
 
   async function handleAiTranslate(targetLocale: string) {
     const sourceLocale = locales.find(
@@ -107,8 +183,8 @@ export default function ProductFormPage({
     }
   }
 
-  const [slug, setSlug] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [subCategoryId, setSubCategoryId] = useState("");
   const [featured, setFeatured] = useState(false);
   const [order, setOrder] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
@@ -141,8 +217,12 @@ export default function ProductFormPage({
           const p = (await productRes.json()) as ProductResponse;
           if (!active) return;
 
-          setSlug(p.slug);
-          setCategoryId(p.categoryId);
+          setSubCategoryId(p.subCategoryId);
+          // Derive selectedCategoryId from loaded categories
+          const parentCat = categoriesData.find((c) =>
+            c.subCategories.some((sc) => sc.id === p.subCategoryId),
+          );
+          if (parentCat) setSelectedCategoryId(parentCat.id);
           setFeatured(p.featured);
           setOrder(p.order);
           setImageUrl(p.images?.[0]?.url || "");
@@ -265,8 +345,7 @@ export default function ProductFormPage({
     setErrorMessage("");
 
     const body = {
-      slug,
-      categoryId,
+      subCategoryId,
       featured,
       order,
       translations: locales.map((l) => ({ locale: l, ...translations[l] })),
@@ -350,45 +429,59 @@ export default function ProductFormPage({
 
           {/* Main */}
           <div className="lg:col-span-2 space-y-6">
+            <h2 className="text-lg font-semibold text-white">
+              {t("multiLangContent")}
+            </h2>
+            <div className="flex items-center gap-1">
+              {locales.map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setActiveLocale(l)}
+                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                    activeLocale === l
+                      ? "bg-(--arvesta-accent) text-white"
+                      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
+                  }`}
+                >
+                  {localeLabels[l]}
+                </button>
+              ))}
+            </div>
+
             <Card className="border-white/5 bg-(--arvesta-bg-card)">
-              <CardHeader>
-                <CardTitle className="font-ui text-base text-white">
-                  {t("multiLangContent")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="fr">
-                  <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5 mb-4">
+              <CardContent className="pt-6">
+                <Tabs value={activeLocale} onValueChange={setActiveLocale}>
+                  <TabsList className="hidden">
                     {locales.map((l) => (
-                      <TabsTrigger
-                        key={l}
-                        value={l}
-                        className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
-                      >
+                      <TabsTrigger key={l} value={l}>
                         {localeLabels[l]}
                       </TabsTrigger>
                     ))}
                   </TabsList>
                   {locales.map((l) => (
                     <TabsContent key={l} value={l} className="space-y-4">
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center justify-end gap-2">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          disabled={aiTranslating}
-                          onClick={() => handleAiTranslate(l)}
+                          disabled={aiGenerating}
+                          onClick={() => handleAiGenerate(l)}
                           className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-xs gap-1.5"
                         >
-                          <Languages className="w-3.5 h-3.5" />
-                          {aiTranslating
-                            ? t("aiTranslating")
-                            : t("aiTranslate")}
+                          <Sparkles className="w-3.5 h-3.5" />
+                          {aiGenerating ? t("aiGenerating") : t("aiGenerate")}
                         </Button>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-(--arvesta-text-secondary)">
                           {t("title")} ({l.toUpperCase()})
+                          {l === "tr" && aiTranslating && (
+                            <span className="ml-2 text-xs text-purple-400">
+                              çevriliyor...
+                            </span>
+                          )}
                         </Label>
                         <Input
                           value={translations[l]?.title || ""}
@@ -400,6 +493,11 @@ export default function ProductFormPage({
                                 title: e.target.value,
                               },
                             })
+                          }
+                          onBlur={
+                            l === "tr"
+                              ? () => autoTranslateFromTr("title")
+                              : undefined
                           }
                           className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
                           placeholder={`${t("titlePlaceholder")} (${localeLabels[l]})`}
@@ -419,6 +517,11 @@ export default function ProductFormPage({
                                 description: e.target.value,
                               },
                             })
+                          }
+                          onBlur={
+                            l === "tr"
+                              ? () => autoTranslateFromTr("description")
+                              : undefined
                           }
                           className="bg-(--arvesta-bg-elevated) border-white/5 text-white resize-none"
                           rows={3}
@@ -492,17 +595,6 @@ export default function ProductFormPage({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-(--arvesta-text-secondary)">
-                    {t("slug")}
-                  </Label>
-                  <Input
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    className="bg-(--arvesta-bg-elevated) border-white/5 text-white"
-                    placeholder={t("slugPlaceholder")}
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label
                     htmlFor="product-category"
                     className="text-(--arvesta-text-secondary)"
@@ -512,19 +604,58 @@ export default function ProductFormPage({
                   <select
                     id="product-category"
                     aria-label={t("category")}
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
+                    value={selectedCategoryId}
+                    onChange={(e) => {
+                      setSelectedCategoryId(e.target.value);
+                      setSubCategoryId("");
+                    }}
                     className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/5 rounded-md text-white text-sm focus:border-(--arvesta-accent) focus:outline-none"
                   >
                     <option value="">{t("selectCategory")}</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.translations.find((t) => t.locale === currentLocale)
-                          ?.name ||
-                          c.translations.find((t) => t.locale === "fr")?.name ||
+                        {c.translations.find(
+                          (tr) => tr.locale === currentLocale,
+                        )?.name ||
+                          c.translations.find((tr) => tr.locale === "fr")
+                            ?.name ||
                           c.slug}
                       </option>
                     ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="product-subcategory"
+                    className="text-(--arvesta-text-secondary)"
+                  >
+                    {t("subCategory")}
+                  </Label>
+                  <select
+                    id="product-subcategory"
+                    aria-label={t("subCategory")}
+                    value={subCategoryId}
+                    onChange={(e) => setSubCategoryId(e.target.value)}
+                    disabled={!selectedCategoryId}
+                    className="w-full h-10 px-3 bg-(--arvesta-bg-elevated) border border-white/5 rounded-md text-white text-sm focus:border-(--arvesta-accent) focus:outline-none disabled:opacity-50"
+                  >
+                    <option value="">
+                      {selectedCategoryId
+                        ? t("selectSubCategory")
+                        : t("selectCategoryFirst")}
+                    </option>
+                    {categories
+                      .find((c) => c.id === selectedCategoryId)
+                      ?.subCategories.map((sc) => (
+                        <option key={sc.id} value={sc.id}>
+                          {sc.translations.find(
+                            (tr) => tr.locale === currentLocale,
+                          )?.name ||
+                            sc.translations.find((tr) => tr.locale === "fr")
+                              ?.name ||
+                            sc.slug}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 <div className="space-y-2">

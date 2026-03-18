@@ -165,6 +165,44 @@ async function main() {
   }
   console.log("✅ Categories created");
 
+  // ── SubCategories (minimal: one default per category) ──
+  const subCategoryMap: Record<string, string> = {};
+  for (const cat of categories) {
+    const slug = `${cat.slug}-general`;
+    const created = await prisma.subCategory.upsert({
+      where: { slug },
+      update: { order: 0, image: cat.image, categoryId: categoryMap[cat.slug] },
+      create: {
+        slug,
+        order: 0,
+        image: cat.image,
+        categoryId: categoryMap[cat.slug],
+        translations: {
+          create: [
+            {
+              locale: "fr",
+              name: "Général",
+              description:
+                "Collection générale liée à cette catégorie.",
+            },
+            {
+              locale: "en",
+              name: "General",
+              description: "General collection tied to this category.",
+            },
+            {
+              locale: "tr",
+              name: "Genel",
+              description: "Bu kategoriye bağlı genel koleksiyon.",
+            },
+          ],
+        },
+      },
+    });
+    subCategoryMap[cat.slug] = created.id;
+  }
+  console.log("✅ SubCategories created");
+
   // ── Products ──
   const products = [
     {
@@ -401,7 +439,7 @@ async function main() {
         slug: p.slug,
         featured: p.featured,
         order: p.order,
-        categoryId: categoryMap[p.categorySlug],
+        subCategoryId: subCategoryMap[p.categorySlug],
         images: {
           create: [{ url: p.image, alt: p.fr.title, order: 0 }],
         },

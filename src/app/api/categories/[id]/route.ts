@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
+import { resolveSlug } from "@/lib/slugify";
 
 const categoryTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -12,7 +13,7 @@ const categoryTranslationSchema = z.object({
 });
 
 const updateCategorySchema = z.object({
-  slug: z.string().trim().min(1),
+  slug: z.string().trim().optional(),
   order: z.coerce.number().int().default(0),
   image: z.string().trim().min(1).optional(),
   translations: z.array(categoryTranslationSchema).optional(),
@@ -45,7 +46,8 @@ export async function PUT(
     );
   }
 
-  const { slug, order, image, translations } = parsed.data;
+  const { order, image, translations } = parsed.data;
+  const slug = resolveSlug(parsed.data.slug, translations ?? []);
 
   const txOperations = [
     prisma.category.update({

@@ -72,6 +72,7 @@ export default function BlogFormPage({
   const isNew = postId === "new";
   const router = useRouter();
 
+  const [activeLocale, setActiveLocale] = useState(currentLocale);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [preparing, setPreparing] = useState(false);
@@ -379,17 +380,32 @@ export default function BlogFormPage({
         </div>
       )}
 
+      <h2 className="text-lg font-semibold text-white mb-2">
+        {t("multiLangContent")}
+      </h2>
+      <div className="mb-4 flex items-center gap-1">
+        {locales.map((l) => (
+          <button
+            key={l}
+            type="button"
+            onClick={() => setActiveLocale(l)}
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeLocale === l
+                ? "bg-(--arvesta-accent) text-white"
+                : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
+            }`}
+          >
+            {localeLabels[l]}
+          </button>
+        ))}
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* Main content */}
         <Card className="border-zinc-800 bg-zinc-900/50">
-          <CardHeader>
-            <CardTitle className="text-white">
-              {t("multiLangContent")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue={currentLocale}>
-              <TabsList className="mb-4">
+          <CardContent className="pt-6">
+            <Tabs value={activeLocale} onValueChange={setActiveLocale}>
+              <TabsList className="hidden">
                 {locales.map((l) => (
                   <TabsTrigger key={l} value={l}>
                     {localeLabels[l]}

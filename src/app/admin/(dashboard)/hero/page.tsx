@@ -55,6 +55,7 @@ export default function AdminHero() {
       locales.map((l) => [l, { badge: "", title: "", subtitle: "" }]),
     ),
   );
+  const [heroLocale, setHeroLocale] = useState("fr");
 
   const load = () =>
     fetch("/api/hero")
@@ -338,14 +339,27 @@ export default function AdminHero() {
 
               <Separator className="bg-white/5" />
 
-              <Tabs defaultValue="fr">
-                <TabsList className="bg-(--arvesta-bg-elevated) border border-white/5">
+              <div className="flex items-center gap-1 mb-3">
+                {locales.map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setHeroLocale(l)}
+                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      heroLocale === l
+                        ? "bg-(--arvesta-accent) text-white"
+                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
+                    }`}
+                  >
+                    {localeLabels[l]}
+                  </button>
+                ))}
+              </div>
+
+              <Tabs value={heroLocale} onValueChange={setHeroLocale}>
+                <TabsList className="hidden">
                   {locales.map((l) => (
-                    <TabsTrigger
-                      key={l}
-                      value={l}
-                      className="font-ui text-xs data-[state=active]:bg-(--arvesta-accent) data-[state=active]:text-white"
-                    >
+                    <TabsTrigger key={l} value={l}>
                       {localeLabels[l]}
                     </TabsTrigger>
                   ))}

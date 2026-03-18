@@ -391,6 +391,7 @@ export default function AdminSettings() {
                 </div>
               </div>
             </TabsContent>
+
           </Tabs>
 
           <div className="border-t border-(--arvesta-gold)/15 pt-4">

@@ -8,16 +8,44 @@ datasource db {
 }
 
 model Category {
-  id           String                  @id @default(cuid())
-  slug         String                  @unique
-  order        Int                     @default(0)
-  image        String?
-  products     Product[]
-  translations CategoryTranslation[]
-  createdAt    DateTime                @default(now())
-  updatedAt    DateTime                @updatedAt
+  id            String                  @id @default(cuid())
+  slug          String                  @unique
+  order         Int                     @default(0)
+  image         String?
+  subCategories SubCategory[]
+  translations  CategoryTranslation[]
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
 
   @@map("categories")
+}
+
+model SubCategory {
+  id           String                     @id @default(cuid())
+  slug         String                     @unique
+  order        Int                        @default(0)
+  image        String?
+  category     Category                   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categoryId   String
+  products     Product[]
+  translations SubCategoryTranslation[]
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+
+  @@index([categoryId])
+  @@map("sub_categories")
+}
+
+model SubCategoryTranslation {
+  id            String      @id @default(cuid())
+  locale        String
+  name          String
+  description   String?
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  subCategoryId String
+
+  @@unique([subCategoryId, locale])
+  @@map("sub_category_translations")
 }
 
 model CategoryTranslation {
@@ -33,18 +61,18 @@ model CategoryTranslation {
 }
 
 model Product {
-  id           String                 @id @default(cuid())
-  slug         String                 @unique
-  featured     Boolean                @default(false)
-  order        Int                    @default(0)
-    category     Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  categoryId   String
-  images       ProductImage[]
-  translations ProductTranslation[]
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
+  id             String                 @id @default(cuid())
+  slug           String                 @unique
+  featured       Boolean                @default(false)
+  order          Int                    @default(0)
+  subCategory    SubCategory            @relation(fields: [subCategoryId], references: [id], onDelete: Restrict)
+  subCategoryId  String
+  images         ProductImage[]
+  translations   ProductTranslation[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
 
-  @@index([categoryId])
+  @@index([subCategoryId])
   @@map("products")
 }
 
@@ -180,4 +208,94 @@ model FaqItemTranslation {
 
   @@unique([faqItemId, locale])
   @@map("faq_item_translations")
+}
+
+model ServiceItem {
+  id           String                   @id @default(cuid())
+  icon         String?
+  order        Int                      @default(0)
+  published    Boolean                  @default(true)
+  translations ServiceItemTranslation[]
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  @@index([published, order])
+  @@map("service_items")
+}
+
+model ServiceItemTranslation {
+  id          String      @id @default(cuid())
+  locale      String
+  title       String
+  summary     String
+  detail      String      @db.Text
+  serviceItem ServiceItem @relation(fields: [serviceItemId], references: [id], onDelete: Cascade)
+  serviceItemId String
+
+  @@unique([serviceItemId, locale])
+  @@map("service_item_translations")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  photo     String?
+  email     String?
+  phone     String?
+  order     Int      @default(0)
+  role      String   @default("member") // "lead" = Yönetici/Kurucu (üstte), "member" = diğerleri
+  published Boolean  @default(true)
+  translations TeamMemberTranslation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, order])
+  @@map("team_members")
+}
+
+model TeamMemberTranslation {
+  id         String     @id @default(cuid())
+  locale     String
+  fullName   String
+  title      String
+  teamMember TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  teamMemberId String
+
+  @@unique([teamMemberId, locale])
+  @@map("team_member_translations")
+}
+
+model DigitalCatalog {
+  id        String               @id @default(cuid())
+  slug      String               @unique
+  published Boolean              @default(false)
+  order     Int                  @default(0)
+  coverImage String?
+  pages     DigitalCatalogPage[]
+  translations DigitalCatalogTranslation[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@map("digital_catalogs")
+}
+
+model DigitalCatalogTranslation {
+  id       String         @id @default(cuid())
+  locale   String
+  title    String
+  catalog  DigitalCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+  catalogId String
+
+  @@unique([catalogId, locale])
+  @@map("digital_catalog_translations")
+}
+
+model DigitalCatalogPage {
+  id       String         @id @default(cuid())
+  imageUrl String
+  order   Int            @default(0)
+  catalog DigitalCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+  catalogId String
+
+  @@index([catalogId])
+  @@map("digital_catalog_pages")
 }

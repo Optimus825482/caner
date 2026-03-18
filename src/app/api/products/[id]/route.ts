@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
+import { resolveSlug } from "@/lib/slugify";
 
 const productTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -19,8 +20,8 @@ const productImageSchema = z.object({
 });
 
 const updateProductSchema = z.object({
-  slug: z.string().trim().min(1),
-  categoryId: z.string().trim().min(1),
+  slug: z.string().trim().optional(),
+  subCategoryId: z.string().trim().min(1),
   featured: z.boolean().default(false),
   order: z.coerce.number().int().default(0),
   translations: z.array(productTranslationSchema).optional(),
@@ -75,12 +76,13 @@ export async function PUT(
     );
   }
 
-  const { slug, categoryId, featured, order, translations, images } = parsed.data;
+  const { subCategoryId, featured, order, translations, images } = parsed.data;
+  const slug = resolveSlug(parsed.data.slug, translations ?? []);
 
   const txOperations: Prisma.PrismaPromise<unknown>[] = [
     prisma.product.update({
       where: { id },
-      data: { slug, categoryId, featured, order },
+      data: { slug, subCategoryId, featured, order },
     }),
     ...(translations?.map((t) =>
       prisma.productTranslation.upsert({
@@ -97,7 +99,9 @@ export async function PUT(
   ];
 
   if (images) {
-    txOperations.push(prisma.productImage.deleteMany({ where: { productId: id } }));
+    txOperations.push(
+      prisma.productImage.deleteMany({ where: { productId: id } }),
+    );
     txOperations.push(
       prisma.productImage.createMany({
         data: images.map((img) => ({
