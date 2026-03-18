@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Package,
   Grid3X3,
-  Layers,
   MessageSquare,
   Image as ImageIcon,
   Settings,
@@ -40,7 +39,6 @@ const menuKeys = [
 
 const catalogChildren = [
   { href: "/admin/categories", icon: Grid3X3, key: "categories" },
-  { href: "/admin/subcategories", icon: Layers, key: "subCategories" },
   { href: "/admin/products", icon: Package, key: "products" },
   { href: "/admin/catalog", icon: BookOpen, key: "digitalCatalog" },
 ] as const;
