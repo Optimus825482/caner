@@ -403,7 +403,9 @@
     "uploadLogo": "Logo Değiştir",
     "uploading": "Yükleniyor...",
     "kurumsalTab": "Kurumsal",
-    "kurumsalInfo": "Kurumsal sayfasının içeriğini buradan düzenleyebilirsiniz. Her alan 3 dilde (FR, EN, TR) düzenlenebilir."
+    "kurumsalInfo": "Kurumsal sayfasının içeriğini buradan düzenleyebilirsiniz. Her alan 3 dilde (FR, EN, TR) düzenlenebilir.",
+    "crossCategorySubcategory": "Koleksiyon Modu (Çapraz Kategori)",
+    "crossCategorySubcategoryHelp": "Açıkken, bir alt kategoriye tıklandığında aynı isimdeki tüm alt kategorilerdeki ürünler (tüm ana kategorilerden) birlikte gösterilir."
   },
   "adminMediaEditor": {
     "title": "Görsel Ön İşleme",

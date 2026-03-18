@@ -121,6 +121,12 @@ export default async function ProductsPage({
         })),
     }));
 
+  // Cross-category subcategory setting
+  const crossCatSetting = await prisma.siteSetting.findUnique({
+    where: { key: "cross_category_subcategory" },
+  });
+  const crossCategoryMode = crossCatSetting?.value === "true";
+
   const publishedCatalogs = await prisma.digitalCatalog.findMany({
     where: { published: true },
     include: {
@@ -152,6 +158,7 @@ export default async function ProductsPage({
           categories={filterCategories}
           catalogs={publishedCatalogs}
           locale={locale}
+          crossCategoryMode={crossCategoryMode}
           labels={{
             all: t("filterAll"),
             allSubCategories: t("filterAllSub"),

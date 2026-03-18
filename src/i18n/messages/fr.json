@@ -403,7 +403,9 @@
     "uploadLogo": "Changer le logo",
     "uploading": "Téléchargement...",
     "kurumsalTab": "Entreprise",
-    "kurumsalInfo": "Modifiez le contenu de la page Entreprise ici. Chaque champ est éditable en 3 langues (FR, EN, TR)."
+    "kurumsalInfo": "Modifiez le contenu de la page Entreprise ici. Chaque champ est éditable en 3 langues (FR, EN, TR).",
+    "crossCategorySubcategory": "Mode Collection (Inter-catégories)",
+    "crossCategorySubcategoryHelp": "Lorsqu'activé, cliquer sur une sous-catégorie affiche tous les produits de toutes les sous-catégories portant le même nom, indépendamment de la catégorie parente."
   },
   "adminMediaEditor": {
     "title": "Prétraitement d'image",

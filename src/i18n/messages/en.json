@@ -401,7 +401,9 @@
     "uploadLogo": "Change Logo",
     "uploading": "Uploading...",
     "kurumsalTab": "Corporate",
-    "kurumsalInfo": "Edit the Corporate page content here. Each field is editable in 3 languages (FR, EN, TR)."
+    "kurumsalInfo": "Edit the Corporate page content here. Each field is editable in 3 languages (FR, EN, TR).",
+    "crossCategorySubcategory": "Collection Mode (Cross-Category)",
+    "crossCategorySubcategoryHelp": "When enabled, clicking a subcategory shows all products from all subcategories with the same name, regardless of parent category."
   },
   "adminMediaEditor": {
     "title": "Image Preprocessing",

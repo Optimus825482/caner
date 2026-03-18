@@ -35,6 +35,7 @@ interface Props {
   categories: FilterOption[];
   catalogs: Catalog[];
   locale: string;
+  crossCategoryMode: boolean;
   labels: {
     all: string;
     allSubCategories: string;
@@ -49,6 +50,7 @@ export function ProductsPageContent({
   categories,
   catalogs,
   locale,
+  crossCategoryMode,
   labels,
 }: Props) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
@@ -57,11 +59,20 @@ export function ProductsPageContent({
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<
     string | null
   >(null);
+  const [selectedSubCategoryName, setSelectedSubCategoryName] = useState<
+    string | null
+  >(null);
 
   const filteredProducts = products.filter((p) => {
     if (selectedCategoryId && p.categoryId !== selectedCategoryId) return false;
-    if (selectedSubCategoryId && p.subCategoryId !== selectedSubCategoryId)
-      return false;
+    if (selectedSubCategoryId) {
+      // Cross-category mode: filter by subcategory NAME across all categories
+      if (crossCategoryMode && selectedSubCategoryName) {
+        return p.subCategoryName === selectedSubCategoryName;
+      }
+      // Normal mode: filter by exact subcategory ID
+      return p.subCategoryId === selectedSubCategoryId;
+    }
     return true;
   });
 
@@ -88,6 +99,7 @@ export function ProductsPageContent({
             onClick={() => {
               setSelectedCategoryId(null);
               setSelectedSubCategoryId(null);
+              setSelectedSubCategoryName(null);
             }}
             className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
               !selectedCategoryId
@@ -104,6 +116,7 @@ export function ProductsPageContent({
               onClick={() => {
                 setSelectedCategoryId(cat.id);
                 setSelectedSubCategoryId(null);
+                setSelectedSubCategoryName(null);
               }}
               className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
                 selectedCategoryId === cat.id
@@ -126,7 +139,10 @@ export function ProductsPageContent({
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              onClick={() => setSelectedSubCategoryId(null)}
+              onClick={() => {
+                setSelectedSubCategoryId(null);
+                setSelectedSubCategoryName(null);
+              }}
               className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-300 ${
                 !selectedSubCategoryId
                   ? "bg-(--arvesta-gold)/20 text-(--arvesta-gold) border border-(--arvesta-gold)/40"
@@ -139,7 +155,10 @@ export function ProductsPageContent({
               <button
                 key={sc.id}
                 type="button"
-                onClick={() => setSelectedSubCategoryId(sc.id)}
+                onClick={() => {
+                  setSelectedSubCategoryId(sc.id);
+                  setSelectedSubCategoryName(sc.name);
+                }}
                 className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-300 ${
                   selectedSubCategoryId === sc.id
                     ? "bg-(--arvesta-gold)/20 text-(--arvesta-gold) border border-(--arvesta-gold)/40"

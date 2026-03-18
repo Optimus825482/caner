@@ -29,6 +29,7 @@ import {
   Search,
   Upload,
   ImageIcon,
+  Layers,
 } from "lucide-react";
 
 type FieldType = "text" | "email" | "url" | "number" | "password" | "boolean";
@@ -84,6 +85,14 @@ const generalSettingKeys: SettingField[] = [
     icon: Phone,
     placeholder: "https://wa.me/33143678800",
     type: "url",
+  },
+  {
+    key: "cross_category_subcategory",
+    label: "crossCategorySubcategory",
+    icon: Layers,
+    placeholder: "false",
+    type: "boolean",
+    help: "crossCategorySubcategoryHelp",
   },
 ];
 
