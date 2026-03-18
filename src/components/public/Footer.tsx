@@ -92,7 +92,8 @@ export default async function Footer({ locale }: { locale: string }) {
 
           <div className="flex flex-col items-center justify-between gap-6 border-t border-(--arvesta-gold)/22 pt-6 text-center md:flex-row">
             <span className="text-xs text-(--arvesta-text-muted)">
-              © {new Date().getFullYear()} Arvesta Menuiserie France.{" "}
+              © {new Date().getFullYear()}{" "}
+              <span className="font-brand">Arvesta</span> Menuiserie France.{" "}
               {t("rights")}
             </span>
             <div className="flex gap-4">

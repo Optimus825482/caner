@@ -395,7 +395,7 @@ export function MediaEditorDialog({
                           </div>
                         ) : (
                           <div
-                            className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
+                            className={`text-white font-brand flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
                           >
                             {watermarkText || "ARVESTA"}
                           </div>
@@ -478,7 +478,7 @@ export function MediaEditorDialog({
                         </div>
                       ) : (
                         <div
-                          className={`text-white font-bold flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
+                          className={`text-white font-brand flex items-center justify-center rounded-xl p-2 md:p-4 shadow-xl text-center max-w-[85%] wrap-break-word whitespace-normal tracking-[2px] bg-black/45 ${watermarkOpacityClass} ${watermarkTextSizeClass}`}
                         >
                           {watermarkText || "ARVESTA"}
                         </div>

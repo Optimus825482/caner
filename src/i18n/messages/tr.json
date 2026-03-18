@@ -357,6 +357,8 @@
     "confirmDeleteCategory": "\"{name}\" kategorisini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
     "deleteError": "Silme başarısız. Bu öğeye bağlı alt kategoriler veya ürünler olup olmadığını kontrol edin."
   },
+  "adminSettings": {
+    "title": "Site Ayarları",
     "subtitle": "Genel ayarlar ve SMTP e-posta yönlendirme yapılandırması",
     "settingsCenter": "Ayar Merkezi",
     "generalTab": "Genel Bilgiler",

@@ -355,6 +355,8 @@
     "confirmDeleteCategory": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
     "deleteError": "Failed to delete. Please check if there are subcategories or products linked to this item."
   },
+  "adminSettings": {
+    "title": "Site Settings",
     "subtitle": "General settings and SMTP email forwarding configuration",
     "settingsCenter": "Settings Center",
     "generalTab": "General Info",

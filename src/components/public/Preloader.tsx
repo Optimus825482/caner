@@ -50,7 +50,7 @@ export default function Preloader({ logoUrl }: { logoUrl?: string }) {
       <div className="h-px w-40 overflow-hidden rounded-full bg-white/10">
         <div className="animate-preloader-fill h-full bg-linear-to-r from-(--arvesta-accent) to-(--arvesta-gold)" />
       </div>
-      <p className="mt-5 font-display text-base italic tracking-wider text-(--arvesta-text-muted)">
+      <p className="mt-5 font-brand text-base tracking-wider text-(--arvesta-text-muted)">
         Arvesta Menuiserie France
       </p>
     </div>

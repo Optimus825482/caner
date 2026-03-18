@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope, Sora } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 import { getLocale } from "next-intl/server";
@@ -23,6 +24,13 @@ const sora = Sora({
   subsets: ["latin"],
   variable: "--font-ui",
   weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const exotc = localFont({
+  src: "../../public/fonts/Exotc350 Bd BT Bold.ttf",
+  variable: "--font-brand",
+  weight: "700",
   display: "swap",
 });
 
@@ -99,7 +107,7 @@ export default async function RootLayout({
         ))}
       </head>
       <body
-        className={`${manrope.variable} ${cormorant.variable} ${sora.variable} font-sans antialiased`}
+        className={`${manrope.variable} ${cormorant.variable} ${sora.variable} ${exotc.variable} font-sans antialiased`}
       >
         {children}
       </body>

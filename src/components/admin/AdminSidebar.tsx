@@ -77,7 +77,7 @@ export default function AdminSidebar() {
           className="object-contain"
         />
         <div>
-          <span className="font-ui text-sm font-bold text-white block leading-tight">
+          <span className="font-brand text-sm text-white block leading-tight">
             Arvesta
           </span>
           <span className="font-ui text-[0.65rem] text-(--arvesta-text-muted)">

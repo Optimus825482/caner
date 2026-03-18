@@ -357,6 +357,8 @@
     "confirmDeleteCategory": "Êtes-vous sûr de vouloir supprimer \"{name}\" ? Cette action est irréversible.",
     "deleteError": "Échec de la suppression. Vérifiez s'il y a des sous-catégories ou des produits liés."
   },
+  "adminSettings": {
+    "title": "Paramètres du site",
     "subtitle": "Paramètres généraux et configuration SMTP de transfert d'e-mails",
     "settingsCenter": "Centre de paramètres",
     "generalTab": "Informations générales",

@@ -78,7 +78,7 @@ export default function Navbar({
               }`}
             />
             <span className="leading-tight">
-              <span className="block font-display text-xl font-semibold italic tracking-wide text-[#f3c98b] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] sm:text-[1.6rem]">
+              <span className="block font-brand text-xl tracking-wide text-[#f3c98b] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] sm:text-[1.6rem]">
                 Arvesta
               </span>
               <span className="-mt-0.5 block font-ui text-[0.65rem] font-medium uppercase tracking-[0.18em] text-white/75 drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] sm:text-[0.7rem] sm:tracking-[0.25em]">
