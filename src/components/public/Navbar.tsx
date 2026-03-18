@@ -74,7 +74,7 @@ export default function Navbar({
               width={115}
               height={115}
               className={`object-contain transition-all duration-300 drop-shadow-[0_4px_16px_rgba(200,168,110,0.35)] ${
-                scrolled ? "h-[72px] w-[72px]" : "h-[90px] w-[90px]"
+                scrolled ? "h-[50px] w-[50px]" : "h-[60px] w-[60px]"
               }`}
             />
             <span className="leading-tight">
