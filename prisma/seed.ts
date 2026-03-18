@@ -169,14 +169,15 @@ async function main() {
   const subCategoryMap: Record<string, string> = {};
   for (const cat of categories) {
     const slug = `${cat.slug}-general`;
+    const catId = categoryMap[cat.slug];
     const created = await prisma.subCategory.upsert({
-      where: { slug },
-      update: { order: 0, image: cat.image, categoryId: categoryMap[cat.slug] },
+      where: { categoryId_slug: { categoryId: catId, slug } },
+      update: { order: 0, image: cat.image, categoryId: catId },
       create: {
         slug,
         order: 0,
         image: cat.image,
-        categoryId: categoryMap[cat.slug],
+        categoryId: catId,
         translations: {
           create: [
             {
