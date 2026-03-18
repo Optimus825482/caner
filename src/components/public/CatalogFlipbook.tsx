@@ -41,8 +41,15 @@ const Page = React.forwardRef<
 
 Page.displayName = "Page";
 
+interface CatalogPage {
+  id: string;
+  order: number;
+  imageUrl: string;
+  catalogId: string;
+}
+
 interface Props {
-  pages: string[];
+  pages: CatalogPage[];
   title?: string;
 }
 
