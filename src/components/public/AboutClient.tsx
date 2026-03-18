@@ -300,7 +300,14 @@ export default function AboutClient({
                       if (!tr) return null;
                       return { member, tr };
                     })
-                    .filter(Boolean)
+                    .filter(
+                      (
+                        item,
+                      ): item is {
+                        member: TeamMember;
+                        tr: { locale: string; fullName: string; title: string };
+                      } => item !== null,
+                    )
                     .map(({ member, tr }) => (
                       <article
                         key={member.id}
@@ -368,7 +375,14 @@ export default function AboutClient({
                     if (!tr) return null;
                     return { member, tr };
                   })
-                  .filter(Boolean)
+                  .filter(
+                    (
+                      item,
+                    ): item is {
+                      member: TeamMember;
+                      tr: { locale: string; fullName: string; title: string };
+                    } => item !== null,
+                  )
                   .map(({ member, tr }) => (
                     <article
                       key={member.id}
