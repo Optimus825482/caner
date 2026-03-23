@@ -44,7 +44,7 @@ export default async function LocaleLayout({
         </main>
         <Footer locale={locale} />
       </div>
-      <WhatsAppFloat />
+      <WhatsAppFloat whatsappUrl={settings.whatsapp} />
       <BackToTop />
       <CookieConsent />
       <Analytics />

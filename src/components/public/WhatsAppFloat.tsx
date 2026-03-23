@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from "react";
 
-export default function WhatsAppFloat() {
+interface WhatsAppFloatProps {
+  whatsappUrl?: string;
+}
+
+export default function WhatsAppFloat({ whatsappUrl }: WhatsAppFloatProps) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -12,9 +16,11 @@ export default function WhatsAppFloat() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const href = whatsappUrl || "https://wa.me/33143678800";
+
   return (
     <a
-      href="https://wa.me/33143678800"
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contact us on WhatsApp"
