@@ -10,6 +10,7 @@ import {
   enforceSameOrigin,
 } from "@/lib/request-guards";
 import { resolveSlug } from "@/lib/slugify";
+import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const productTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -157,6 +158,7 @@ export async function POST(req: NextRequest) {
       include: { translations: true, images: true },
     });
 
+    revalidateCatalogPages();
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     return prismaWriteErrorResponse(error);

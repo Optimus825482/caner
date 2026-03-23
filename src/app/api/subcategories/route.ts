@@ -10,6 +10,7 @@ import {
 } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 import { resolveSlug } from "@/lib/slugify";
+import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const translationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -120,6 +121,7 @@ export async function POST(req: NextRequest) {
       include: { translations: true },
     });
 
+    revalidateCatalogPages();
     return NextResponse.json(subCategory, { status: 201 });
   } catch (error) {
     return prismaWriteErrorResponse(error);

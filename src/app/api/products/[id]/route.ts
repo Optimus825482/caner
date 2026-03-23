@@ -6,6 +6,7 @@ import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 import { resolveSlug } from "@/lib/slugify";
+import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const productTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -122,6 +123,7 @@ export async function PUT(
       include: { translations: true, images: true },
     });
 
+    revalidateCatalogPages();
     return NextResponse.json(updated);
   } catch (error) {
     return prismaWriteErrorResponse(error);
@@ -142,6 +144,7 @@ export async function DELETE(
 
   try {
     await prisma.product.delete({ where: { id } });
+    revalidateCatalogPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);
