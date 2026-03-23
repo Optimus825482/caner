@@ -241,12 +241,24 @@ export default function AdminAbout() {
       setValues(merged);
     }
 
-    await fetch("/api/settings", {
+    // Only send about_* keys to avoid overwriting sensitive settings (e.g. SMTP passwords masked as "***")
+    const aboutOnly: Record<string, string> = {};
+    for (const [k, val] of Object.entries(merged)) {
+      if (k.startsWith("about_")) {
+        aboutOnly[k] = val;
+      }
+    }
+
+    const res = await fetch("/api/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(merged),
+      body: JSON.stringify(aboutOnly),
     });
     setSaving(false);
+    if (!res.ok) {
+      alert("Kaydetme başarısız oldu. Lütfen tekrar deneyin.");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   }

@@ -317,20 +317,20 @@ export function AdminAboutContentEditor({
           <div className="mx-auto max-w-7xl">
             <div className="group relative mb-4 text-center">
               <span className="font-ui text-[10px] font-semibold uppercase tracking-[0.25em] text-(--arvesta-gold)/80">
-                {v("craftsTag") || "USTALIK"}
+                {v("craftTag") || "USTALIK"}
               </span>
               <EditBtn
                 onClick={() =>
                   openEdit("Ustalık Başlık", [
-                    { baseKey: "craftsTag", label: "Etiket" },
-                    { baseKey: "craftsTitle", label: "Başlık" },
+                    { baseKey: "craftTag", label: "Etiket" },
+                    { baseKey: "craftTitle", label: "Başlık" },
                   ])
                 }
                 className="absolute -right-1 top-0"
               />
             </div>
             <h2 className="mb-14 text-center font-display text-2xl font-semibold text-white md:text-3xl lg:text-4xl">
-              {v("craftsTitle") || "Malzeme Seçiminden Montaja"}
+              {v("craftTitle") || "Malzeme Seçiminden Montaja"}
             </h2>
 
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:gap-12">

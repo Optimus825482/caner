@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import { invalidateSmtpCache, MAIL_KEYS } from "@/lib/mailer";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
+import { revalidateAboutPages } from "@/lib/revalidate";
 import {
   buildClientKey,
   createSiteSettingRateLimitAdapter,
@@ -95,6 +96,7 @@ export async function PUT(req: NextRequest) {
     );
 
     invalidateSmtpCache();
+    revalidateAboutPages();
 
     return NextResponse.json({ success: true });
   } catch (error) {

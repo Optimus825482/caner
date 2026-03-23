@@ -40,7 +40,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
 
   return (
     <section
-      className="relative flex h-[70vh] min-h-[480px] w-full items-center justify-center overflow-hidden md:h-screen md:min-h-[700px]"
+      className="relative flex h-dvh min-h-[480px] w-full items-center justify-center overflow-hidden"
       id="hero"
     >
       <div className="absolute inset-0">
@@ -58,6 +58,7 @@ export default function HeroClient({ slides }: { slides: Slide[] }) {
               priority={i === current}
               className="object-cover object-center"
               sizes="100vw"
+              quality={90}
             />
           </div>
         ))}

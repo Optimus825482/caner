@@ -21,3 +21,18 @@ export function revalidateCatalogPages() {
   revalidatePath("/en/products", "page");
   revalidatePath("/tr/products", "page");
 }
+
+/**
+ * Revalidate all public pages that display about/settings data.
+ * Call after admin saves site settings.
+ */
+export function revalidateAboutPages() {
+  revalidatePath("/fr/about", "page");
+  revalidatePath("/en/about", "page");
+  revalidatePath("/tr/about", "page");
+
+  // Home page also uses settings
+  revalidatePath("/fr", "page");
+  revalidatePath("/en", "page");
+  revalidatePath("/tr", "page");
+}
