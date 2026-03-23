@@ -4,11 +4,16 @@ import { getTranslations } from "next-intl/server";
 import { Instagram } from "lucide-react";
 import FooterReveal from "./FooterReveal";
 import { getPublicSettings } from "@/lib/get-public-settings";
+import prisma from "@/lib/prisma";
 
 export default async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "footer" });
-  const tf = await getTranslations({ locale, namespace: "filter" });
   const settings = await getPublicSettings();
+
+  const categories = await prisma.category.findMany({
+    include: { translations: { where: { locale } } },
+    orderBy: { order: "asc" },
+  });
 
   return (
     <footer className="relative overflow-hidden border-t border-(--arvesta-gold)/25 bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-6 pt-16">
@@ -34,24 +39,18 @@ export default async function Footer({ locale }: { locale: string }) {
               <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
                 {t("collections")}
               </h4>
-              <Link
-                href={`/${locale}#collections`}
-                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
-              >
-                {tf("kitchen")}
-              </Link>
-              <Link
-                href={`/${locale}#collections`}
-                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
-              >
-                {tf("wardrobe")}
-              </Link>
-              <Link
-                href={`/${locale}#collections`}
-                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
-              >
-                {tf("bathroom")}
-              </Link>
+              {categories.map((cat) => {
+                const name = cat.translations[0]?.name || cat.slug;
+                return (
+                  <Link
+                    key={cat.id}
+                    href={`/${locale}/collections/${cat.slug}`}
+                    className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
+                  >
+                    {name}
+                  </Link>
+                );
+              })}
             </div>
             <div>
               <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">

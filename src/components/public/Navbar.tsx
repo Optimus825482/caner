@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { Menu, X } from "lucide-react";
 
 const locales = [
@@ -47,11 +47,7 @@ export default function Navbar({
   ];
 
   function switchLocale(newLocale: string) {
-    const currentSegments = pathname.split("/").filter(Boolean);
-    const restSegments = currentSegments.slice(1);
-    const nextPath = `/${[newLocale, ...restSegments].join("/")}`;
-
-    router.replace(nextPath);
+    router.replace(pathname, { locale: newLocale });
   }
 
   return (
