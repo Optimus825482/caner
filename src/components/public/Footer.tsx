@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Instagram } from "lucide-react";
 import FooterReveal from "./FooterReveal";
 import { getPublicSettings } from "@/lib/get-public-settings";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export default async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "footer" });
