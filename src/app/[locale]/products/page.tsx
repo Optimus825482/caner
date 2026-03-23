@@ -108,18 +108,14 @@ export default async function ProductsPage({
     });
   });
 
-  const filterCategories = categories
-    .filter((c) => c.subCategories.some((sc) => sc.products.length > 0))
-    .map((c) => ({
-      id: c.id,
-      name: c.translations[0]?.name || c.slug,
-      subCategories: c.subCategories
-        .filter((sc) => sc.products.length > 0)
-        .map((sc) => ({
-          id: sc.id,
-          name: sc.translations[0]?.name || sc.slug,
-        })),
-    }));
+  const filterCategories = categories.map((c) => ({
+    id: c.id,
+    name: c.translations[0]?.name || c.slug,
+    subCategories: c.subCategories.map((sc) => ({
+      id: sc.id,
+      name: sc.translations[0]?.name || sc.slug,
+    })),
+  }));
 
   // Cross-category subcategory setting
   const crossCatSetting = await prisma.siteSetting.findUnique({

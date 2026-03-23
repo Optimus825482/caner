@@ -62,12 +62,19 @@ interface ContactSettings {
   email?: string;
 }
 
+interface CategoryOption {
+  value: string;
+  label: string;
+}
+
 export default function ContactForm({
   locale,
   settings,
+  categories = [],
 }: {
   locale: string;
   settings?: ContactSettings;
+  categories?: CategoryOption[];
 }) {
   const t = useTranslations("contact");
   const [sending, setSending] = useState(false);
@@ -295,15 +302,15 @@ export default function ContactForm({
               <option value="" disabled className="bg-[#0a1628] text-white">
                 {t("select")}
               </option>
-              <option value="kitchen" className="bg-[#0a1628] text-white">
-                {t("optKitchen")}
-              </option>
-              <option value="bathroom" className="bg-[#0a1628] text-white">
-                {t("optBathroom")}
-              </option>
-              <option value="wardrobe" className="bg-[#0a1628] text-white">
-                {t("optWardrobe")}
-              </option>
+              {categories.map((cat) => (
+                <option
+                  key={cat.value}
+                  value={cat.value}
+                  className="bg-[#0a1628] text-white"
+                >
+                  {cat.label}
+                </option>
+              ))}
               <option value="commercial" className="bg-[#0a1628] text-white">
                 {t("optCommercial")}
               </option>

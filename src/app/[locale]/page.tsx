@@ -6,6 +6,7 @@ import ExportSection from "@/components/public/ExportSection";
 import Marquee from "@/components/public/Marquee";
 import ContactForm from "@/components/public/ContactForm";
 import { getPublicSettings } from "@/lib/get-public-settings";
+import { prisma } from "@/lib/prisma";
 import {
   generateAlternates,
   generateOgMeta,
@@ -72,7 +73,19 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const settings = await getPublicSettings();
+  const [settings, categories] = await Promise.all([
+    getPublicSettings(),
+    prisma.category.findMany({
+      include: { translations: true },
+      orderBy: { order: "asc" },
+    }),
+  ]);
+
+  const categoryOptions = categories.map((cat) => {
+    const tr =
+      cat.translations.find((t) => t.locale === locale) ?? cat.translations[0];
+    return { value: cat.slug, label: tr?.name ?? cat.slug };
+  });
 
   return (
     <div className="relative isolate overflow-x-clip">
@@ -86,6 +99,7 @@ export default async function HomePage({
         <Marquee />
         <ContactForm
           locale={locale}
+          categories={categoryOptions}
           settings={{
             address: settings.address,
             phone: settings.phone,
