@@ -7,8 +7,11 @@ import { getPublicSettings } from "@/lib/get-public-settings";
 import { prisma } from "@/lib/prisma";
 
 export default async function Footer({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: "footer" });
-  const settings = await getPublicSettings();
+  const [t, tf, settings] = await Promise.all([
+    getTranslations({ locale, namespace: "footer" }),
+    getTranslations({ locale, namespace: "filter" }),
+    getPublicSettings(),
+  ]);
 
   const categories = await prisma.category.findMany({
     include: { translations: { where: { locale } } },

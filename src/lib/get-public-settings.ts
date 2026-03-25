@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 
 const PUBLIC_KEYS = [
@@ -16,7 +17,7 @@ export type PublicSettings = Record<(typeof PUBLIC_KEYS)[number], string>;
  * Fetch public site settings directly from DB (for Server Components).
  * Returns a key→value map with empty-string defaults.
  */
-export async function getPublicSettings(): Promise<PublicSettings> {
+export const getPublicSettings = cache(async (): Promise<PublicSettings> => {
   const rows = await prisma.siteSetting.findMany({
     where: { key: { in: [...PUBLIC_KEYS] } },
   });
@@ -38,4 +39,4 @@ export async function getPublicSettings(): Promise<PublicSettings> {
   }
 
   return defaults;
-}
+});

@@ -7,9 +7,9 @@ export default function MarkdownContent({ content }: { content: string }) {
     <ReactMarkdown
       components={{
         h1: ({ children }) => (
-          <h2 className="mb-4 mt-10 font-display text-2xl font-bold text-white first:mt-0">
+          <h1 className="mb-4 mt-10 font-display text-3xl font-bold text-white first:mt-0">
             {children}
-          </h2>
+          </h1>
         ),
         h2: ({ children }) => (
           <h2 className="mb-4 mt-10 font-display text-2xl font-bold text-white first:mt-0">

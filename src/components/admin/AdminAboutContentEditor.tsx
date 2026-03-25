@@ -30,7 +30,6 @@ interface Props {
   values: Values;
   setValues: React.Dispatch<React.SetStateAction<Values>>;
   activeLocale: string;
-  aiTranslating?: string | null;
   autoTranslateField: (baseKey: string) => void;
 }
 

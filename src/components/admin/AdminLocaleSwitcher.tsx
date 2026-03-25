@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 
@@ -11,10 +12,11 @@ const LOCALES = [
 
 export default function AdminLocaleSwitcher() {
   const currentLocale = useLocale();
+  const router = useRouter();
 
   function switchLocale(locale: string) {
     document.cookie = `admin-locale=${locale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
-    window.location.reload();
+    router.refresh();
   }
 
   return (

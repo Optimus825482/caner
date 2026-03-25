@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, startTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { Menu, X } from "lucide-react";
 
-const locales = [
-  { code: "fr", label: "FR" },
-  { code: "en", label: "EN" },
-  { code: "tr", label: "TR" },
-];
+const locales = routing.locales.map((code: string) => ({
+  code,
+  label: code.toUpperCase(),
+}));
 
 export default function Navbar({
   locale,
@@ -28,7 +28,9 @@ export default function Navbar({
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 60);
+      startTransition(() => {
+        setScrolled(window.scrollY > 60);
+      });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -37,14 +39,17 @@ export default function Navbar({
 
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
 
-  const navLinks = [
-    { href: `/${locale}`, label: t("home"), anchor: false },
-    { href: `/${locale}/about`, label: t("about"), anchor: false },
-    { href: `/${locale}/products`, label: t("products"), anchor: false },
-    { href: `/${locale}/services`, label: t("services"), anchor: false },
-    { href: `/${locale}/blog`, label: t("blog"), anchor: false },
-    { href: "#contact", label: t("contact"), anchor: true },
-  ];
+  const navLinks = useMemo(
+    () => [
+      { href: `/${locale}`, label: t("home"), anchor: false },
+      { href: `/${locale}/about`, label: t("about"), anchor: false },
+      { href: `/${locale}/products`, label: t("products"), anchor: false },
+      { href: `/${locale}/services`, label: t("services"), anchor: false },
+      { href: `/${locale}/blog`, label: t("blog"), anchor: false },
+      { href: "#contact", label: t("contact"), anchor: true },
+    ],
+    [locale, t],
+  );
 
   function switchLocale(newLocale: string) {
     router.replace(pathname, { locale: newLocale });

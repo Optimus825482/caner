@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { routing } from "@/i18n/routing";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
 
-const LOCALES = ["fr", "en", "tr"] as const;
+const LOCALES = routing.locales;
 type Locale = (typeof LOCALES)[number];
 
 const LOCALE_MAP: Record<Locale, string> = {

@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         phone: phone || null,
         order,
         published,
-        role: role ?? "member",
+        role: role,
         translations: { create: translations },
       },
       include: { translations: true },

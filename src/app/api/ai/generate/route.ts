@@ -2,13 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
-import { callNvidiaAi } from "@/lib/nvidia-ai";
-
-const LOCALE_NAMES: Record<string, string> = {
-  fr: "French",
-  en: "English",
-  tr: "Turkish",
-};
+import { callNvidiaAi, LOCALE_NAMES } from "@/lib/nvidia-ai";
 
 const generateSchema = z.object({
   type: z.enum(["blog_content", "blog_excerpt", "faq_answer"]),

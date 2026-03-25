@@ -1,3 +1,9 @@
+export const LOCALE_NAMES: Record<string, string> = {
+  fr: "French",
+  en: "English",
+  tr: "Turkish",
+};
+
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 const NVIDIA_MODEL = "qwen/qwen3.5-122b-a10b";
 

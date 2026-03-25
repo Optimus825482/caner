@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import {
@@ -10,6 +9,7 @@ import {
   enforceSameOrigin,
 } from "@/lib/request-guards";
 import { resolveSlug } from "@/lib/slugify";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const productTranslationSchema = z.object({
@@ -38,34 +38,6 @@ const productRateLimitAdapter = createSiteSettingRateLimitAdapter(
 );
 const PRODUCT_MUTATION_RATE_LIMIT_WINDOW_MS = 60_000;
 const PRODUCT_MUTATION_RATE_LIMIT_MAX_REQUESTS = 30;
-
-function prismaWriteErrorResponse(error: unknown) {
-  // DÜZELTME: Native Prisma Error Class üzerinden strict tip kontrolü.
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    if (error.code === "P2002") {
-      return NextResponse.json(
-        { error: "Resource already exists", code: error.code },
-        { status: 409 },
-      );
-    }
-
-    if (error.code === "P2025") {
-      return NextResponse.json(
-        { error: "Resource not found", code: error.code },
-        { status: 404 },
-      );
-    }
-
-    if (error.code === "P2003" || error.code === "P2014") {
-      return NextResponse.json(
-        { error: "Invalid relation reference", code: error.code },
-        { status: 422 },
-      );
-    }
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
-}
 
 export async function GET() {
   const authResult = await requireAdminAuth();

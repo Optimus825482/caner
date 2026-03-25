@@ -50,25 +50,42 @@ export default async function ProductsPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "productsPage" });
 
-  const categories = (await (prisma as any).category.findMany({
-    include: {
-      translations: { where: { locale } },
-      subCategories: {
+  const [categoriesRaw, crossCatSetting, publishedCatalogs] = await Promise.all(
+    [
+      prisma.category.findMany({
         include: {
           translations: { where: { locale } },
-          products: {
+          subCategories: {
             include: {
               translations: { where: { locale } },
-              images: { orderBy: { order: "asc" }, take: 1 },
+              products: {
+                include: {
+                  translations: { where: { locale } },
+                  images: { orderBy: { order: "asc" }, take: 1 },
+                },
+                orderBy: { order: "asc" },
+              },
             },
             orderBy: { order: "asc" },
           },
         },
         orderBy: { order: "asc" },
-      },
-    },
-    orderBy: { order: "asc" },
-  })) as Array<{
+      }),
+      prisma.siteSetting.findUnique({
+        where: { key: "cross_category_subcategory" },
+      }),
+      prisma.digitalCatalog.findMany({
+        where: { published: true },
+        include: {
+          translations: { where: { locale } },
+          pages: { orderBy: { order: "asc" }, take: 1 },
+        },
+        orderBy: { order: "asc" },
+      }),
+    ],
+  );
+
+  const categories = categoriesRaw as Array<{
     id: string;
     slug: string;
     translations: Array<{ locale: string; name: string }>;
@@ -108,29 +125,21 @@ export default async function ProductsPage({
     });
   });
 
-  const filterCategories = categories.map((c) => ({
-    id: c.id,
-    name: c.translations[0]?.name || c.slug,
-    subCategories: c.subCategories.map((sc) => ({
-      id: sc.id,
-      name: sc.translations[0]?.name || sc.slug,
-    })),
-  }));
+  const filterCategories = categories
+    .filter((c) => c.subCategories.some((sc) => sc.products.length > 0))
+    .map((c) => ({
+      id: c.id,
+      name: c.translations[0]?.name || c.slug,
+      subCategories: c.subCategories
+        .filter((sc) => sc.products.length > 0)
+        .map((sc) => ({
+          id: sc.id,
+          name: sc.translations[0]?.name || sc.slug,
+        })),
+    }));
 
   // Cross-category subcategory setting
-  const crossCatSetting = await prisma.siteSetting.findUnique({
-    where: { key: "cross_category_subcategory" },
-  });
   const crossCategoryMode = crossCatSetting?.value === "true";
-
-  const publishedCatalogs = await prisma.digitalCatalog.findMany({
-    where: { published: true },
-    include: {
-      translations: { where: { locale } },
-      pages: { orderBy: { order: "asc" }, take: 1 },
-    },
-    orderBy: { order: "asc" },
-  });
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">

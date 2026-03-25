@@ -68,7 +68,7 @@ export async function PUT(
       where: { id },
       data: {
         slug,
-        image: image !== undefined ? image : undefined,
+        image: image ?? undefined,
         published,
         order,
         ...(translations && {

@@ -97,7 +97,7 @@ export async function DELETE(
 
   try {
     // Check for child subcategories (onDelete: Restrict prevents cascade)
-    const subCount = await (prisma as any).subCategory.count({
+    const subCount = await prisma.subCategory.count({
       where: { categoryId: id },
     });
     if (subCount > 0) {

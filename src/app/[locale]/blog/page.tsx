@@ -49,13 +49,14 @@ export default async function BlogPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "blog" });
-
-  const posts = await prisma.blogPost.findMany({
-    where: { published: true },
-    include: { translations: true },
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  });
+  const [t, posts] = await Promise.all([
+    getTranslations({ locale, namespace: "blog" }),
+    prisma.blogPost.findMany({
+      where: { published: true },
+      include: { translations: true },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    }),
+  ]);
 
   const bc = breadcrumbJsonLd(locale, [
     { name: "Arvesta", url: "" },

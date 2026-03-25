@@ -22,6 +22,7 @@ declare global {
         },
       ) => string;
       reset: (widgetId?: string) => void;
+      remove: (widgetId: string) => void;
     };
   }
 }
@@ -123,7 +124,7 @@ export default function ContactForm({
     // DÜZELTME: Component unmount olduğunda widget DOM'dan temizlenir.
     return () => {
       if (window.turnstile && turnstileWidgetIdRef.current) {
-        window.turnstile.reset(turnstileWidgetIdRef.current);
+        window.turnstile.remove(turnstileWidgetIdRef.current);
         turnstileWidgetIdRef.current = null;
       }
     };

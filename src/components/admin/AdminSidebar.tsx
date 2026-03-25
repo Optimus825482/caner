@@ -50,7 +50,7 @@ export default function AdminSidebar() {
   const t = useTranslations("adminSidebar");
 
   useEffect(() => {
-    fetch("/api/settings")
+    fetch("/api/public-settings")
       .then((r) => r.json())
       .then((data: Record<string, string>) => {
         if (data.site_logo) setLogoUrl(data.site_logo);
