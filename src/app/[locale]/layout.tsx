@@ -5,21 +5,7 @@ import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
 import Preloader from "@/components/public/Preloader";
 import CustomCursor from "@/components/public/CustomCursor";
-import dynamic from "next/dynamic";
-const WhatsAppFloat = dynamic(
-  () => import("@/components/public/WhatsAppFloat"),
-  { ssr: false },
-);
-const BackToTop = dynamic(() => import("@/components/public/BackToTop"), {
-  ssr: false,
-});
-const CookieConsent = dynamic(
-  () => import("@/components/public/CookieConsent"),
-  { ssr: false },
-);
-const Analytics = dynamic(() => import("@/components/public/Analytics"), {
-  ssr: false,
-});
+import ClientOnlyComponents from "@/components/public/ClientOnlyComponents";
 import { getPublicSettings } from "@/lib/get-public-settings";
 
 export default async function LocaleLayout({
@@ -57,10 +43,7 @@ export default async function LocaleLayout({
         </main>
         <Footer locale={locale} />
       </div>
-      <WhatsAppFloat whatsappUrl={settings.whatsapp} />
-      <BackToTop />
-      <CookieConsent />
-      <Analytics />
+      <ClientOnlyComponents whatsappUrl={settings.whatsapp} />
     </NextIntlClientProvider>
   );
 }

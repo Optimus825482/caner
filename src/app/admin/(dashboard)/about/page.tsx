@@ -368,7 +368,6 @@ export default function AdminAbout() {
                       values={values}
                       setValues={setValues}
                       activeLocale={activeLocale}
-                      aiTranslating={aiTranslating}
                       autoTranslateField={autoTranslateField}
                     />
                     <div className="flex gap-3">
