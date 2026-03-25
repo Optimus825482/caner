@@ -1,7 +1,7 @@
 "use client";
 
 import ImageShimmer from "@/components/public/ImageShimmer";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useStaggerReveal } from "@/hooks/useScrollReveal";
 
 interface CategoryItem {
@@ -28,10 +28,11 @@ export default function CollectionsClient({
   explore: string;
 }) {
   const { ref: headerRef, isVisible: headerVisible } = useStaggerReveal(1);
-  const {
-    ref: gridRef,
-    isVisible: gridVisible,
-  } = useStaggerReveal(categories.length, 120, 600);
+  const { ref: gridRef, isVisible: gridVisible } = useStaggerReveal(
+    categories.length,
+    120,
+    600,
+  );
 
   return (
     <section
@@ -97,7 +98,7 @@ export default function CollectionsClient({
                   {cat.description}
                 </p>
                 <Link
-                  href={`/${locale}/collections/${cat.slug}`}
+                  href={`/collections/${cat.slug}`}
                   className="inline-flex items-center gap-2 border-b border-(--arvesta-gold)/45 pb-0.5 font-ui text-xs font-bold uppercase tracking-[0.16em] text-(--arvesta-gold) transition-all hover:gap-3 hover:border-(--arvesta-gold) hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#040b19]"
                 >
                   {explore} <span aria-hidden>→</span>
