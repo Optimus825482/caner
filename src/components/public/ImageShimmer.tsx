@@ -1,7 +1,7 @@
 "use client";
 
 import Image, { type ImageProps } from "next/image";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 // Generates a tiny SVG shimmer as base64 placeholder
 function shimmerSvg(w: number, h: number): string {
@@ -28,9 +28,18 @@ function toBase64(str: string) {
 export default function ImageShimmer({ className = "", ...props }: ImageProps) {
   const [loaded, setLoaded] = useState(false);
 
+  // Use ref callback to catch images that are already loaded from cache
+  // (mobile browsers sometimes skip onLoad for cached images)
+  const imgRef = useCallback((img: HTMLImageElement | null) => {
+    if (img?.complete && img.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, []);
+
   return (
     <Image
       {...props}
+      ref={imgRef}
       alt={props.alt || "Loading placeholder"}
       className={`transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
       placeholder="blur"
