@@ -39,9 +39,9 @@ export default async function Footer({ locale }: { locale: string }) {
 
           <div className="mx-auto mb-12 grid max-w-[560px] grid-cols-2 gap-10 text-center">
             <div>
-              <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
+              <span className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
                 {t("collections")}
-              </h4>
+              </span>
               {categories.map((cat) => {
                 const name = cat.translations[0]?.name || cat.slug;
                 return (
@@ -56,9 +56,21 @@ export default async function Footer({ locale }: { locale: string }) {
               })}
             </div>
             <div>
-              <h4 className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
+              <span className="mb-4 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold)/95">
                 {t("company")}
-              </h4>
+              </span>
+              <Link
+                href={`/${locale}/services`}
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
+              >
+                {t("services")}
+              </Link>
+              <Link
+                href={`/${locale}/products`}
+                className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
+              >
+                {t("products")}
+              </Link>
               <Link
                 href={`/${locale}/about`}
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"

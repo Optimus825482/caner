@@ -36,7 +36,7 @@ const exotc = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://arvestafrance.com",
+    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com",
   ),
   title: "Arvesta Menuiserie France — Premium Interior Design",
   description:

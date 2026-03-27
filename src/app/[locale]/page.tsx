@@ -12,25 +12,30 @@ import {
   generateOgMeta,
   furnitureStoreJsonLd,
   organizationJsonLd,
+  websiteJsonLd,
 } from "@/lib/seo";
 
-const meta: Record<string, { title: string; description: string }> = {
-  fr: {
-    title: "Arvesta Menuiserie France — Mobilier Sur Mesure Premium",
-    description:
-      "Cuisines, dressings, salles de bains et projets sur mesure de haute qualité. Fabriqué en Turquie, livré en Europe. Devis gratuit.",
-  },
-  en: {
-    title: "Arvesta Menuiserie France — Premium Custom Furniture",
-    description:
-      "High-quality custom kitchens, wardrobes, bathrooms and bespoke projects. Made in Turkey, delivered across Europe. Free quote.",
-  },
-  tr: {
-    title: "Arvesta Menuiserie France — Premium Özel Tasarım Mobilya",
-    description:
-      "Yüksek kaliteli özel tasarım mutfak, gardırop, banyo ve kişiye özel projeler. Türkiye'de üretilir, Avrupa'ya teslim edilir.",
-  },
-};
+const meta: Record<string, { title: string; description: string; h1: string }> =
+  {
+    fr: {
+      title: "Arvesta Menuiserie France — Mobilier Sur Mesure Premium",
+      description:
+        "Cuisines, dressings, salles de bains et projets sur mesure de haute qualité. Fabriqué en Turquie, livré en Europe. Devis gratuit.",
+      h1: "Arvesta — Mobilier Sur Mesure Premium, Cuisines et Dressings",
+    },
+    en: {
+      title: "Arvesta Menuiserie France — Premium Custom Furniture",
+      description:
+        "High-quality custom kitchens, wardrobes, bathrooms and bespoke projects. Made in Turkey, delivered across Europe. Free quote.",
+      h1: "Arvesta — Premium Custom Furniture, Kitchens and Wardrobes",
+    },
+    tr: {
+      title: "Arvesta Menuiserie France — Premium Özel Tasarım Mobilya",
+      description:
+        "Yüksek kaliteli özel tasarım mutfak, gardırop, banyo ve kişiye özel projeler. Türkiye'de üretilir, Avrupa'ya teslim edilir.",
+      h1: "Arvesta — Premium Özel Tasarım Mobilya, Mutfak ve Gardırop",
+    },
+  };
 
 export async function generateMetadata({
   params,
@@ -52,6 +57,7 @@ function JsonLd({ locale }: { locale: string }) {
   const m = meta[locale] || meta.fr;
   const store = furnitureStoreJsonLd(locale, m.description);
   const org = organizationJsonLd();
+  const site = websiteJsonLd();
 
   return (
     <>
@@ -62,6 +68,10 @@ function JsonLd({ locale }: { locale: string }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(org) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(site) }}
       />
     </>
   );
@@ -89,6 +99,7 @@ export default async function HomePage({
 
   return (
     <div className="relative isolate overflow-x-clip">
+      <h1 className="sr-only">{(meta[locale] || meta.fr).h1}</h1>
       <JsonLd locale={locale} />
       <Hero locale={locale} />
 

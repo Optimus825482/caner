@@ -57,7 +57,7 @@ export function generateOgMeta(
 }
 
 /**
- * WebSite JSON-LD for root layout (sitelinks search box).
+ * WebSite JSON-LD for root layout.
  */
 export function websiteJsonLd() {
   return {
@@ -65,14 +65,7 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     name: "Arvesta Menuiserie France",
     url: BASE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${BASE_URL}/fr/collections/{search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
+    inLanguage: ["fr", "en", "tr"],
   };
 }
 
@@ -85,7 +78,7 @@ export function organizationJsonLd() {
     "@type": "Organization",
     name: "Arvesta Menuiserie France",
     url: BASE_URL,
-    logo: `${BASE_URL}/uploads/products/logo.png`,
+    logo: `${BASE_URL}/logo.png`,
     sameAs: ["https://instagram.com/arvesta"],
     contactPoint: {
       "@type": "ContactPoint",
@@ -116,6 +109,8 @@ export function breadcrumbJsonLd(
 
 /**
  * Product JSON-LD for product detail pages.
+ * Note: Offer removed — sur mesure products have no fixed price.
+ * Google invalidates Offer schema with price "0".
  */
 export function productJsonLd(
   locale: string,
@@ -142,20 +137,6 @@ export function productJsonLd(
     manufacturer: {
       "@type": "Organization",
       name: "Arvesta Menuiserie France",
-    },
-    offers: {
-      "@type": "Offer",
-      availability: "https://schema.org/InStock",
-      priceCurrency: "EUR",
-      price: "0",
-      priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-      url: `${BASE_URL}/${locale}/products/${product.slug}`,
-      seller: {
-        "@type": "Organization",
-        name: "Arvesta Menuiserie France",
-      },
     },
   };
 }
@@ -199,7 +180,7 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     name: "Arvesta Menuiserie France",
     description,
     url: `${BASE_URL}/${locale}`,
-    logo: `${BASE_URL}/uploads/products/logo.png`,
+    logo: `${BASE_URL}/logo.png`,
     image: `${BASE_URL}/image.png`,
     address: {
       "@type": "PostalAddress",
@@ -246,6 +227,133 @@ export function faqJsonLd(faqs: Array<{ question: string; answer: string }>) {
         "@type": "Answer",
         text: faq.answer,
       },
+    })),
+  };
+}
+
+/**
+ * Service JSON-LD for services page.
+ */
+export function serviceJsonLd(
+  services: Array<{ name: string; description: string }>,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FurnitureStore",
+    name: "Arvesta Menuiserie France",
+    url: BASE_URL,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Services",
+      itemListElement: services.map((svc) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: svc.name,
+          description: svc.description,
+          provider: {
+            "@type": "Organization",
+            name: "Arvesta Menuiserie France",
+          },
+          areaServed: [
+            { "@type": "Country", name: "France" },
+            { "@type": "Country", name: "Belgium" },
+            { "@type": "Country", name: "Germany" },
+            { "@type": "Country", name: "Netherlands" },
+          ],
+        },
+      })),
+    },
+  };
+}
+
+/**
+ * AboutPage JSON-LD — E-E-A-T signal for about page.
+ */
+export function aboutPageJsonLd(locale: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "À Propos — Arvesta Menuiserie France",
+    url: `${BASE_URL}/${locale}/about`,
+    mainEntity: {
+      "@type": "Organization",
+      name: "Arvesta Menuiserie France",
+      url: BASE_URL,
+      foundingLocation: {
+        "@type": "Place",
+        name: "Aksaray, Türkiye",
+      },
+      areaServed: [
+        { "@type": "Country", name: "France" },
+        { "@type": "Country", name: "Belgium" },
+        { "@type": "Country", name: "Germany" },
+        { "@type": "Country", name: "Netherlands" },
+      ],
+      knowsAbout: [
+        "Menuiserie sur mesure",
+        "Cuisine sur mesure",
+        "Mobilier premium",
+        "Dressing sur mesure",
+      ],
+    },
+  };
+}
+
+/**
+ * Blog JSON-LD for blog listing page.
+ */
+export function blogListJsonLd(
+  locale: string,
+  posts: Array<{
+    title: string;
+    url: string;
+    date: string;
+    excerpt?: string;
+  }>,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Blog & Inspirations — Arvesta",
+    url: `${BASE_URL}/${locale}/blog`,
+    publisher: {
+      "@type": "Organization",
+      name: "Arvesta Menuiserie France",
+    },
+    blogPost: posts.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: post.url,
+      datePublished: post.date,
+      ...(post.excerpt ? { description: post.excerpt } : {}),
+      author: {
+        "@type": "Organization",
+        name: "Arvesta Menuiserie France",
+      },
+    })),
+  };
+}
+
+/**
+ * ItemList JSON-LD for product listing pages.
+ */
+export function productListJsonLd(
+  locale: string,
+  products: Array<{ name: string; url: string; image?: string }>,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Nos Produits — Arvesta",
+    url: `${BASE_URL}/${locale}/products`,
+    numberOfItems: products.length,
+    itemListElement: products.slice(0, 20).map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.name,
+      url: p.url,
+      ...(p.image ? { image: p.image } : {}),
     })),
   };
 }

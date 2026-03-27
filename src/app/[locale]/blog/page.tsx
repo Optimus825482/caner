@@ -8,6 +8,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  blogListJsonLd,
 } from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
@@ -63,11 +64,33 @@ export default async function BlogPage({
     { name: t("title") },
   ]);
 
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
+  const blogSchema = blogListJsonLd(
+    locale,
+    posts.map((post) => {
+      const tr =
+        post.translations.find((t) => t.locale === locale) ||
+        post.translations.find((t) => t.locale === "fr") ||
+        post.translations[0];
+      return {
+        title: tr?.title || post.slug,
+        url: `${BASE_URL}/${locale}/blog/${post.slug}`,
+        date: post.createdAt.toISOString(),
+        excerpt: tr?.excerpt || undefined,
+      };
+    }),
+  );
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
       />
 
       <div className="mx-auto max-w-[960px]">

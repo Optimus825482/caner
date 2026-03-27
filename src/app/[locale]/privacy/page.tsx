@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
-import { generateAlternates } from "@/lib/seo";
+import {
+  generateAlternates,
+  generateOgMeta,
+  breadcrumbJsonLd,
+} from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -31,6 +35,7 @@ export async function generateMetadata({
     title: m.title,
     description: m.description,
     alternates: generateAlternates(locale, "/privacy"),
+    openGraph: generateOgMeta(locale, m.title, m.description, "/privacy"),
   };
 }
 
@@ -42,8 +47,17 @@ export default async function PrivacyPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "privacy" });
 
+  const bc = breadcrumbJsonLd(locale, [
+    { name: "Arvesta", url: "" },
+    { name: meta[locale]?.title.split(" — ")[0] || "Privacy" },
+  ]);
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+      />
       <div className="mx-auto max-w-[720px]">
         <Link
           href={`/${locale}`}

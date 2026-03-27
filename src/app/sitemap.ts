@@ -52,7 +52,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Static pages
-  const staticPages = ["", "/about", "/privacy", "/faq", "/blog"];
+  const staticPages = [
+    "",
+    "/about",
+    "/privacy",
+    "/faq",
+    "/blog",
+    "/services",
+    "/products",
+  ];
   const pages: MetadataRoute.Sitemap = staticPages.flatMap((path) =>
     LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}${path}`,

@@ -4,6 +4,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  aboutPageJsonLd,
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 
@@ -65,6 +66,12 @@ export default async function AboutPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(aboutPageJsonLd(locale)),
+        }}
       />
       <AboutClient locale={locale} settings={aboutSettings} />
     </>

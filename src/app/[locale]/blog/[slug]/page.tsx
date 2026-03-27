@@ -88,7 +88,7 @@ export default async function BlogPostPage({
       name: "Arvesta Menuiserie France",
       logo: {
         "@type": "ImageObject",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com"}/uploads/products/logo.png`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com"}/logo.png`,
       },
     },
   };

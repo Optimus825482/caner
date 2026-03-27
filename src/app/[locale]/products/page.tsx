@@ -6,6 +6,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  productListJsonLd,
 } from "@/lib/seo";
 import { ProductsPageContent } from "@/components/public/ProductsPageContent";
 
@@ -125,6 +126,17 @@ export default async function ProductsPage({
     });
   });
 
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
+  const itemListSchema = productListJsonLd(
+    locale,
+    allProducts.map((p) => ({
+      name: p.title,
+      url: `${BASE_URL}/${locale}/products/${p.slug}`,
+      image: p.image || undefined,
+    })),
+  );
+
   const filterCategories = categories
     .filter((c) => c.subCategories.some((sc) => sc.products.length > 0))
     .map((c) => ({
@@ -146,6 +158,10 @@ export default async function ProductsPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <div className="mx-auto max-w-7xl">

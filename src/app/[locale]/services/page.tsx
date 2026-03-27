@@ -6,6 +6,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  serviceJsonLd,
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import ServiceDetailDialog from "@/components/public/ServiceDetailDialog";
@@ -88,6 +89,10 @@ export default async function ServicesPage({
     };
   });
 
+  const svcSchema = serviceJsonLd(
+    services.map((s) => ({ name: s.title, description: s.summary })),
+  );
+
   // Fetch FAQ items from DB
   const dbFaqs = (await (prisma as any).faqItem.findMany({
     where: { published: true },
@@ -115,6 +120,12 @@ export default async function ServicesPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
       />
+      {services.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(svcSchema) }}
+        />
+      )}
 
       <div className="mx-auto max-w-7xl">
         {/* Header */}
