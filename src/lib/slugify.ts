@@ -20,7 +20,7 @@ export function resolveSlug(
   slug: string | undefined,
   translations: { locale: string; name?: string; title?: string }[],
 ): string {
-  if (slug?.trim()) return slug.trim();
+  if (slug?.trim()) return slugify(slug.trim());
   const fr = translations.find((t) => t.locale === "fr");
   const source =
     fr?.name ||
