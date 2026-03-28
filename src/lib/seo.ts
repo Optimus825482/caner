@@ -201,6 +201,19 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     ],
     priceRange: "€€€",
     knowsLanguage: ["fr", "en", "tr"],
+    telephone: "+33-1-XX-XX-XX-XX",
+    email: "contact@arvesta-france.com",
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "09:00",
+        closes: "18:00",
+      },
+    ],
+    paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
+    currenciesAccepted: "EUR",
+    sameAs: ["https://instagram.com/arvesta"],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Mobilier Sur Mesure",

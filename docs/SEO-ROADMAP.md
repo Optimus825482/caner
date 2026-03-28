@@ -21,40 +21,40 @@
 
 ---
 
-## FAZ 2 — Schema Zenginleştirme ✅ TAMAMLANDI
+## FAZ 2 — Schema Zenginleştirme ✅ TAMAMLANDI (10/10)
 
-| #    | Görev                                                         | Dosya(lar)                           | Durum             |
-| ---- | ------------------------------------------------------------- | ------------------------------------ | ----------------- |
-| 2.1  | `serviceJsonLd()` fonksiyonu oluştur                          | `src/lib/seo.ts`                     | ✅                |
-| 2.2  | Services sayfasına Service schema ekle                        | `src/app/[locale]/services/page.tsx` | ✅                |
-| 2.3  | `aboutPageJsonLd()` fonksiyonu oluştur                        | `src/lib/seo.ts`                     | ✅                |
-| 2.4  | About sayfasına AboutPage schema ekle                         | `src/app/[locale]/about/page.tsx`    | ✅                |
-| 2.5  | `blogListJsonLd()` fonksiyonu oluştur                         | `src/lib/seo.ts`                     | ✅                |
-| 2.6  | Blog listesine Blog schema ekle                               | `src/app/[locale]/blog/page.tsx`     | ✅                |
-| 2.7  | `productListJsonLd()` fonksiyonu oluştur                      | `src/lib/seo.ts`                     | ✅                |
-| 2.8  | Products listesine ItemList schema ekle                       | `src/app/[locale]/products/page.tsx` | ✅                |
-| 2.9  | Privacy sayfasına BreadcrumbList + OpenGraph ekle             | `src/app/[locale]/privacy/page.tsx`  | ✅                |
-| 2.10 | FurnitureStore schema genişlet (telefon, saat, ödeme, sameAs) | `src/lib/seo.ts`                     | ⬜ Gelecek sprint |
-
----
-
-## FAZ 3 — Yapısal İyileştirmeler ✅ TAMAMLANDI
-
-| #   | Görev                                                 | Dosya(lar)                                 | Durum             |
-| --- | ----------------------------------------------------- | ------------------------------------------ | ----------------- |
-| 3.1 | Footer `<h4>` → `<span>` dönüşümü (semantic düzeltme) | `src/components/public/Footer.tsx`         | ✅                |
-| 3.2 | Footer'a Services ve Products linkleri ekle           | `src/components/public/Footer.tsx`         | ✅                |
-| 3.3 | `llms.txt` dosyası oluştur (AI crawler'lar için)      | `public/llms.txt`                          | ✅                |
-| 3.4 | Catalog breadcrumb'da hardcoded Türkçe düzelt         | `src/app/[locale]/catalog/[slug]/page.tsx` | ⬜ Gelecek sprint |
+| #    | Görev                                                         | Dosya(lar)                           | Durum |
+| ---- | ------------------------------------------------------------- | ------------------------------------ | ----- |
+| 2.1  | `serviceJsonLd()` fonksiyonu oluştur                          | `src/lib/seo.ts`                     | ✅    |
+| 2.2  | Services sayfasına Service schema ekle                        | `src/app/[locale]/services/page.tsx` | ✅    |
+| 2.3  | `aboutPageJsonLd()` fonksiyonu oluştur                        | `src/lib/seo.ts`                     | ✅    |
+| 2.4  | About sayfasına AboutPage schema ekle                         | `src/app/[locale]/about/page.tsx`    | ✅    |
+| 2.5  | `blogListJsonLd()` fonksiyonu oluştur                         | `src/lib/seo.ts`                     | ✅    |
+| 2.6  | Blog listesine Blog schema ekle                               | `src/app/[locale]/blog/page.tsx`     | ✅    |
+| 2.7  | `productListJsonLd()` fonksiyonu oluştur                      | `src/lib/seo.ts`                     | ✅    |
+| 2.8  | Products listesine ItemList schema ekle                       | `src/app/[locale]/products/page.tsx` | ✅    |
+| 2.9  | Privacy sayfasına BreadcrumbList + OpenGraph ekle             | `src/app/[locale]/privacy/page.tsx`  | ✅    |
+| 2.10 | FurnitureStore schema genişlet (telefon, saat, ödeme, sameAs) | `src/lib/seo.ts`                     | ✅    |
 
 ---
 
-## FAZ 4 — RGPD / Uyumluluk (Ayrı Sprint)
+## FAZ 3 — Yapısal İyileştirmeler ✅ TAMAMLANDI (4/4)
+
+| #   | Görev                                                 | Dosya(lar)                                 | Durum |
+| --- | ----------------------------------------------------- | ------------------------------------------ | ----- |
+| 3.1 | Footer `<h4>` → `<span>` dönüşümü (semantic düzeltme) | `src/components/public/Footer.tsx`         | ✅    |
+| 3.2 | Footer'a Services ve Products linkleri ekle           | `src/components/public/Footer.tsx`         | ✅    |
+| 3.3 | `llms.txt` dosyası oluştur (AI crawler'lar için)      | `public/llms.txt`                          | ✅    |
+| 3.4 | Catalog breadcrumb'da hardcoded Türkçe düzelt         | `src/app/[locale]/catalog/[slug]/page.tsx` | ✅    |
+
+---
+
+## FAZ 4 — RGPD / Uyumluluk ✅ TAMAMLANDI
 
 | #   | Görev                                          | Dosya(lar)                                | Durum |
 | --- | ---------------------------------------------- | ----------------------------------------- | ----- |
-| 4.1 | Cookie consent'e "Personnaliser" seçeneği ekle | `src/components/public/CookieConsent.tsx` | ⬜    |
-| 4.2 | GA script'i consent'e bağla                    | Analytics bileşeni                        | ⬜    |
+| 4.1 | Cookie consent'e "Personnaliser" seçeneği ekle | `src/components/public/CookieConsent.tsx` | ✅    |
+| 4.2 | GA script'i consent'e bağla                    | `src/components/public/Analytics.tsx`     | ✅    |
 
 ---
 
@@ -62,7 +62,7 @@
 
 | #    | Görev                                                | Tür          | Durum |
 | ---- | ---------------------------------------------------- | ------------ | ----- |
-| 5.1  | Google Search Console kurulumu + sitemap submit      | Manuel       | ⬜    |
+| 5.1  | Google Search Console kurulumu + sitemap submit      | Manuel       | ✅    |
 | 5.2  | Bing Webmaster Tools kurulumu                        | Manuel       | ⬜    |
 | 5.3  | Google Business Profile oluştur (Paris)              | Manuel       | ⬜    |
 | 5.4  | İlk 3 blog yazısını yayınla (GEO optimize)           | İçerik       | ⬜    |

@@ -85,7 +85,9 @@
     "contact": "İletişim",
     "privacy": "Gizlilik",
     "faq": "SSS",
-    "blog": "Blog"
+    "blog": "Blog",
+    "services": "Hizmetlerimiz",
+    "products": "Ürünlerimiz"
   },
   "about": {
     "title": "Arvesta Hakkında",
@@ -126,7 +128,11 @@
   "cookie": {
     "message": "Bu site deneyiminizi iyileştirmek için çerezler kullanır. Devam ederek gizlilik politikamızı kabul etmiş olursunuz.",
     "accept": "Kabul Et",
-    "decline": "Reddet"
+    "decline": "Reddet",
+    "customize": "Özelleştir",
+    "essential": "Zorunlu çerezler (her zaman aktif)",
+    "analytics": "Analitik çerezler (Google Analytics)",
+    "savePreferences": "Tercihlerimi kaydet"
   },
   "privacy": {
     "backToHome": "Ana sayfaya dön",

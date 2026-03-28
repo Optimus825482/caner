@@ -21,7 +21,8 @@ export async function generateMetadata({
   });
   if (!catalog) return { title: "Not Found" };
 
-  const tr = catalog.translations.find((t) => t.locale === locale) ||
+  const tr =
+    catalog.translations.find((t) => t.locale === locale) ||
     catalog.translations[0];
   const title = tr?.title || catalog.slug;
 
@@ -49,13 +50,16 @@ export default async function CatalogViewPage({
 
   if (!catalog) notFound();
 
-  const tr = catalog.translations.find((t) => t.locale === locale) ||
+  const tr =
+    catalog.translations.find((t) => t.locale === locale) ||
     catalog.translations[0];
   const title = tr?.title || catalog.slug;
 
+  const t = await getTranslations({ locale, namespace: "productsPage" });
+
   const bc = breadcrumbJsonLd(locale, [
     { name: "Arvesta", url: "" },
-    { name: "Ürünlerimiz", url: "/products" },
+    { name: t("title"), url: "/products" },
     { name: title, url: `/catalog/${slug}` },
   ]);
 
@@ -67,10 +71,7 @@ export default async function CatalogViewPage({
       />
 
       <div className="mx-auto max-w-4xl">
-        <CatalogFlipbook
-          pages={catalog.pages}
-          title={title}
-        />
+        <CatalogFlipbook pages={catalog.pages} title={title} />
       </div>
     </main>
   );

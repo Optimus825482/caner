@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import AboutClient from "@/components/public/AboutClient";
 import {
   generateAlternates,
@@ -7,6 +8,7 @@ import {
   aboutPageJsonLd,
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
+import { ABOUT_SETTINGS_TAG } from "@/lib/revalidate";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -52,14 +54,22 @@ export default async function AboutPage({
     { name: meta[locale]?.title.split(" — ")[0] || "About" },
   ]);
 
-  // Fetch about_* settings from DB for admin-editable kurumsal content
-  const aboutRows = await prisma.siteSetting.findMany({
-    where: { key: { startsWith: "about_" } },
-  });
-  const aboutSettings: Record<string, string> = {};
-  for (const row of aboutRows) {
-    if (row.value) aboutSettings[row.key] = row.value;
-  }
+  // Fetch about_* settings from DB — tag-based cache ile revalidation garantili
+  const getAboutSettings = unstable_cache(
+    async () => {
+      const aboutRows = await prisma.siteSetting.findMany({
+        where: { key: { startsWith: "about_" } },
+      });
+      const settings: Record<string, string> = {};
+      for (const row of aboutRows) {
+        if (row.value) settings[row.key] = row.value;
+      }
+      return settings;
+    },
+    ["about-settings"],
+    { tags: [ABOUT_SETTINGS_TAG] },
+  );
+  const aboutSettings = await getAboutSettings();
 
   return (
     <>

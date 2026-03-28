@@ -85,7 +85,9 @@
     "contact": "Contact",
     "privacy": "Confidentialité",
     "faq": "FAQ",
-    "blog": "Blog"
+    "blog": "Blog",
+    "services": "Nos Services",
+    "products": "Nos Produits"
   },
   "about": {
     "title": "À Propos d'Arvesta",
@@ -126,7 +128,11 @@
   "cookie": {
     "message": "Ce site utilise des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité.",
     "accept": "Accepter",
-    "decline": "Refuser"
+    "decline": "Refuser",
+    "customize": "Personnaliser",
+    "essential": "Cookies essentiels (toujours actifs)",
+    "analytics": "Cookies analytiques (Google Analytics)",
+    "savePreferences": "Enregistrer mes préférences"
   },
   "privacy": {
     "backToHome": "Retour à l'accueil",
