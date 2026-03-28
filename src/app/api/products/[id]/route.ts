@@ -4,6 +4,9 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
+import { resolveSlug } from "@/lib/slugify";
+import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const productTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -18,42 +21,33 @@ const productImageSchema = z.object({
 });
 
 const updateProductSchema = z.object({
-  slug: z.string().trim().min(1),
-  categoryId: z.string().trim().min(1),
+  slug: z.string().trim().optional(),
+  subCategoryId: z.string().trim().min(1),
   featured: z.boolean().default(false),
   order: z.coerce.number().int().default(0),
   translations: z.array(productTranslationSchema).optional(),
   images: z.array(productImageSchema).optional(),
 });
 
-function prismaWriteErrorResponse(error: unknown) {
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code)
-      : null;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const authResult = await requireAdminAuth();
+  if (!authResult.ok) return authResult.response;
 
-  if (code === "P2002") {
-    return NextResponse.json(
-      { error: "Resource already exists", code },
-      { status: 409 },
-    );
+  const { id } = await params;
+
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { translations: true, images: true },
+  });
+
+  if (!product) {
+    return NextResponse.json({ error: "Resource not found" }, { status: 404 });
   }
 
-  if (code === "P2025") {
-    return NextResponse.json(
-      { error: "Resource not found", code },
-      { status: 404 },
-    );
-  }
-
-  if (code === "P2003" || code === "P2014") {
-    return NextResponse.json(
-      { error: "Invalid relation reference", code },
-      { status: 422 },
-    );
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
+  return NextResponse.json(product);
 }
 
 export async function PUT(
@@ -83,12 +77,13 @@ export async function PUT(
     );
   }
 
-  const { slug, categoryId, featured, order, translations, images } = parsed.data;
+  const { subCategoryId, featured, order, translations, images } = parsed.data;
+  const slug = resolveSlug(parsed.data.slug, translations ?? []);
 
   const txOperations: Prisma.PrismaPromise<unknown>[] = [
     prisma.product.update({
       where: { id },
-      data: { slug, categoryId, featured, order },
+      data: { slug, subCategoryId, featured, order },
     }),
     ...(translations?.map((t) =>
       prisma.productTranslation.upsert({
@@ -105,7 +100,9 @@ export async function PUT(
   ];
 
   if (images) {
-    txOperations.push(prisma.productImage.deleteMany({ where: { productId: id } }));
+    txOperations.push(
+      prisma.productImage.deleteMany({ where: { productId: id } }),
+    );
     txOperations.push(
       prisma.productImage.createMany({
         data: images.map((img) => ({
@@ -126,6 +123,7 @@ export async function PUT(
       include: { translations: true, images: true },
     });
 
+    revalidateCatalogPages();
     return NextResponse.json(updated);
   } catch (error) {
     return prismaWriteErrorResponse(error);
@@ -146,6 +144,7 @@ export async function DELETE(
 
   try {
     await prisma.product.delete({ where: { id } });
+    revalidateCatalogPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);

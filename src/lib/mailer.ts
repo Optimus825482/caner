@@ -5,13 +5,14 @@ type ContactSubmissionMailPayload = {
   id: string;
   fullName: string;
   email: string;
+  phone: string | null;
   projectType: string;
   description: string;
   locale: string;
   createdAt: Date;
 };
 
-const MAIL_KEYS = [
+export const MAIL_KEYS = [
   "smtp_enabled",
   "smtp_host",
   "smtp_port",
@@ -32,6 +33,15 @@ type SmtpConfig = {
   from: string;
   to: string;
 };
+
+let cachedTransporter: {
+  smtp: SmtpConfig;
+  transporter: nodemailer.Transporter;
+} | null = null;
+
+export function invalidateSmtpCache() {
+  cachedTransporter = null;
+}
 
 function toBool(value?: string) {
   const normalized = String(value ?? "")
@@ -73,7 +83,15 @@ function hasValidSmtpConfig(config: SmtpConfig): boolean {
   );
 }
 
-async function createTransporterFromSettings() {
+async function createTransporterFromSettings(options?: {
+  bypassCache?: boolean;
+}) {
+  const bypassCache = options?.bypassCache === true;
+
+  if (!bypassCache && cachedTransporter) {
+    return cachedTransporter;
+  }
+
   const smtp = await getSmtpConfig();
   if (!hasValidSmtpConfig(smtp)) return null;
 
@@ -84,11 +102,17 @@ async function createTransporterFromSettings() {
     auth: { user: smtp.user, pass: smtp.pass },
   });
 
-  return { smtp, transporter };
+  const transport = { smtp, transporter };
+
+  if (!bypassCache) {
+    cachedTransporter = transport;
+  }
+
+  return transport;
 }
 
 export async function testSmtpConnection() {
-  const transport = await createTransporterFromSettings();
+  const transport = await createTransporterFromSettings({ bypassCache: true });
   if (!transport) {
     return { ok: false as const, error: "SMTP config is missing or disabled." };
   }
@@ -96,13 +120,18 @@ export async function testSmtpConnection() {
   try {
     await transport.transporter.verify();
     return { ok: true as const };
-  } catch {
-    return { ok: false as const, error: "SMTP verification failed." };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[SMTP verify]", message);
+    return {
+      ok: false as const,
+      error: `SMTP verification failed: ${message}`,
+    };
   }
 }
 
 export async function sendSmtpTestMail() {
-  const transport = await createTransporterFromSettings();
+  const transport = await createTransporterFromSettings({ bypassCache: true });
   if (!transport) {
     return { ok: false as const, error: "SMTP config is missing or disabled." };
   }
@@ -115,8 +144,13 @@ export async function sendSmtpTestMail() {
       text: "SMTP ayarları başarıyla çalışıyor. Bu bir test mesajıdır.",
     });
     return { ok: true as const };
-  } catch {
-    return { ok: false as const, error: "Failed to send test email." };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[SMTP sendTest]", message);
+    return {
+      ok: false as const,
+      error: `Failed to send test email: ${message}`,
+    };
   }
 }
 
@@ -137,6 +171,7 @@ export async function sendContactSubmissionNotification(
     text: [
       `Name: ${submission.fullName}`,
       `Email: ${submission.email}`,
+      `Phone: ${submission.phone ?? "-"}`,
       `Project Type: ${submission.projectType}`,
       `Locale: ${submission.locale}`,
       `Created At: ${submission.createdAt.toISOString()}`,

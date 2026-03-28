@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 
 const updateSubmissionSchema = z
   .object({
@@ -11,22 +12,6 @@ const updateSubmissionSchema = z
   .refine((val) => val.isRead !== undefined, {
     message: "At least one field must be provided",
   });
-
-function prismaWriteErrorResponse(error: unknown) {
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code)
-      : null;
-
-  if (code === "P2025") {
-    return NextResponse.json(
-      { error: "Submission not found", code },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
-}
 
 export async function PATCH(
   req: NextRequest,
@@ -65,7 +50,9 @@ export async function PATCH(
 
     return NextResponse.json(updated);
   } catch (error) {
-    return prismaWriteErrorResponse(error);
+    return prismaWriteErrorResponse(error, {
+      notFound: "Submission not found",
+    });
   }
 }
 
@@ -85,6 +72,8 @@ export async function DELETE(
     await prisma.contactSubmission.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    return prismaWriteErrorResponse(error);
+    return prismaWriteErrorResponse(error, {
+      notFound: "Submission not found",
+    });
   }
 }

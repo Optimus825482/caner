@@ -18,5 +18,5 @@ export default async function Hero({ locale }: { locale: string }) {
     subtitle: s.translations[0]?.subtitle || "",
   }));
 
-  return <HeroClient slides={data} locale={locale} />;
+  return <HeroClient slides={data} />;
 }

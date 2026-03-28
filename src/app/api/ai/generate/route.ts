@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { requireAdminAuth } from "@/lib/auth";
+import { enforceSameOrigin } from "@/lib/request-guards";
+import { callNvidiaAi, LOCALE_NAMES } from "@/lib/nvidia-ai";
+
+const generateSchema = z.object({
+  type: z.enum(["blog_content", "blog_excerpt", "faq_answer"]),
+  prompt: z.string().trim().min(1),
+  locale: z.string().trim().min(2),
+});
+
+const SYSTEM_PROMPTS: Record<string, string> = {
+  blog_content: `You are a skilled content writer for Arvesta, a luxury custom furniture company based in Aksaray, Turkey, serving European markets.
+
+WRITING STYLE:
+- Write like a real human expert — not like AI. Vary sentence length. Use short punchy sentences mixed with longer flowing ones. Include occasional rhetorical questions or conversational asides.
+- Avoid AI clichés: never use "In today's world", "It's worth noting", "In conclusion", "Let's dive in", "Whether you're... or...", "At the end of the day".
+- Use concrete details, sensory language, and specific examples rather than vague generalities.
+- Premium but approachable tone — like a knowledgeable friend who happens to be an interior design expert.
+
+STRUCTURE:
+- Use proper paragraph breaks — each paragraph should cover one idea (3-5 sentences).
+- Use markdown headings (##, ###) to organize sections naturally.
+- Include bullet points or numbered lists where they genuinely help readability.
+- Add line breaks between paragraphs for clean formatting.
+- SEO-friendly but never keyword-stuffed.
+
+Output ONLY the article content in the requested language. No titles, no metadata, no "Here's your article" prefix.`,
+  blog_excerpt: `You are a content writer for Arvesta, a luxury custom furniture company. Write a compelling 1-2 sentence excerpt/summary for a blog post. Make it sound natural and intriguing — like a magazine teaser, not an AI summary. Avoid generic phrases like "In this article" or "Discover how". Output ONLY the excerpt text in the requested language.`,
+  faq_answer: `You are a customer service expert for Arvesta, a luxury custom furniture company based in Aksaray, Turkey, delivering to Europe. Write clear, helpful FAQ answers that build trust. Keep answers concise but informative (2-4 sentences). Sound like a real person — warm, direct, knowledgeable. Output ONLY the answer text in the requested language.`,
+};
+
+export async function POST(req: NextRequest) {
+  const originDenied = enforceSameOrigin(req);
+  if (originDenied) return originDenied;
+
+  const authResult = await requireAdminAuth();
+  if (!authResult.ok) return authResult.response;
+
+  const body = await req.json();
+  const parsed = generateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Validation failed", details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+
+  const { type, prompt, locale } = parsed.data;
+  const langName = LOCALE_NAMES[locale] || locale;
+
+  const result = await callNvidiaAi(
+    [
+      { role: "system", content: SYSTEM_PROMPTS[type] },
+      {
+        role: "user",
+        content: `Write in ${langName}. ${prompt}`,
+      },
+    ],
+    { maxTokens: type === "blog_content" ? 8192 : 2048 },
+  );
+
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: 502 });
+  }
+
+  return NextResponse.json({ generated: result.text });
+}

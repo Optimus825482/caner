@@ -1,10 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Mail,
   Clock,
@@ -20,12 +29,14 @@ import {
   CheckCheck,
   CheckSquare,
   Square,
+  Phone,
 } from "lucide-react";
 
 type SubmissionItem = {
   id: string;
   fullName: string;
   email: string;
+  phone: string | null;
   projectType: string;
   description: string;
   locale: string;
@@ -40,18 +51,28 @@ type Props = {
 type Filter = "all" | "unread" | "read";
 
 export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
+  const t = useTranslations("adminSubmissions");
   const [submissions, setSubmissions] = useState(initialSubmissions);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [bulkBusy, setBulkBusy] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [feedback, setFeedback] = useState<string>("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
 
   useEffect(() => {
     const allIds = new Set(submissions.map((s) => s.id));
-    setSelectedIds((prev) => prev.filter((id) => allIds.has(id)));
+    setSelectedIds((prev) => {
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (allIds.has(id)) next.add(id);
+      }
+      return next;
+    });
   }, [submissions]);
 
   const stats = useMemo(() => {
@@ -86,25 +107,43 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
     });
   }, [submissions, query, filter, dateFrom, dateTo]);
 
-  const filteredIds = useMemo(() => filtered.map((s) => s.id), [filtered]);
+  const filteredIds = useMemo(
+    () => new Set(filtered.map((s) => s.id)),
+    [filtered],
+  );
   const allFilteredSelected =
-    filteredIds.length > 0 && filteredIds.every((id) => selectedIds.includes(id));
-  const selectedCount = selectedIds.length;
+    filteredIds.size > 0 &&
+    Array.from(filteredIds).every((id) => selectedIds.has(id));
+  const selectedCount = selectedIds.size;
 
   const toggleSelectOne = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
 
   const toggleSelectAllFiltered = () => {
     setSelectedIds((prev) => {
+      const next = new Set(prev);
+
       if (allFilteredSelected) {
-        return prev.filter((id) => !filteredIds.includes(id));
+        for (const id of filteredIds) {
+          next.delete(id);
+        }
+        return next;
       }
 
-      const merged = new Set([...prev, ...filteredIds]);
-      return Array.from(merged);
+      for (const id of filteredIds) {
+        next.add(id);
+      }
+
+      return next;
     });
   };
 
@@ -115,6 +154,7 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
   const updateReadState = async (id: string, isRead: boolean) => {
     setBusyId(id);
+    setFeedback("");
     try {
       const res = await fetch(`/api/submissions/${id}`, {
         method: "PATCH",
@@ -129,17 +169,15 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       );
     } catch (error) {
       console.error(error);
-      alert("Güncelleme başarısız oldu.");
+      setFeedback(t("updateFailed"));
     } finally {
       setBusyId(null);
     }
   };
 
   const deleteSubmission = async (id: string) => {
-    const confirmed = window.confirm("Bu talebi silmek istediğine emin misin?");
-    if (!confirmed) return;
-
     setBusyId(id);
+    setFeedback("");
     try {
       const res = await fetch(`/api/submissions/${id}`, {
         method: "DELETE",
@@ -148,75 +186,86 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       if (!res.ok) throw new Error("Failed to delete submission");
 
       setSubmissions((prev) => prev.filter((item) => item.id !== id));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     } catch (error) {
       console.error(error);
-      alert("Silme işlemi başarısız oldu.");
+      setFeedback(t("deleteFailed"));
     } finally {
       setBusyId(null);
+      setConfirmDeleteId(null);
     }
   };
 
   const bulkMarkRead = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.size === 0) return;
+
+    const ids = Array.from(selectedIds);
 
     setBulkBusy(true);
+    setFeedback("");
     try {
       const res = await fetch("/api/submissions/bulk", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds, isRead: true }),
+        body: JSON.stringify({ ids, isRead: true }),
       });
 
       if (!res.ok) throw new Error("Bulk mark read failed");
 
       setSubmissions((prev) =>
         prev.map((item) =>
-          selectedIds.includes(item.id) ? { ...item, isRead: true } : item,
+          selectedIds.has(item.id) ? { ...item, isRead: true } : item,
         ),
       );
-      setSelectedIds([]);
+      setSelectedIds(new Set());
     } catch (error) {
       console.error(error);
-      alert("Toplu okundu işaretleme başarısız oldu.");
+      setFeedback(t("bulkMarkReadFailed"));
     } finally {
       setBulkBusy(false);
     }
   };
 
   const bulkDelete = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.size === 0) return;
 
-    const confirmed = window.confirm(
-      `${selectedIds.length} adet talebi silmek istediğine emin misin?`,
-    );
-    if (!confirmed) return;
+    const ids = Array.from(selectedIds);
 
     setBulkBusy(true);
+    setFeedback("");
     try {
       const res = await fetch("/api/submissions/bulk", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds }),
+        body: JSON.stringify({ ids }),
       });
 
       if (!res.ok) throw new Error("Bulk delete failed");
 
-      const selectedSet = new Set(selectedIds);
-      setSubmissions((prev) => prev.filter((item) => !selectedSet.has(item.id)));
-      setSelectedIds([]);
+      setSubmissions((prev) =>
+        prev.filter((item) => !selectedIds.has(item.id)),
+      );
+      setSelectedIds(new Set());
     } catch (error) {
       console.error(error);
-      alert("Toplu silme işlemi başarısız oldu.");
+      setFeedback(t("bulkDeleteFailed"));
     } finally {
       setBulkBusy(false);
+      setConfirmBulkDeleteOpen(false);
     }
   };
 
   const copyEmail = async (email: string) => {
     try {
       await navigator.clipboard.writeText(email);
+      setFeedback(t("emailCopied"));
     } catch (error) {
       console.error(error);
+      setFeedback(t("emailCopyFailed"));
     }
   };
 
@@ -225,60 +274,68 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">
-            İletişim Talepleri
+            {t("title")}
           </h1>
-          <p className="font-ui text-sm text-[var(--arvesta-text-muted)]">
-            Müşterilerden gelen mesajları filtrele, oku ve yönet.
+          <p className="font-ui text-sm text-(--arvesta-text-muted)">
+            {t("subtitle")}
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+        <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">Toplam</p>
-              <p className="font-ui text-xl font-semibold text-white">{stats.total}</p>
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">
+                {t("total")}
+              </p>
+              <p className="font-ui text-xl font-semibold text-white">
+                {stats.total}
+              </p>
             </div>
-            <Inbox className="h-5 w-5 text-[var(--arvesta-gold)]" />
+            <Inbox className="h-5 w-5 text-(--arvesta-gold)" />
           </CardContent>
         </Card>
 
-        <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+        <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">
-                Okunmamış
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">
+                {t("unread")}
               </p>
-              <p className="font-ui text-xl font-semibold text-[var(--arvesta-accent)]">
+              <p className="font-ui text-xl font-semibold text-(--arvesta-accent)">
                 {stats.unread}
               </p>
             </div>
-            <MessageSquare className="h-5 w-5 text-[var(--arvesta-accent)]" />
+            <MessageSquare className="h-5 w-5 text-(--arvesta-accent)" />
           </CardContent>
         </Card>
 
-        <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+        <Card className="border-white/5 bg-(--arvesta-bg-card)">
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="font-ui text-xs text-[var(--arvesta-text-muted)]">Okunan</p>
-              <p className="font-ui text-xl font-semibold text-emerald-400">{stats.read}</p>
+              <p className="font-ui text-xs text-(--arvesta-text-muted)">
+                {t("readCount")}
+              </p>
+              <p className="font-ui text-xl font-semibold text-emerald-400">
+                {stats.read}
+              </p>
             </div>
             <CheckCircle2 className="h-5 w-5 text-emerald-400" />
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+      <Card className="border-white/5 bg-(--arvesta-bg-card)">
         <CardContent className="space-y-3 p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--arvesta-text-muted)]" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-(--arvesta-text-muted)" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.currentTarget.value)}
-                placeholder="İsim, e-posta, proje tipi veya mesaj içinde ara..."
-                className="h-10 border-white/10 bg-[var(--arvesta-bg-elevated)] pl-9 text-white"
+                placeholder={t("searchPlaceholder")}
+                className="h-10 border-white/10 bg-(--arvesta-bg-elevated) pl-9 text-white"
               />
             </div>
 
@@ -291,11 +348,15 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                   onClick={() => setFilter(f)}
                   className={
                     filter === f
-                      ? "bg-[var(--arvesta-accent)] text-white hover:bg-[var(--arvesta-accent-hover)]"
-                      : "border-white/10 bg-[var(--arvesta-bg-elevated)] text-[var(--arvesta-text-secondary)]"
+                      ? "bg-(--arvesta-accent) text-white hover:bg-(--arvesta-accent-hover)"
+                      : "border-white/10 bg-(--arvesta-bg-elevated) text-(--arvesta-text-secondary)"
                   }
                 >
-                  {f === "all" ? "Tümü" : f === "unread" ? "Okunmamış" : "Okunan"}
+                  {f === "all"
+                    ? t("filterAll")
+                    : f === "unread"
+                      ? t("filterUnread")
+                      : t("filterRead")}
                 </Button>
               ))}
             </div>
@@ -303,31 +364,31 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-xs text-[var(--arvesta-text-muted)]">
+              <span className="inline-flex items-center gap-1 text-xs text-(--arvesta-text-muted)">
                 <CalendarRange className="h-3.5 w-3.5" />
-                Tarih Aralığı
+                {t("dateRange")}
               </span>
               <Input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.currentTarget.value)}
-                className="h-9 w-[170px] border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                className="h-9 w-42.5 border-white/10 bg-(--arvesta-bg-elevated) text-white"
               />
-              <span className="text-xs text-[var(--arvesta-text-muted)]">-</span>
+              <span className="text-xs text-(--arvesta-text-muted)">-</span>
               <Input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.currentTarget.value)}
-                className="h-9 w-[170px] border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                className="h-9 w-42.5 border-white/10 bg-(--arvesta-bg-elevated) text-white"
               />
               {(dateFrom || dateTo) && (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={clearDateFilter}
-                  className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                  className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                 >
-                  Temizle
+                  {t("clear")}
                 </Button>
               )}
             </div>
@@ -336,60 +397,71 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={filteredIds.length === 0}
+                disabled={filteredIds.size === 0}
                 onClick={toggleSelectAllFiltered}
-                className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
               >
                 {allFilteredSelected ? (
                   <CheckSquare className="mr-1" />
                 ) : (
                   <Square className="mr-1" />
                 )}
-                {allFilteredSelected ? "Filtreyi Bırak" : "Filtreyi Seç"}
+                {allFilteredSelected
+                  ? t("deselectFiltered")
+                  : t("selectFiltered")}
               </Button>
             </div>
           </div>
 
           {selectedCount > 0 && (
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--arvesta-accent)]/20 bg-[var(--arvesta-accent)]/5 p-2.5">
-              <Badge className="border-[var(--arvesta-accent)]/20 bg-[var(--arvesta-accent)]/10 text-[var(--arvesta-accent)]">
-                {selectedCount} seçili
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-(--arvesta-accent)/20 bg-(--arvesta-accent)/5 p-2.5">
+              <Badge className="border-(--arvesta-accent)/20 bg-(--arvesta-accent)/10 text-(--arvesta-accent)">
+                {selectedCount} {t("selected")}
               </Badge>
 
               <Button
                 size="sm"
                 disabled={bulkBusy}
                 onClick={bulkMarkRead}
-                className="bg-[var(--arvesta-accent)] text-white hover:bg-[var(--arvesta-accent-hover)]"
+                className="bg-(--arvesta-accent) text-white hover:bg-(--arvesta-accent-hover)"
               >
                 <CheckCheck className="mr-1" />
-                Toplu Okundu İşaretle
+                {t("bulkMarkRead")}
               </Button>
 
               <Button
                 variant="destructive"
                 size="sm"
                 disabled={bulkBusy}
-                onClick={bulkDelete}
+                onClick={() => setConfirmBulkDeleteOpen(true)}
               >
                 <Trash2 className="mr-1" />
-                Toplu Sil
+                {t("bulkDelete")}
               </Button>
             </div>
+          )}
+
+          {feedback && (
+            <p
+              className="rounded-lg border border-white/10 bg-(--arvesta-bg-elevated) px-3 py-2 text-xs text-(--arvesta-text-secondary)"
+              role="status"
+            >
+              {feedback}
+            </p>
           )}
         </CardContent>
       </Card>
 
       <div className="space-y-3">
         {filtered.map((sub) => {
-          const isSelected = selectedIds.includes(sub.id);
+          const isSelected = selectedIds.has(sub.id);
 
           return (
             <Card
               key={sub.id}
-              className={`border-white/5 bg-[var(--arvesta-bg-card)] transition-all ${
-                !sub.isRead ? "border-l-2 border-l-[var(--arvesta-accent)]" : ""
-              } ${isSelected ? "ring-1 ring-[var(--arvesta-accent)]/40" : ""}`}
+              className={`border-white/5 bg-(--arvesta-bg-card) transition-all ${
+                !sub.isRead ? "border-l-2 border-l-(--arvesta-accent)" : ""
+              } ${isSelected ? "ring-1 ring-(--arvesta-accent)/40" : ""}`}
             >
               <CardHeader className="pb-2">
                 <CardTitle className="flex flex-wrap items-center justify-between gap-2">
@@ -398,31 +470,37 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectOne(sub.id)}
-                      className="h-4 w-4 rounded border-white/20 bg-[var(--arvesta-bg-elevated)] accent-[var(--arvesta-accent)]"
+                      className="h-4 w-4 rounded border-white/20 bg-(--arvesta-bg-elevated) accent-(--arvesta-accent)"
                       aria-label={`${sub.fullName} seç`}
                     />
 
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(232,98,44,0.1)] text-sm font-bold text-[var(--arvesta-accent)]">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(232,98,44,0.1)] text-sm font-bold text-(--arvesta-accent)">
                       {sub.fullName.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate font-ui text-sm font-semibold text-white">
                         {sub.fullName}
                       </p>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--arvesta-text-muted)]">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-(--arvesta-text-muted)">
                         <span className="inline-flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {sub.email}
                         </span>
+                        {sub.phone && (
+                          <span className="inline-flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {sub.phone}
+                          </span>
+                        )}
                         <Badge
                           variant="outline"
-                          className="border-white/10 text-[var(--arvesta-text-secondary)]"
+                          className="border-white/10 text-(--arvesta-text-secondary)"
                         >
                           {sub.projectType}
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="border-white/10 text-[var(--arvesta-text-muted)]"
+                          className="border-white/10 text-(--arvesta-text-muted)"
                         >
                           {sub.locale.toUpperCase()}
                         </Badge>
@@ -432,11 +510,11 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
 
                   <div className="flex items-center gap-2">
                     {!sub.isRead && (
-                      <Badge className="border-[var(--arvesta-accent)]/20 bg-[var(--arvesta-accent)]/10 text-[var(--arvesta-accent)]">
-                        Yeni
+                      <Badge className="border-(--arvesta-accent)/20 bg-(--arvesta-accent)/10 text-(--arvesta-accent)">
+                        {t("new")}
                       </Badge>
                     )}
-                    <span className="inline-flex items-center gap-1 text-xs text-[var(--arvesta-text-muted)]">
+                    <span className="inline-flex items-center gap-1 text-xs text-(--arvesta-text-muted)">
                       <Clock className="h-3 w-3" />
                       {new Date(sub.createdAt).toLocaleString("tr-TR", {
                         day: "2-digit",
@@ -451,8 +529,8 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
               </CardHeader>
 
               <CardContent className="space-y-3">
-                <div className="rounded-xl border border-white/5 bg-[var(--arvesta-bg-elevated)] p-3">
-                  <p className="whitespace-pre-wrap break-words font-ui text-sm leading-relaxed text-[var(--arvesta-text-secondary)]">
+                <div className="rounded-xl border border-white/5 bg-(--arvesta-bg-elevated) p-3">
+                  <p className="whitespace-pre-wrap wrap-break-word font-ui text-sm leading-relaxed text-(--arvesta-text-secondary)">
                     {sub.description}
                   </p>
                 </div>
@@ -463,37 +541,41 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
                     size="sm"
                     disabled={busyId === sub.id}
                     onClick={() => updateReadState(sub.id, !sub.isRead)}
-                    className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                    className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                   >
-                    {sub.isRead ? <EyeOff className="mr-1" /> : <Eye className="mr-1" />}
-                    {sub.isRead ? "Okunmamış Yap" : "Okundu İşaretle"}
+                    {sub.isRead ? (
+                      <EyeOff className="mr-1" />
+                    ) : (
+                      <Eye className="mr-1" />
+                    )}
+                    {sub.isRead ? t("markUnread") : t("markRead")}
                   </Button>
 
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => copyEmail(sub.email)}
-                    className="border-white/10 bg-[var(--arvesta-bg-elevated)] text-white"
+                    className="border-white/10 bg-(--arvesta-bg-elevated) text-white"
                   >
                     <Copy className="mr-1" />
-                    E-postayı Kopyala
+                    {t("copyEmail")}
                   </Button>
 
                   <a
                     href={`mailto:${sub.email}`}
-                    className="inline-flex h-7 items-center justify-center rounded-lg border border-white/10 bg-[var(--arvesta-bg-elevated)] px-2.5 text-[0.8rem] text-white transition hover:bg-white/5"
+                    className="inline-flex h-7 items-center justify-center rounded-lg border border-white/10 bg-(--arvesta-bg-elevated) px-2.5 text-[0.8rem] text-white transition hover:bg-white/5"
                   >
-                    Yanıtla
+                    {t("reply")}
                   </a>
 
                   <Button
                     variant="destructive"
                     size="sm"
                     disabled={busyId === sub.id}
-                    onClick={() => deleteSubmission(sub.id)}
+                    onClick={() => setConfirmDeleteId(sub.id)}
                   >
                     <Trash2 className="mr-1" />
-                    Sil
+                    {t("delete")}
                   </Button>
                 </div>
               </CardContent>
@@ -502,16 +584,80 @@ export default function AdminSubmissionsClient({ initialSubmissions }: Props) {
         })}
 
         {filtered.length === 0 && (
-          <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+          <Card className="border-white/5 bg-(--arvesta-bg-card)">
             <CardContent className="py-12 text-center">
-              <MessageSquare className="mx-auto mb-3 h-10 w-10 text-[var(--arvesta-text-muted)]" />
-              <p className="font-ui text-[var(--arvesta-text-muted)]">
-                Filtreye uygun talep bulunamadı.
+              <MessageSquare className="mx-auto mb-3 h-10 w-10 text-(--arvesta-text-muted)" />
+              <p className="font-ui text-(--arvesta-text-muted)">
+                {t("noResults")}
               </p>
             </CardContent>
           </Card>
         )}
       </div>
+
+      <Dialog
+        open={confirmDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDeleteId(null);
+        }}
+      >
+        <DialogContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
+          <DialogHeader>
+            <DialogTitle>{t("deleteConfirmTitle")}</DialogTitle>
+            <DialogDescription className="text-(--arvesta-text-secondary)">
+              {t("deleteConfirmDesc")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteId(null)}
+              className="border-white/15 bg-transparent text-white"
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={!confirmDeleteId || busyId === confirmDeleteId}
+              onClick={() => {
+                if (confirmDeleteId) void deleteSubmission(confirmDeleteId);
+              }}
+            >
+              {t("delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={confirmBulkDeleteOpen}
+        onOpenChange={setConfirmBulkDeleteOpen}
+      >
+        <DialogContent className="border-white/10 bg-(--arvesta-bg-card) text-white">
+          <DialogHeader>
+            <DialogTitle>{t("bulkDeleteConfirmTitle")}</DialogTitle>
+            <DialogDescription className="text-(--arvesta-text-secondary)">
+              {t("bulkDeleteConfirmDesc", { count: selectedCount })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmBulkDeleteOpen(false)}
+              className="border-white/15 bg-transparent text-white"
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={bulkBusy}
+              onClick={bulkDelete}
+            >
+              {t("bulkDelete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

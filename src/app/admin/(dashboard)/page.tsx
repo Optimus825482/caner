@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import frMessages from "@/i18n/messages/fr.json";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   Package,
@@ -12,19 +12,41 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-const t = frMessages.adminDashboard;
+const SUPPORTED = ["fr", "tr"] as const;
+
+async function getAdminMessages() {
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get("admin-locale")?.value;
+  let locale: string | undefined;
+
+  if (cookieLocale && SUPPORTED.includes(cookieLocale as "fr" | "tr")) {
+    locale = cookieLocale;
+  } else {
+    const headerStore = await headers();
+    const acceptLang = headerStore.get("accept-language") ?? "";
+    const preferred = acceptLang
+      .split(",")
+      .map((p) => p.split(";")[0].trim().toLowerCase());
+    for (const lang of preferred) {
+      const short = lang.slice(0, 2);
+      if (SUPPORTED.includes(short as "fr" | "tr")) {
+        locale = short;
+        break;
+      }
+    }
+  }
+  if (!locale) locale = "tr";
+  return (await import(`@/i18n/messages/${locale}.json`)).default;
+}
 
 export default async function AdminDashboard() {
   const session = await auth();
   const user = session?.user as { role?: string } | undefined;
+  if (!user) redirect("/admin/login");
+  if (user.role !== "admin") redirect("/");
 
-  if (!user) {
-    redirect("/admin/login");
-  }
-
-  if (user.role !== "admin") {
-    redirect("/");
-  }
+  const messages = await getAdminMessages();
+  const t = messages.adminDashboard;
 
   const [productCount, categoryCount, submissionCount, unreadCount, heroCount] =
     await Promise.all([
@@ -78,7 +100,7 @@ export default async function AdminDashboard() {
         <h1 className="font-display text-3xl font-semibold text-white mb-1">
           {t.title}
         </h1>
-        <p className="text-[var(--arvesta-text-muted)] font-ui text-sm">
+        <p className="text-(--arvesta-text-muted) font-ui text-sm">
           {t.subtitle}
         </p>
       </div>
@@ -87,10 +109,10 @@ export default async function AdminDashboard() {
         {stats.map((stat) => (
           <Card
             key={stat.label}
-            className="border-white/5 bg-[var(--arvesta-bg-card)] hover:border-white/10 transition-all"
+            className="border-white/5 bg-(--arvesta-bg-card) hover:border-white/10 transition-all"
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="font-ui text-sm font-medium text-[var(--arvesta-text-secondary)]">
+              <CardTitle className="font-ui text-sm font-medium text-(--arvesta-text-secondary)">
                 {stat.label}
               </CardTitle>
               <div
@@ -118,51 +140,53 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      <Card className="border-white/5 bg-[var(--arvesta-bg-card)]">
+      <Card className="border-white/5 bg-(--arvesta-bg-card)">
         <CardHeader>
           <CardTitle className="font-ui text-lg text-white flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-[var(--arvesta-accent)]" />
+            <TrendingUp className="w-5 h-5 text-(--arvesta-accent)" />
             {t.recentSubmissionsTitle}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {recentSubmissions.length === 0 ? (
-            <p className="text-[var(--arvesta-text-muted)] text-sm py-4 text-center">
+            <p className="text-(--arvesta-text-muted) text-sm py-4 text-center">
               {t.noSubmissions}
             </p>
           ) : (
             <div className="space-y-3">
-              {recentSubmissions.map((sub: (typeof recentSubmissions)[number]) => (
-                <div
-                  key={sub.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-[var(--arvesta-bg-elevated)] border border-white/3 hover:border-white/8 transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[rgba(232,98,44,0.1)] flex items-center justify-center text-[var(--arvesta-accent)] font-ui text-sm font-bold">
-                      {sub.fullName.charAt(0).toUpperCase()}
+              {recentSubmissions.map(
+                (sub: (typeof recentSubmissions)[number]) => (
+                  <div
+                    key={sub.id}
+                    className="flex items-center justify-between p-3 rounded-lg bg-(--arvesta-bg-elevated) border border-white/3 hover:border-white/8 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-[rgba(232,98,44,0.1)] flex items-center justify-center text-(--arvesta-accent) font-ui text-sm font-bold">
+                        {sub.fullName.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-white block">
+                          {sub.fullName}
+                        </span>
+                        <span className="text-xs text-(--arvesta-text-muted)">
+                          {sub.email}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-sm font-medium text-white block">
-                        {sub.fullName}
-                      </span>
-                      <span className="text-xs text-[var(--arvesta-text-muted)]">
-                        {sub.email}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="border-white/10 text-(--arvesta-text-secondary) font-ui text-xs"
+                      >
+                        {sub.projectType}
+                      </Badge>
+                      {!sub.isRead && (
+                        <div className="w-2 h-2 rounded-full bg-(--arvesta-accent)" />
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      variant="outline"
-                      className="border-white/10 text-[var(--arvesta-text-secondary)] font-ui text-xs"
-                    >
-                      {sub.projectType}
-                    </Badge>
-                    {!sub.isRead && (
-                      <div className="w-2 h-2 rounded-full bg-[var(--arvesta-accent)]" />
-                    )}
-                  </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           )}
         </CardContent>

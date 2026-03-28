@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-export default function Preloader() {
+export default function Preloader({ logoUrl }: { logoUrl?: string }) {
   const [loaded, setLoaded] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [skip, setSkip] = useState(false);
@@ -11,13 +11,14 @@ export default function Preloader() {
   useEffect(() => {
     // Only show on first visit per session
     if (sessionStorage.getItem("arvesta-preloader-shown")) {
-      setSkip(true);
+      // Use a microtask to avoid synchronous state update in effect
+      Promise.resolve().then(() => setSkip(true));
       return;
     }
     sessionStorage.setItem("arvesta-preloader-shown", "1");
 
     // 3 second preloader
-    const timer = setTimeout(() => setLoaded(true), 3000);
+    const timer = setTimeout(() => setLoaded(true), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -32,13 +33,13 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[var(--arvesta-bg)] transition-opacity duration-700 ${
+      className={`fixed inset-0 z-99999 flex flex-col items-center justify-center bg-(--arvesta-bg) transition-opacity duration-700 ${
         loaded ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
       <div className="animate-preloader-pulse mb-10">
         <Image
-          src="/uploads/products/logo.png"
+          src={logoUrl || "/uploads/products/logo.png"}
           alt="Arvesta"
           width={180}
           height={180}
@@ -47,9 +48,9 @@ export default function Preloader() {
         />
       </div>
       <div className="h-px w-40 overflow-hidden rounded-full bg-white/10">
-        <div className="animate-preloader-fill h-full bg-gradient-to-r from-[var(--arvesta-accent)] to-[var(--arvesta-gold)]" />
+        <div className="animate-preloader-fill h-full bg-linear-to-r from-(--arvesta-accent) to-(--arvesta-gold)" />
       </div>
-      <p className="mt-5 font-display text-base italic tracking-wider text-[var(--arvesta-text-muted)]">
+      <p className="mt-5 font-brand text-base tracking-wider text-(--arvesta-text-muted)">
         Arvesta Menuiserie France
       </p>
     </div>

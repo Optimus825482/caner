@@ -3,6 +3,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
+import { resolveSlug } from "@/lib/slugify";
+import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const categoryTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -11,41 +14,11 @@ const categoryTranslationSchema = z.object({
 });
 
 const updateCategorySchema = z.object({
-  slug: z.string().trim().min(1),
+  slug: z.string().trim().optional(),
   order: z.coerce.number().int().default(0),
   image: z.string().trim().min(1).optional(),
   translations: z.array(categoryTranslationSchema).optional(),
 });
-
-function prismaWriteErrorResponse(error: unknown) {
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code)
-      : null;
-
-  if (code === "P2002") {
-    return NextResponse.json(
-      { error: "Resource already exists", code },
-      { status: 409 },
-    );
-  }
-
-  if (code === "P2025") {
-    return NextResponse.json(
-      { error: "Resource not found", code },
-      { status: 404 },
-    );
-  }
-
-  if (code === "P2003" || code === "P2014") {
-    return NextResponse.json(
-      { error: "Invalid relation reference", code },
-      { status: 422 },
-    );
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
-}
 
 export async function PUT(
   req: NextRequest,
@@ -74,7 +47,8 @@ export async function PUT(
     );
   }
 
-  const { slug, order, image, translations } = parsed.data;
+  const { order, image, translations } = parsed.data;
+  const slug = resolveSlug(parsed.data.slug, translations ?? []);
 
   const txOperations = [
     prisma.category.update({
@@ -102,6 +76,7 @@ export async function PUT(
       where: { id },
       include: { translations: true },
     });
+    revalidateCatalogPages();
     return NextResponse.json(updated);
   } catch (error) {
     return prismaWriteErrorResponse(error);
@@ -121,7 +96,22 @@ export async function DELETE(
   const { id } = await params;
 
   try {
+    // Check for child subcategories (onDelete: Restrict prevents cascade)
+    const subCount = await prisma.subCategory.count({
+      where: { categoryId: id },
+    });
+    if (subCount > 0) {
+      return NextResponse.json(
+        {
+          error: "HAS_CHILDREN",
+          message: `Bu kategorinin ${subCount} alt kategorisi var. Önce alt kategorileri silin.`,
+        },
+        { status: 409 },
+      );
+    }
+
     await prisma.category.delete({ where: { id } });
+    revalidateCatalogPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);

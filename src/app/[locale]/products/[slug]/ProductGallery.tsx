@@ -19,8 +19,8 @@ export default function ProductGallery({
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square items-center justify-center rounded-2xl border border-[var(--arvesta-gold)]/20 bg-[var(--arvesta-bg-card)]">
-        <span className="text-[var(--arvesta-text-muted)]">No image</span>
+      <div className="flex aspect-square items-center justify-center rounded-2xl border border-(--arvesta-gold)/20 bg-(--arvesta-bg-card)">
+        <span className="text-(--arvesta-text-muted)">No image</span>
       </div>
     );
   }
@@ -28,7 +28,7 @@ export default function ProductGallery({
   return (
     <div className="space-y-4">
       {/* Main Image */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--arvesta-gold)]/25 bg-[var(--arvesta-bg-card)]">
+      <div className="relative aspect-4/3 overflow-hidden rounded-2xl border border-(--arvesta-gold)/25 bg-(--arvesta-bg-card)">
         <Image
           src={images[selected].url}
           alt={images[selected].alt || title}
@@ -48,7 +48,7 @@ export default function ProductGallery({
               onClick={() => setSelected(i)}
               className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
                 i === selected
-                  ? "border-[var(--arvesta-gold)] shadow-[0_0_12px_rgba(212,175,106,0.3)]"
+                  ? "border-(--arvesta-gold) shadow-[0_0_12px_rgba(212,175,106,0.3)]"
                   : "border-transparent opacity-60 hover:opacity-100"
               }`}
               aria-label={`View image ${i + 1}`}

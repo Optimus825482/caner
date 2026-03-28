@@ -13,6 +13,7 @@ export default async function AdminSubmissionsPage() {
     id: s.id,
     fullName: s.fullName,
     email: s.email,
+    phone: s.phone,
     projectType: s.projectType,
     description: s.description,
     locale: s.locale,

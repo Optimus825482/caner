@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import AboutClient from "@/components/public/AboutClient";
+import {
+  generateAlternates,
+  generateOgMeta,
+  breadcrumbJsonLd,
+  aboutPageJsonLd,
+} from "@/lib/seo";
+import { prisma } from "@/lib/prisma";
+import { ABOUT_SETTINGS_TAG } from "@/lib/revalidate";
 
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
@@ -29,13 +38,8 @@ export async function generateMetadata({
   return {
     title: m.title,
     description: m.description,
-    openGraph: {
-      title: m.title,
-      description: m.description,
-      type: "website",
-      locale: locale === "fr" ? "fr_FR" : locale === "tr" ? "tr_TR" : "en_US",
-      siteName: "Arvesta Menuiserie France",
-    },
+    alternates: generateAlternates(locale, "/about"),
+    openGraph: generateOgMeta(locale, m.title, m.description, "/about"),
   };
 }
 
@@ -45,5 +49,41 @@ export default async function AboutPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <AboutClient locale={locale} />;
+  const bc = breadcrumbJsonLd(locale, [
+    { name: "Arvesta", url: "" },
+    { name: meta[locale]?.title.split(" — ")[0] || "About" },
+  ]);
+
+  // Fetch about_* settings from DB — tag-based cache ile revalidation garantili
+  const getAboutSettings = unstable_cache(
+    async () => {
+      const aboutRows = await prisma.siteSetting.findMany({
+        where: { key: { startsWith: "about_" } },
+      });
+      const settings: Record<string, string> = {};
+      for (const row of aboutRows) {
+        if (row.value) settings[row.key] = row.value;
+      }
+      return settings;
+    },
+    ["about-settings"],
+    { tags: [ABOUT_SETTINGS_TAG] },
+  );
+  const aboutSettings = await getAboutSettings();
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(aboutPageJsonLd(locale)),
+        }}
+      />
+      <AboutClient locale={locale} settings={aboutSettings} />
+    </>
+  );
 }

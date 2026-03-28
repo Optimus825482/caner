@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope, Sora } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+
+import { getLocale } from "next-intl/server";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -24,28 +27,87 @@ const sora = Sora({
   display: "swap",
 });
 
+const exotc = localFont({
+  src: "../../public/fonts/Exotc350 Bd BT Bold.ttf",
+  variable: "--font-brand",
+  weight: "700",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com",
+  ),
   title: "Arvesta Menuiserie France — Premium Interior Design",
   description:
     "Mobilier sur mesure de haute qualité. Cuisines, salles de bains, dressings et projets personnalisés. Fabriqué en Turquie, livré en Europe.",
-  icons: { icon: "/uploads/products/logo.png" },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   manifest: "/manifest.json",
+  openGraph: {
+    images: [
+      { url: "/image.png", width: 512, height: 512, alt: "Arvesta logo" },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/image.png"],
+  },
   other: {
     "theme-color": "#d4af6a",
+    "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+
+  let verificationMeta: Record<string, string> = {};
+  if (process.env.DATABASE_URL) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      const settings = await prisma.siteSetting.findMany({
+        where: {
+          key: { in: ["seo_google_verification", "seo_bing_verification"] },
+        },
+      });
+      for (const s of settings) {
+        if (s.key === "seo_google_verification" && s.value)
+          verificationMeta["google-site-verification"] = s.value;
+        if (s.key === "seo_bing_verification" && s.value)
+          verificationMeta["msvalidate.01"] = s.value;
+      }
+    } catch {
+      // DB not available at build time
+    }
+  }
+
   return (
-    <html suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+        />
+        {Object.entries(verificationMeta).map(([name, content]) => (
+          <meta key={name} name={name} content={content} />
+        ))}
+      </head>
       <body
-        className={`${manrope.variable} ${cormorant.variable} ${sora.variable} font-sans antialiased`}
+        className={`${manrope.variable} ${cormorant.variable} ${sora.variable} ${exotc.variable} font-sans antialiased`}
       >
         {children}
       </body>

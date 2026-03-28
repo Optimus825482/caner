@@ -8,6 +8,9 @@ import {
   enforceRateLimit,
   enforceSameOrigin,
 } from "@/lib/request-guards";
+import { prismaWriteErrorResponse } from "@/lib/api-helpers";
+import { resolveSlug } from "@/lib/slugify";
+import { revalidateCatalogPages } from "@/lib/revalidate";
 
 const categoryTranslationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -16,52 +19,34 @@ const categoryTranslationSchema = z.object({
 });
 
 const createCategorySchema = z.object({
-  slug: z.string().trim().min(1),
+  slug: z.string().trim().optional(),
   order: z.coerce.number().int().default(0),
   image: z.string().trim().min(1).optional(),
   translations: z.array(categoryTranslationSchema).min(1),
 });
 
-const categoryRateLimitAdapter = createSiteSettingRateLimitAdapter(prisma.siteSetting);
+const categoryRateLimitAdapter = createSiteSettingRateLimitAdapter(
+  prisma.siteSetting,
+);
 const CATEGORY_MUTATION_RATE_LIMIT_WINDOW_MS = 60_000;
 const CATEGORY_MUTATION_RATE_LIMIT_MAX_REQUESTS = 30;
-
-function prismaWriteErrorResponse(error: unknown) {
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code)
-      : null;
-
-  if (code === "P2002") {
-    return NextResponse.json(
-      { error: "Resource already exists", code },
-      { status: 409 },
-    );
-  }
-
-  if (code === "P2025") {
-    return NextResponse.json(
-      { error: "Resource not found", code },
-      { status: 404 },
-    );
-  }
-
-  if (code === "P2003" || code === "P2014") {
-    return NextResponse.json(
-      { error: "Invalid relation reference", code },
-      { status: 422 },
-    );
-  }
-
-  return NextResponse.json({ error: "Database write failed" }, { status: 500 });
-}
 
 export async function GET() {
   const authResult = await requireAdminAuth();
   if (!authResult.ok) return authResult.response;
 
   const categories = await prisma.category.findMany({
-    include: { translations: true, _count: { select: { products: true } } },
+    include: {
+      translations: true,
+      subCategories: {
+        include: {
+          translations: true,
+          _count: { select: { products: true } },
+        },
+        orderBy: { order: "asc" },
+      },
+      _count: { select: { subCategories: true } },
+    },
     orderBy: { order: "asc" },
   });
   return NextResponse.json(categories);
@@ -81,7 +66,8 @@ export async function POST(req: NextRequest) {
     clientKey,
     windowMs: CATEGORY_MUTATION_RATE_LIMIT_WINDOW_MS,
     maxRequests: CATEGORY_MUTATION_RATE_LIMIT_MAX_REQUESTS,
-    errorMessage: "Too many category mutation requests. Please try again later.",
+    errorMessage:
+      "Too many category mutation requests. Please try again later.",
   });
   if (rateLimited) return rateLimited;
 
@@ -100,7 +86,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { slug, order, image, translations } = parsed.data;
+  const { order, image, translations } = parsed.data;
+  const slug = resolveSlug(parsed.data.slug, translations);
 
   try {
     const category = await prisma.category.create({
@@ -119,6 +106,7 @@ export async function POST(req: NextRequest) {
       include: { translations: true },
     });
 
+    revalidateCatalogPages();
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
     return prismaWriteErrorResponse(error);

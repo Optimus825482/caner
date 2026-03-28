@@ -11,19 +11,73 @@ export type RateLimitAdapter = {
   set: (key: string, state: RateLimitState) => Promise<void>;
 };
 
+type CachedRateLimitState = {
+  state: RateLimitState;
+  expiresAt: number;
+};
+
+function normalizeOrigin(value: string): string | null {
+  try {
+    const parsed = new URL(value);
+    const protocol = parsed.protocol.toLowerCase();
+    const hostname = parsed.hostname.toLowerCase();
+    const isHttpsDefaultPort =
+      protocol === "https:" && (!parsed.port || parsed.port === "443");
+    const isHttpDefaultPort =
+      protocol === "http:" && (!parsed.port || parsed.port === "80");
+    const port =
+      isHttpsDefaultPort || isHttpDefaultPort || !parsed.port
+        ? ""
+        : `:${parsed.port}`;
+
+    return `${protocol}//${hostname}${port}`;
+  } catch {
+    return null;
+  }
+}
+
+function getOriginFromUrl(value: string): string | null {
+  try {
+    return normalizeOrigin(new URL(value).origin);
+  } catch {
+    return null;
+  }
+}
+
 export function enforceSameOrigin(req: NextRequest): NextResponse | null {
-  const allowedOrigin = req.nextUrl.origin;
   const origin = req.headers.get("origin");
   const referer = req.headers.get("referer");
 
+  // Build the expected origin from the request URL.
+  // Behind a reverse proxy (Coolify / Docker) the forwarded host + proto
+  // reflect the real public origin, while nextUrl.origin may be localhost.
+  const forwardedHost =
+    req.headers.get("x-forwarded-host") || req.headers.get("host");
+  const forwardedProto =
+    req.headers.get("x-forwarded-proto") ||
+    req.nextUrl.protocol.replace(":", "");
+  const expectedOriginRaw = forwardedHost
+    ? `${forwardedProto}://${forwardedHost.split(",")[0].trim()}`
+    : req.nextUrl.origin;
+  const expectedOrigin = normalizeOrigin(expectedOriginRaw);
+  const requestOrigin = normalizeOrigin(req.nextUrl.origin);
+  const allowedOrigins = new Set(
+    [expectedOrigin, requestOrigin].filter(
+      (value): value is string => value !== null,
+    ),
+  );
+
   if (origin) {
-    if (origin !== allowedOrigin) {
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (!normalizedOrigin || !allowedOrigins.has(normalizedOrigin)) {
       return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
     }
     return null;
   }
 
-  if (!referer || !referer.startsWith(allowedOrigin)) {
+  const refererOrigin = referer ? getOriginFromUrl(referer) : null;
+
+  if (!refererOrigin || !allowedOrigins.has(refererOrigin)) {
     return NextResponse.json(
       { error: "Origin or referer header is required" },
       { status: 403 },
@@ -52,7 +106,8 @@ export function getClientIp(req: NextRequest): string {
 export function buildClientKey(req: NextRequest, scope: string): string {
   const ip = getClientIp(req);
   const userAgent = req.headers.get("user-agent")?.trim() || "unknown";
-  const acceptLanguage = req.headers.get("accept-language")?.trim() || "unknown";
+  const acceptLanguage =
+    req.headers.get("accept-language")?.trim() || "unknown";
 
   const digest = createHash("sha256")
     .update(`${scope}|${ip}|${userAgent}|${acceptLanguage}`)
@@ -96,8 +151,74 @@ export function createMemoryRateLimitAdapter(): RateLimitAdapter {
   };
 }
 
+function touchCacheEntry<K, V>(map: Map<K, V>, key: K, value: V) {
+  map.delete(key);
+  map.set(key, value);
+}
+
+function pruneLruCache<K, V>(map: Map<K, V>, maxEntries: number) {
+  while (map.size > maxEntries) {
+    const oldestKey = map.keys().next().value;
+    if (oldestKey === undefined) break;
+    map.delete(oldestKey);
+  }
+}
+
+function resolveCacheExpiry(state: RateLimitState, fallbackTtlMs: number) {
+  const now = Date.now();
+  return state.resetAt > now ? state.resetAt : now + fallbackTtlMs;
+}
+
+function createLruRateLimitAdapter(
+  adapter: RateLimitAdapter,
+  {
+    maxEntries = 2000,
+    fallbackTtlMs = 60_000,
+  }: { maxEntries?: number; fallbackTtlMs?: number } = {},
+): RateLimitAdapter {
+  const cache = new Map<string, CachedRateLimitState>();
+
+  return {
+    async get(key: string) {
+      const now = Date.now();
+      const cached = cache.get(key);
+
+      if (cached) {
+        if (cached.expiresAt > now) {
+          touchCacheEntry(cache, key, cached);
+          return cached.state;
+        }
+
+        cache.delete(key);
+      }
+
+      const state = await adapter.get(key);
+      if (state) {
+        touchCacheEntry(cache, key, {
+          state,
+          expiresAt: resolveCacheExpiry(state, fallbackTtlMs),
+        });
+        pruneLruCache(cache, maxEntries);
+      }
+
+      return state;
+    },
+
+    async set(key: string, state: RateLimitState) {
+      touchCacheEntry(cache, key, {
+        state,
+        expiresAt: resolveCacheExpiry(state, fallbackTtlMs),
+      });
+      pruneLruCache(cache, maxEntries);
+      await adapter.set(key, state);
+    },
+  };
+}
+
 type SiteSettingDelegate = {
-  findUnique: (args: { where: { key: string } }) => Promise<{ value: string } | null>;
+  findUnique: (args: {
+    where: { key: string };
+  }) => Promise<{ value: string } | null>;
   upsert: (args: {
     where: { key: string };
     create: { key: string; value: string };
@@ -108,7 +229,7 @@ type SiteSettingDelegate = {
 export function createSiteSettingRateLimitAdapter(
   siteSetting: SiteSettingDelegate,
 ): RateLimitAdapter {
-  return {
+  const dbAdapter: RateLimitAdapter = {
     async get(key: string) {
       const existing = await siteSetting.findUnique({ where: { key } });
       if (!existing) return null;
@@ -122,6 +243,8 @@ export function createSiteSettingRateLimitAdapter(
       });
     },
   };
+
+  return createLruRateLimitAdapter(dbAdapter);
 }
 
 export async function enforceRateLimit({
@@ -153,7 +276,10 @@ export async function enforceRateLimit({
   }
 
   if (existing.count >= maxRequests) {
-    const retryAfterSeconds = Math.max(1, Math.ceil((existing.resetAt - now) / 1000));
+    const retryAfterSeconds = Math.max(
+      1,
+      Math.ceil((existing.resetAt - now) / 1000),
+    );
 
     return NextResponse.json(
       {

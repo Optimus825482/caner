@@ -3,5 +3,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="min-h-screen bg-[var(--arvesta-bg)]">{children}</div>;
+  return <div className="min-h-screen bg-(--arvesta-bg)">{children}</div>;
 }

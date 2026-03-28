@@ -3,12 +3,13 @@ import { getTranslations } from "next-intl/server";
 import CollectionsClient from "./CollectionsClient";
 
 export default async function Collections({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: "sf" });
-
-  const categories = await prisma.category.findMany({
-    include: { translations: { where: { locale } } },
-    orderBy: { order: "asc" },
-  });
+  const [t, categories] = await Promise.all([
+    getTranslations({ locale, namespace: "sf" }),
+    prisma.category.findMany({
+      include: { translations: { where: { locale } } },
+      orderBy: { order: "asc" },
+    }),
+  ]);
 
   const data = categories.map((cat: (typeof categories)[number]) => ({
     id: cat.id,
