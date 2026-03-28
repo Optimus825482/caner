@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireAdminAuth } from "@/lib/auth";
+import { auth, requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 
@@ -27,8 +27,14 @@ const updateHeroSlideSchema = z.object({
   translations: z.array(heroTranslationSchema).optional(),
 });
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
+
+  const where = isAdmin ? {} : { active: true };
+
   const slides = await prisma.heroSlide.findMany({
+    where,
     include: { translations: true },
     orderBy: { order: "asc" },
   });

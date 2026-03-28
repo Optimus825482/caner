@@ -48,19 +48,24 @@ export default async function AdminDashboard() {
   const messages = await getAdminMessages();
   const t = messages.adminDashboard;
 
-  const [productCount, categoryCount, submissionCount, unreadCount, heroCount] =
-    await Promise.all([
-      prisma.product.count(),
-      prisma.category.count(),
-      prisma.contactSubmission.count(),
-      prisma.contactSubmission.count({ where: { isRead: false } }),
-      prisma.heroSlide.count({ where: { active: true } }),
-    ]);
-
-  const recentSubmissions = await prisma.contactSubmission.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
+  const [
+    productCount,
+    categoryCount,
+    submissionCount,
+    unreadCount,
+    heroCount,
+    recentSubmissions,
+  ] = await Promise.all([
+    prisma.product.count(),
+    prisma.category.count(),
+    prisma.contactSubmission.count(),
+    prisma.contactSubmission.count({ where: { isRead: false } }),
+    prisma.heroSlide.count({ where: { active: true } }),
+    prisma.contactSubmission.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    }),
+  ]);
 
   const stats = [
     {

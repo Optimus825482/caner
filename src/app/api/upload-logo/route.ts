@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
+import { sniffImageType } from "@/lib/media-preprocess";
 import path from "path";
 import fs from "fs/promises";
 import { randomUUID } from "crypto";
@@ -39,6 +40,11 @@ export async function POST(req: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+
+  const sniffedExt = sniffImageType(buffer);
+  if (!sniffedExt) {
+    return NextResponse.json({ error: "Invalid image content" }, { status: 415 });
+  }
 
   const sharpModule = await import("sharp");
   const sharp = sharpModule.default;

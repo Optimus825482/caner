@@ -58,22 +58,40 @@ export default async function ServicesPage({
     { name: t("title") },
   ]);
 
-  // Fetch services from DB
-  const dbServices = (await (prisma as any).serviceItem.findMany({
-    where: { published: true },
-    include: { translations: true },
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  })) as Array<{
-    id: string;
-    icon: string | null;
-    order: number;
-    translations: Array<{
-      locale: string;
-      title: string;
-      summary: string;
-      detail: string;
-    }>;
-  }>;
+  // Fetch services and FAQ items in parallel
+  const [dbServices, dbFaqs] = await Promise.all([
+    (prisma as any).serviceItem.findMany({
+      where: { published: true },
+      include: { translations: true },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    }) as Promise<
+      Array<{
+        id: string;
+        icon: string | null;
+        order: number;
+        translations: Array<{
+          locale: string;
+          title: string;
+          summary: string;
+          detail: string;
+        }>;
+      }>
+    >,
+    (prisma as any).faqItem.findMany({
+      where: { published: true },
+      include: { translations: true },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    }) as Promise<
+      Array<{
+        id: string;
+        translations: Array<{
+          locale: string;
+          question: string;
+          answer: string;
+        }>;
+      }>
+    >,
+  ]);
 
   const services = dbServices.map((item) => {
     const tr =
@@ -92,16 +110,6 @@ export default async function ServicesPage({
   const svcSchema = serviceJsonLd(
     services.map((s) => ({ name: s.title, description: s.summary })),
   );
-
-  // Fetch FAQ items from DB
-  const dbFaqs = (await (prisma as any).faqItem.findMany({
-    where: { published: true },
-    include: { translations: true },
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  })) as Array<{
-    id: string;
-    translations: Array<{ locale: string; question: string; answer: string }>;
-  }>;
 
   const faqs = dbFaqs
     .map((item) => {

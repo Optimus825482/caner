@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import MaterialSymbolsLoader from "@/components/MaterialSymbolsLoader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -279,6 +280,7 @@ export default function ServiceFormPage({
 
   return (
     <div>
+      <MaterialSymbolsLoader />
       <div className="mb-6 flex items-center gap-4">
         <Link href="/admin/services">
           <Button variant="ghost" size="icon">

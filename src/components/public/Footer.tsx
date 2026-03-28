@@ -4,19 +4,15 @@ import { getTranslations } from "next-intl/server";
 import { Instagram } from "lucide-react";
 import FooterReveal from "./FooterReveal";
 import { getPublicSettings } from "@/lib/get-public-settings";
-import { prisma } from "@/lib/prisma";
+import { getCategories } from "@/lib/get-categories";
 
 export default async function Footer({ locale }: { locale: string }) {
-  const [t, tf, settings] = await Promise.all([
+  const [t, tf, settings, categories] = await Promise.all([
     getTranslations({ locale, namespace: "footer" }),
     getTranslations({ locale, namespace: "filter" }),
     getPublicSettings(),
+    getCategories(locale),
   ]);
-
-  const categories = await prisma.category.findMany({
-    include: { translations: { where: { locale } } },
-    orderBy: { order: "asc" },
-  });
 
   return (
     <footer className="relative overflow-hidden border-t border-(--arvesta-gold)/25 bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-6 pt-16">

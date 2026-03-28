@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import MarkdownContent from "@/components/public/MarkdownContent";
 import {
@@ -12,16 +13,20 @@ import {
   breadcrumbJsonLd,
 } from "@/lib/seo";
 
+const getBlogPost = cache(async (slug: string) => {
+  return prisma.blogPost.findUnique({
+    where: { slug },
+    include: { translations: true },
+  });
+});
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const post = await prisma.blogPost.findUnique({
-    where: { slug },
-    include: { translations: true },
-  });
+  const post = await getBlogPost(slug);
 
   if (!post || !post.published) {
     return { title: "Not Found" };
@@ -51,10 +56,7 @@ export default async function BlogPostPage({
   const { locale, slug } = await params;
   const t = await getTranslations({ locale, namespace: "blog" });
 
-  const post = await prisma.blogPost.findUnique({
-    where: { slug },
-    include: { translations: true },
-  });
+  const post = await getBlogPost(slug);
 
   if (!post || !post.published) {
     notFound();

@@ -6,7 +6,7 @@ import ExportSection from "@/components/public/ExportSection";
 import Marquee from "@/components/public/Marquee";
 import ContactForm from "@/components/public/ContactForm";
 import { getPublicSettings } from "@/lib/get-public-settings";
-import { prisma } from "@/lib/prisma";
+import { getAllCategories } from "@/lib/get-categories";
 import {
   generateAlternates,
   generateOgMeta,
@@ -85,10 +85,7 @@ export default async function HomePage({
   const { locale } = await params;
   const [settings, categories] = await Promise.all([
     getPublicSettings(),
-    prisma.category.findMany({
-      include: { translations: true },
-      orderBy: { order: "asc" },
-    }),
+    getAllCategories(),
   ]);
 
   const categoryOptions = categories.map((cat) => {

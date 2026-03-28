@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import {
   generateAlternates,
@@ -9,16 +10,20 @@ import {
 } from "@/lib/seo";
 import { CatalogFlipbook } from "@/components/public/CatalogFlipbook";
 
+const getCatalog = cache(async (slug: string) => {
+  return prisma.digitalCatalog.findUnique({
+    where: { slug, published: true },
+    include: { translations: true, pages: { orderBy: { order: "asc" } } },
+  });
+});
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const catalog = await prisma.digitalCatalog.findUnique({
-    where: { slug, published: true },
-    include: { translations: true },
-  });
+  const catalog = await getCatalog(slug);
   if (!catalog) return { title: "Not Found" };
 
   const tr =
@@ -40,13 +45,7 @@ export default async function CatalogViewPage({
 }) {
   const { locale, slug } = await params;
 
-  const catalog = await prisma.digitalCatalog.findUnique({
-    where: { slug, published: true },
-    include: {
-      translations: true,
-      pages: { orderBy: { order: "asc" } },
-    },
-  });
+  const catalog = await getCatalog(slug);
 
   if (!catalog) notFound();
 

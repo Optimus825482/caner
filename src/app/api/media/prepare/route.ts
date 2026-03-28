@@ -16,9 +16,12 @@ const prepareSchema = z.object({
 
 function toPublicFilePath(sourceUrl: string): string | null {
   if (!sourceUrl.startsWith("/uploads/products/")) return null;
-
+  if (sourceUrl.includes("..") || sourceUrl.includes("\0")) return null;
   const safeRelative = sourceUrl.replace(/^\/+/, "");
-  return path.join(process.cwd(), "public", safeRelative);
+  const resolved = path.join(process.cwd(), "public", safeRelative);
+  const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
+  if (!resolved.startsWith(uploadDir)) return null;
+  return resolved;
 }
 
 export async function POST(req: NextRequest) {

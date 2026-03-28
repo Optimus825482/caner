@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
+import { sniffImageType } from "@/lib/media-preprocess";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
@@ -35,6 +36,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const sniffedExt = sniffImageType(buffer);
+  if (!sniffedExt) {
+    return NextResponse.json({ error: "Invalid image content" }, { status: 415 });
+  }
+
   const ext =
     file.type === "image/png"
       ? ".png"
@@ -46,7 +55,6 @@ export async function POST(req: NextRequest) {
 
   await mkdir(uploadDir, { recursive: true });
 
-  const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(uploadDir, filename), buffer);
 
   return NextResponse.json({ url: `/uploads/about/${filename}` });

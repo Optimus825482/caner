@@ -1,14 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import CollectionsClient from "./CollectionsClient";
+import { getCategories } from "@/lib/get-categories";
 
 export default async function Collections({ locale }: { locale: string }) {
   const [t, categories] = await Promise.all([
     getTranslations({ locale, namespace: "sf" }),
-    prisma.category.findMany({
-      include: { translations: { where: { locale } } },
-      orderBy: { order: "asc" },
-    }),
+    getCategories(locale),
   ]);
 
   const data = categories.map((cat: (typeof categories)[number]) => ({

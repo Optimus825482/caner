@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireAdminAuth } from "@/lib/auth";
+import { auth, requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 
@@ -21,11 +21,16 @@ const createBlogPostSchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
+
   const { searchParams } = new URL(req.url);
-  const publishedOnly = searchParams.get("published") === "true";
+  const publishedParam = searchParams.get("published");
+
+  const where = isAdmin && publishedParam !== "true" ? {} : { published: true };
 
   const posts = await prisma.blogPost.findMany({
-    where: publishedOnly ? { published: true } : undefined,
+    where,
     include: { translations: true },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });

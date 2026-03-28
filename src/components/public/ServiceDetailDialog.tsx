@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import MaterialSymbolsLoader from "@/components/MaterialSymbolsLoader";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ export default function ServiceDetailDialog({
 
   return (
     <>
+      <MaterialSymbolsLoader />
       <button
         type="button"
         onClick={() => setOpen(true)}

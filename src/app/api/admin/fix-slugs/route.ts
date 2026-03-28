@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/auth";
+import { enforceSameOrigin } from "@/lib/request-guards";
 import { slugify } from "@/lib/slugify";
 import { revalidateCatalogPages } from "@/lib/revalidate";
 
@@ -9,7 +10,10 @@ import { revalidateCatalogPages } from "@/lib/revalidate";
  * spaces, accents, or other non-URL-safe characters.
  * DELETE this route after running it once in production.
  */
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const originDenied = enforceSameOrigin(req);
+  if (originDenied) return originDenied;
+
   const authResult = await requireAdminAuth();
   if (!authResult.ok) return authResult.response;
 

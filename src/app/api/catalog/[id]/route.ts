@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireAdminAuth } from "@/lib/auth";
+import { auth, requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 import { resolveSlug } from "@/lib/slugify";
@@ -29,6 +29,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
+
   const { id } = await params;
 
   const catalog = await prisma.digitalCatalog.findUnique({
@@ -37,6 +40,10 @@ export async function GET(
   });
 
   if (!catalog) {
+    return NextResponse.json({ error: "Resource not found" }, { status: 404 });
+  }
+
+  if (!isAdmin && !catalog.published) {
     return NextResponse.json({ error: "Resource not found" }, { status: 404 });
   }
 

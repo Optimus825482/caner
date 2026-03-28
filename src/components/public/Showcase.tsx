@@ -1,12 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import ShowcaseClient from "./ShowcaseClient";
+import { getCategories } from "@/lib/get-categories";
 
 export default async function Showcase({ locale }: { locale: string }) {
   const [categories, products] = await Promise.all([
-    prisma.category.findMany({
-      include: { translations: { where: { locale } } },
-      orderBy: { order: "asc" },
-    }),
+    getCategories(locale),
     prisma.product.findMany({
       include: {
         translations: { where: { locale } },
