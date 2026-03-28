@@ -81,6 +81,7 @@ html {
 body {
   background: var(--arvesta-bg);
   color: var(--arvesta-text);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -38,7 +38,7 @@ export default async function LocaleLayout({
       <CustomCursor />
       <div className="flex min-h-dvh flex-col bg-(--arvesta-bg) text-(--arvesta-text)">
         <Navbar locale={locale} logoUrl={logoUrl} />
-        <main id="main-content" className="flex-1 overflow-x-hidden">
+        <main id="main-content" className="flex-1">
           {children}
         </main>
         <Footer locale={locale} />

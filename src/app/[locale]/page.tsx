@@ -98,7 +98,7 @@ export default async function HomePage({
   });
 
   return (
-    <div className="relative isolate overflow-x-hidden">
+    <div className="relative isolate">
       <h1 className="sr-only">{(meta[locale] || meta.fr).h1}</h1>
       <JsonLd locale={locale} />
       <Hero locale={locale} />
