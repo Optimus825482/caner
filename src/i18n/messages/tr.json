@@ -19,7 +19,8 @@
   "showcase": {
     "tag": "DİJİTAL SHOWROOM",
     "title": "İnteraktif Vitrin",
-    "desc": "Yaratımlarımızı sürükleyici bir deneyimle keşfedin. Her parça bir ustalık hikayesi anlatır."
+    "desc": "Yaratımlarımızı sürükleyici bir deneyimle keşfedin. Her parça bir ustalık hikayesi anlatır.",
+    "showMore": "{count} ürün daha göster"
   },
   "filter": {
     "all": "Tümü",

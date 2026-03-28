@@ -19,7 +19,8 @@
   "showcase": {
     "tag": "SHOWROOM DIGITAL",
     "title": "Vitrine Interactive",
-    "desc": "Explorez nos créations avec une expérience immersive. Chaque pièce raconte une histoire de savoir-faire."
+    "desc": "Explorez nos créations avec une expérience immersive. Chaque pièce raconte une histoire de savoir-faire.",
+    "showMore": "Afficher {count} produits de plus"
   },
   "filter": {
     "all": "Tout",

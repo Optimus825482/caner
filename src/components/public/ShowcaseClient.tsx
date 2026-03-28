@@ -34,6 +34,8 @@ export default function ShowcaseClient({
   const [lightboxProductId, setLightboxProductId] = useState<string | null>(
     null,
   );
+  const MOBILE_INITIAL_LIMIT = 12;
+  const [mobileShowAll, setMobileShowAll] = useState(false);
 
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
   const { ref: filterRef, isVisible: filterVisible } = useScrollReveal();
@@ -47,6 +49,12 @@ export default function ShowcaseClient({
     filter === "all"
       ? products
       : products.filter((p) => p.categorySlug === filter);
+
+  // On mobile, limit visible items to avoid 60k+ px pages
+  const displayItems = mobileShowAll
+    ? filtered
+    : filtered.slice(0, MOBILE_INITIAL_LIMIT);
+  const hasMore = filtered.length > MOBILE_INITIAL_LIMIT && !mobileShowAll;
 
   const lightboxIndex = lightboxProductId
     ? filtered.findIndex((p) => p.id === lightboxProductId)
@@ -129,6 +137,7 @@ export default function ShowcaseClient({
           <button
             onClick={() => {
               setFilter("all");
+              setMobileShowAll(false);
               closeLightbox();
             }}
             className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
@@ -145,6 +154,7 @@ export default function ShowcaseClient({
               key={cat.slug}
               onClick={() => {
                 setFilter(cat.slug);
+                setMobileShowAll(false);
                 closeLightbox();
               }}
               className={`rounded-full border px-5 py-2.5 font-ui text-xs font-semibold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d] ${
@@ -162,7 +172,7 @@ export default function ShowcaseClient({
           ref={gridRef}
           className="grid grid-cols-1 gap-6 md:grid-cols-12 md:auto-rows-[190px] md:gap-7"
         >
-          {filtered.map((item, i) => (
+          {displayItems.map((item, i) => (
             <button
               type="button"
               key={item.id}
@@ -201,6 +211,20 @@ export default function ShowcaseClient({
             </button>
           ))}
         </div>
+
+        {hasMore && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setMobileShowAll(true)}
+              className="rounded-full border border-(--arvesta-gold)/40 bg-[rgba(200,168,110,0.08)] px-8 py-3 font-ui text-xs font-semibold uppercase tracking-widest text-(--arvesta-gold) transition-all hover:border-(--arvesta-gold) hover:bg-[rgba(200,168,110,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold)/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d]"
+            >
+              {t("showcase.showMore", {
+                count: filtered.length - MOBILE_INITIAL_LIMIT,
+              })}
+            </button>
+          </div>
+        )}
       </section>
 
       {lightboxProductId !== null && activeLightboxItem && (

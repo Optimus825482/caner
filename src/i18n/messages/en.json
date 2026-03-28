@@ -19,7 +19,8 @@
   "showcase": {
     "tag": "DIGITAL SHOWROOM",
     "title": "Interactive Showcase",
-    "desc": "Explore our creations with an immersive experience. Each piece tells a story of craftsmanship."
+    "desc": "Explore our creations with an immersive experience. Each piece tells a story of craftsmanship.",
+    "showMore": "Show {count} more products"
   },
   "filter": {
     "all": "All",

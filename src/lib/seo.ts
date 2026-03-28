@@ -90,20 +90,38 @@ export function organizationJsonLd() {
 
 /**
  * BreadcrumbList JSON-LD.
+ * Google requires "item" (URL) on every ListItem except the last one.
+ * When url is "" or omitted on the first item, we default to the locale homepage.
  */
 export function breadcrumbJsonLd(
   locale: string,
   items: Array<{ name: string; url?: string }>,
 ) {
+  const lastIndex = items.length - 1;
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      ...(item.url ? { item: `${BASE_URL}/${locale}${item.url}` } : {}),
-    })),
+    itemListElement: items.map((item, index) => {
+      const isLast = index === lastIndex;
+      // Resolve URL: empty string → locale homepage, undefined on last item → omit
+      let itemUrl: string | undefined;
+      if (item.url !== undefined) {
+        itemUrl =
+          item.url === ""
+            ? `${BASE_URL}/${locale}`
+            : `${BASE_URL}/${locale}${item.url}`;
+      } else if (!isLast) {
+        // Non-last items MUST have a URL per Google spec — fallback to homepage
+        itemUrl = `${BASE_URL}/${locale}`;
+      }
+
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        ...(itemUrl ? { item: itemUrl } : {}),
+      };
+    }),
   };
 }
 
