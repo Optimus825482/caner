@@ -21,7 +21,9 @@ RUN mkdir -p models && \
 
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+# Unique build ID — triggers client-side cache bust on new deploys
+ENV NEXT_PUBLIC_BUILD_ID=${COOLIFY_BUILD_SECRETS_HASH:-default}
+RUN NEXT_PUBLIC_BUILD_ID=$(date +%s) npm run build
 
 # ---- Runner ----
 FROM node:20-slim AS runner

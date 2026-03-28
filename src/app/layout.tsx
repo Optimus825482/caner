@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 import { getLocale } from "next-intl/server";
+import BuildVersionChecker from "@/components/public/BuildVersionChecker";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -109,6 +110,7 @@ export default async function RootLayout({
       <body
         className={`${manrope.variable} ${cormorant.variable} ${sora.variable} ${exotc.variable} font-sans antialiased`}
       >
+        <BuildVersionChecker />
         {children}
       </body>
     </html>
