@@ -30,11 +30,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     updatedAt: Date | null;
     createdAt: Date;
   }> = [];
+  let catalogs: Array<{
+    slug: string;
+    updatedAt: Date | null;
+    createdAt: Date;
+  }> = [];
 
   if (process.env.DATABASE_URL) {
     try {
       const { prisma } = await import("@/lib/prisma");
-      [products, categories, blogPosts] = await Promise.all([
+      [products, categories, blogPosts, catalogs] = await Promise.all([
         prisma.product.findMany({
           select: { slug: true, updatedAt: true, createdAt: true },
         }),
@@ -45,13 +50,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           where: { published: true },
           select: { slug: true, updatedAt: true, createdAt: true },
         }),
+        prisma.digitalCatalog.findMany({
+          where: { published: true },
+          select: { slug: true, updatedAt: true, createdAt: true },
+        }),
       ]);
     } catch {
       // Build ortamında DB erişimi yoksa yalnızca statik sayfalarla sitemap üretilir.
     }
   }
 
-  // Static pages
+  // Static pages — use a fixed date to avoid misleading Google with every build
+  const STATIC_LAST_MODIFIED = new Date("2026-03-01T00:00:00Z");
   const staticPages = [
     "",
     "/about",
@@ -64,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: MetadataRoute.Sitemap = staticPages.flatMap((path) =>
     LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}${path}`,
-      lastModified: new Date(),
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: path === "" ? ("weekly" as const) : ("monthly" as const),
       priority: path === "" ? 1 : 0.6,
       alternates: alternates(path),
@@ -105,5 +115,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  return [...pages, ...productPages, ...collectionPages, ...blogPages];
+  // Digital catalog pages
+  const catalogPages: MetadataRoute.Sitemap = catalogs.flatMap((catalog) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}/catalog/${catalog.slug}`,
+      lastModified: catalog.updatedAt ?? catalog.createdAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+      alternates: alternates(`/catalog/${catalog.slug}`),
+    })),
+  );
+
+  return [
+    ...pages,
+    ...productPages,
+    ...collectionPages,
+    ...blogPages,
+    ...catalogPages,
+  ];
 }

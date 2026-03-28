@@ -30,11 +30,15 @@ export async function generateMetadata({
     catalog.translations.find((t) => t.locale === locale) ||
     catalog.translations[0];
   const title = tr?.title || catalog.slug;
+  const description = tr?.title
+    ? `${tr.title} — Catalogue digital Arvesta Menuiserie France`
+    : "Catalogue digital Arvesta Menuiserie France";
 
   return {
     title: `${title} — Arvesta`,
+    description,
     alternates: generateAlternates(locale, `/catalog/${slug}`),
-    openGraph: generateOgMeta(locale, title, "", `/catalog/${slug}`),
+    openGraph: generateOgMeta(locale, title, description, `/catalog/${slug}`),
   };
 }
 
@@ -59,7 +63,7 @@ export default async function CatalogViewPage({
   const bc = breadcrumbJsonLd(locale, [
     { name: "Arvesta", url: "" },
     { name: t("title"), url: "/products" },
-    { name: title, url: `/catalog/${slug}` },
+    { name: title },
   ]);
 
   return (

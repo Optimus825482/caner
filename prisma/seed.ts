@@ -559,7 +559,7 @@ async function main() {
     { key: "phone", value: "+33 (0) 1 43 67 88" },
     { key: "email", value: "contact@arvesta-france.com" },
     { key: "address", value: "75001 Paris, France" },
-    { key: "instagram", value: "https://instagram.com/arvesta" },
+    { key: "instagram", value: "https://www.instagram.com/arvestamenuiserie" },
     { key: "whatsapp", value: "https://wa.me/33143678800" },
   ];
 

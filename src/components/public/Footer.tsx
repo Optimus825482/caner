@@ -108,7 +108,10 @@ export default async function Footer({ locale }: { locale: string }) {
             </span>
             <div className="flex gap-4">
               <a
-                href={settings.instagram || "https://instagram.com/arvesta"}
+                href={
+                  settings.instagram ||
+                  "https://www.instagram.com/arvestamenuiserie"
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"

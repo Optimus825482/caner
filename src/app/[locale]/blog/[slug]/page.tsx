@@ -44,7 +44,13 @@ export async function generateMetadata({
     title: `${title} — Arvesta`,
     description,
     alternates: generateAlternates(locale, `/blog/${slug}`),
-    openGraph: generateOgMeta(locale, title, description, `/blog/${slug}`),
+    openGraph: generateOgMeta(
+      locale,
+      title,
+      description,
+      `/blog/${slug}`,
+      post.image ? [post.image] : undefined,
+    ),
   };
 }
 
@@ -78,7 +84,7 @@ export default async function BlogPostPage({
     "@type": "Article",
     headline: tr?.title || post.slug,
     description: tr?.excerpt || "",
-    image: post.image || undefined,
+    ...(post.image ? { image: post.image } : {}),
     datePublished: post.createdAt.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     author: {

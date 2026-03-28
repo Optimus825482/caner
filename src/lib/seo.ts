@@ -79,10 +79,11 @@ export function organizationJsonLd() {
     name: "Arvesta Menuiserie France",
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
-    sameAs: ["https://instagram.com/arvesta"],
+    sameAs: ["https://www.instagram.com/arvestamenuiserie"],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
+      email: "contact@arvesta-france.com",
       availableLanguage: ["French", "English", "Turkish"],
     },
   };
@@ -219,7 +220,6 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     ],
     priceRange: "€€€",
     knowsLanguage: ["fr", "en", "tr"],
-    telephone: "+33-1-XX-XX-XX-XX",
     email: "contact@arvesta-france.com",
     openingHoursSpecification: [
       {
@@ -231,7 +231,7 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     ],
     paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
     currenciesAccepted: "EUR",
-    sameAs: ["https://instagram.com/arvesta"],
+    sameAs: ["https://www.instagram.com/arvestamenuiserie"],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Mobilier Sur Mesure",

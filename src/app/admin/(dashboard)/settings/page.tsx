@@ -76,7 +76,7 @@ const generalSettingKeys: SettingField[] = [
     key: "instagram",
     label: "instagramUrl",
     icon: Globe,
-    placeholder: "https://instagram.com/arvesta",
+    placeholder: "https://www.instagram.com/arvestamenuiserie",
     type: "url",
   },
   {
