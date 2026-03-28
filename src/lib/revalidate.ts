@@ -25,7 +25,7 @@ export function revalidateCatalogPages() {
  */
 export function revalidateAboutPages() {
   // Tag-based revalidation — kesin cache invalidation
-  revalidateTag(ABOUT_SETTINGS_TAG);
+  revalidateTag(ABOUT_SETTINGS_TAG, { expire: 0 });
 
   // Path-based revalidation — full route cache temizliği
   for (const locale of locales) {
