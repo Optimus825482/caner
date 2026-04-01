@@ -161,7 +161,7 @@ export default function ContactForm({
         if (window.turnstile && turnstileWidgetIdRef.current) {
           window.turnstile.reset(turnstileWidgetIdRef.current);
         }
-        setTimeout(() => setSent(false), 3000);
+        setTimeout(() => setSent(false), 5000);
         return;
       }
 

@@ -10,6 +10,23 @@ import {
 } from "@/lib/seo";
 import { CatalogFlipbook } from "@/components/public/CatalogFlipbook";
 
+export async function generateStaticParams() {
+  if (!process.env.DATABASE_URL) return [];
+  try {
+    const { prisma: db } = await import("@/lib/prisma");
+    const { routing } = await import("@/i18n/routing");
+    const catalogs = await db.digitalCatalog.findMany({
+      where: { published: true },
+      select: { slug: true },
+    });
+    return catalogs.flatMap((c) =>
+      routing.locales.map((locale) => ({ locale, slug: c.slug })),
+    );
+  } catch {
+    return [];
+  }
+}
+
 const getCatalog = cache(async (slug: string) => {
   return prisma.digitalCatalog.findUnique({
     where: { slug, published: true },

@@ -14,6 +14,23 @@ import {
   breadcrumbJsonLd,
 } from "@/lib/seo";
 
+export async function generateStaticParams() {
+  if (!process.env.DATABASE_URL) return [];
+  try {
+    const { prisma: db } = await import("@/lib/prisma");
+    const { routing } = await import("@/i18n/routing");
+    const posts = await db.blogPost.findMany({
+      where: { published: true },
+      select: { slug: true },
+    });
+    return posts.flatMap((p) =>
+      routing.locales.map((locale) => ({ locale, slug: p.slug })),
+    );
+  } catch {
+    return [];
+  }
+}
+
 const getBlogPost = cache(async (slug: string) => {
   return prisma.blogPost.findUnique({
     where: { slug },
