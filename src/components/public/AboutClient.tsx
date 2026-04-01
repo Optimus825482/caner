@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ImageShimmer from "@/components/public/ImageShimmer";
@@ -453,7 +453,7 @@ export default function AboutClient({
               {s("ctaDesc")}
             </p>
             <Link
-              href={`/${locale}#contact`}
+              href={{ pathname: "/", hash: "contact" }}
               className="inline-flex items-center gap-2 rounded-full border border-(--arvesta-gold)/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-8 py-3.5 font-ui text-sm font-bold text-[#2b160a] shadow-[0_12px_32px_rgba(232,98,44,0.35)] transition-all duration-200 hover:-translate-y-px hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--arvesta-gold) focus-visible:ring-offset-2 focus-visible:ring-offset-[#050d1d]"
             >
               {s("ctaBtn")} <span aria-hidden>→</span>

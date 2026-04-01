@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope, Sora } from "next/font/google";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 
 import { getLocale } from "next-intl/server";
@@ -68,6 +69,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default async function RootLayout({
   children,
 }: {
@@ -107,6 +114,18 @@ export default async function RootLayout({
       >
         <BuildVersionChecker />
         {children}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-M9B3CE8199"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-M9B3CE8199');
+          `}
+        </Script>
       </body>
     </html>
   );

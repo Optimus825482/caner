@@ -5,7 +5,26 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://arvestafrance.com";
 
 const LOCALES = routing.locales;
+const DEFAULT_LOCALE = routing.defaultLocale;
 type Locale = (typeof LOCALES)[number];
+
+/**
+ * Kamuya açık mutlak URL (localePrefix as-needed: varsayılan dilde /fr yok).
+ * path: "" veya "/" = anasayfa; "/about", "/products/x" gibi locale önekisiz.
+ */
+export function absolutePublicUrl(locale: string, path: string = ""): string {
+  const base = SITE_URL.replace(/\/$/, "");
+  let p = path.trim();
+  if (!p || p === "/") p = "";
+  else if (!p.startsWith("/")) p = `/${p}`;
+
+  if (locale === DEFAULT_LOCALE) {
+    if (!p) return `${base}/`;
+    return `${base}${p}`;
+  }
+  if (!p) return `${base}/${locale}/`;
+  return `${base}/${locale}${p}`;
+}
 
 const LOCALE_MAP: Record<Locale, string> = {
   fr: "fr_FR",
@@ -21,12 +40,12 @@ export function generateAlternates(
   locale: string,
   path: string = "",
 ): Metadata["alternates"] {
-  const canonical = `${SITE_URL}/${locale}${path}`;
+  const canonical = absolutePublicUrl(locale, path);
   const languages: Record<string, string> = {};
   for (const loc of LOCALES) {
-    languages[loc] = `${SITE_URL}/${loc}${path}`;
+    languages[loc] = absolutePublicUrl(loc, path);
   }
-  languages["x-default"] = `${SITE_URL}/fr${path}`;
+  languages["x-default"] = absolutePublicUrl(DEFAULT_LOCALE, path);
   return { canonical, languages };
 }
 
@@ -51,7 +70,7 @@ export function generateOgMeta(
     locale: ogLocale,
     alternateLocale: alternateLocales,
     siteName: "Arvesta Menuiserie France",
-    url: `${SITE_URL}/${locale}${path}`,
+    url: absolutePublicUrl(locale, path),
     ...(images && images.length > 0 ? { images } : {}),
   };
 }
@@ -109,11 +128,11 @@ export function breadcrumbJsonLd(
       if (item.url !== undefined) {
         itemUrl =
           item.url === ""
-            ? `${SITE_URL}/${locale}`
-            : `${SITE_URL}/${locale}${item.url}`;
+            ? absolutePublicUrl(locale, "")
+            : absolutePublicUrl(locale, item.url);
       } else if (!isLast) {
         // Non-last items MUST have a URL per Google spec — fallback to homepage
-        itemUrl = `${SITE_URL}/${locale}`;
+        itemUrl = absolutePublicUrl(locale, "");
       }
 
       return {
@@ -131,6 +150,12 @@ export function breadcrumbJsonLd(
  * Note: Offer removed — sur mesure products have no fixed price.
  * Google invalidates Offer schema with price "0".
  */
+const CONTACT_LABEL: Record<string, string> = {
+  fr: "Nous contacter pour un devis",
+  en: "Contact us for a quote",
+  tr: "Fiyat teklifi için bize ulaşın",
+};
+
 export function productJsonLd(
   locale: string,
   product: {
@@ -141,12 +166,15 @@ export function productJsonLd(
     category?: string;
   },
 ) {
+  const contactUrl = absolutePublicUrl(locale, "/#contact");
+  const contactLabel = CONTACT_LABEL[locale] ?? CONTACT_LABEL["fr"];
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.description,
-    url: `${SITE_URL}/${locale}/products/${product.slug}`,
+    url: absolutePublicUrl(locale, `/products/${product.slug}`),
     ...(product.image ? { image: product.image } : {}),
     ...(product.category ? { category: product.category } : {}),
     brand: {
@@ -156,6 +184,17 @@ export function productJsonLd(
     manufacturer: {
       "@type": "Organization",
       name: "Arvesta Menuiserie France",
+    },
+    offers: {
+      "@type": "Offer",
+      url: contactUrl,
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: "Arvesta Menuiserie France",
+      },
+      description: contactLabel,
     },
   };
 }
@@ -178,7 +217,7 @@ export function collectionJsonLd(
     "@type": "CollectionPage",
     name: collection.name,
     description: collection.description,
-    url: `${SITE_URL}/${locale}/collections/${collection.slug}`,
+    url: absolutePublicUrl(locale, `/collections/${collection.slug}`),
     ...(collection.image ? { image: collection.image } : {}),
     isPartOf: {
       "@type": "WebSite",
@@ -198,7 +237,7 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     "@type": "FurnitureStore",
     name: "Arvesta Menuiserie France",
     description,
-    url: `${SITE_URL}/${locale}`,
+    url: absolutePublicUrl(locale, ""),
     logo: `${SITE_URL}/logo.png`,
     image: `${SITE_URL}/image.png`,
     address: {
@@ -306,7 +345,7 @@ export function aboutPageJsonLd(locale: string) {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     name: "À Propos — Arvesta Menuiserie France",
-    url: `${SITE_URL}/${locale}/about`,
+    url: absolutePublicUrl(locale, "/about"),
     mainEntity: {
       "@type": "Organization",
       name: "Arvesta Menuiserie France",
@@ -347,7 +386,7 @@ export function blogListJsonLd(
     "@context": "https://schema.org",
     "@type": "Blog",
     name: "Blog & Inspirations — Arvesta",
-    url: `${SITE_URL}/${locale}/blog`,
+    url: absolutePublicUrl(locale, "/blog"),
     publisher: {
       "@type": "Organization",
       name: "Arvesta Menuiserie France",
@@ -359,8 +398,9 @@ export function blogListJsonLd(
       datePublished: post.date,
       ...(post.excerpt ? { description: post.excerpt } : {}),
       author: {
-        "@type": "Organization",
-        name: "Arvesta Menuiserie France",
+        "@type": "Person",
+        name: "Caner Doğan",
+        url: SITE_URL,
       },
     })),
   };
@@ -377,7 +417,7 @@ export function productListJsonLd(
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Nos Produits — Arvesta",
-    url: `${SITE_URL}/${locale}/products`,
+    url: absolutePublicUrl(locale, "/products"),
     numberOfItems: products.length,
     itemListElement: products.slice(0, 20).map((p, i) => ({
       "@type": "ListItem",

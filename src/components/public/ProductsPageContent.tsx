@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ProductsCatalogSection } from "./ProductsCatalogSection";
 
 interface ProductItem {
@@ -177,7 +177,7 @@ export function ProductsPageContent({
         {filteredProducts.map((product) => (
           <Link
             key={product.id}
-            href={`/${locale}/products/${product.slug}`}
+            href={`/products/${product.slug}`}
             className="group overflow-hidden rounded-2xl border border-(--arvesta-gold)/15 bg-(--arvesta-bg-card) transition-all duration-500 hover:-translate-y-1 hover:border-(--arvesta-gold)/40"
           >
             <div className="relative aspect-[4/3] overflow-hidden">

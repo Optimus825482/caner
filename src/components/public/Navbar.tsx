@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useMemo, startTransition } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { Menu, X } from "lucide-react";
 
@@ -37,18 +36,18 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
+  const isHome = pathname === "/" || pathname === "";
 
   const navLinks = useMemo(
     () => [
-      { href: `/${locale}`, label: t("home"), anchor: false },
-      { href: `/${locale}/about`, label: t("about"), anchor: false },
-      { href: `/${locale}/products`, label: t("products"), anchor: false },
-      { href: `/${locale}/services`, label: t("services"), anchor: false },
-      { href: `/${locale}/blog`, label: t("blog"), anchor: false },
+      { href: "/", label: t("home"), anchor: false },
+      { href: "/about", label: t("about"), anchor: false },
+      { href: "/products", label: t("products"), anchor: false },
+      { href: "/services", label: t("services"), anchor: false },
+      { href: "/blog", label: t("blog"), anchor: false },
       { href: "#contact", label: t("contact"), anchor: true },
     ],
-    [locale, t],
+    [t],
   );
 
   function switchLocale(newLocale: string) {
@@ -66,7 +65,7 @@ export default function Navbar({
           }`}
         >
           <Link
-            href={`/${locale}`}
+            href="/"
             className="nav-logo relative z-10 flex items-center gap-3 -my-8"
           >
             <Image
@@ -92,9 +91,10 @@ export default function Navbar({
             {navLinks.map((link) => {
               const isActive =
                 !link.anchor &&
-                (link.href === `/${locale}`
+                (link.href === "/"
                   ? isHome
-                  : pathname.startsWith(link.href));
+                  : pathname === link.href ||
+                    pathname.startsWith(`${link.href}/`));
 
               const cls = `relative font-ui text-base font-medium tracking-[0.03em] transition-colors duration-300 after:absolute after:bottom-[-6px] after:left-0 after:h-px after:bg-linear-to-r after:from-[#f3c98b] after:to-(--arvesta-accent) after:transition-all after:duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3c98b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] ${
                 isActive
@@ -105,12 +105,18 @@ export default function Navbar({
               return (
                 <li key={link.href}>
                   {link.anchor ? (
-                    <a
-                      href={isHome ? link.href : `/${locale}/${link.href}`}
-                      className={cls}
-                    >
-                      {link.label}
-                    </a>
+                    isHome ? (
+                      <a href={link.href} className={cls}>
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={{ pathname: "/", hash: "contact" }}
+                        className={cls}
+                      >
+                        {link.label}
+                      </Link>
+                    )
                   ) : (
                     <Link href={link.href} className={cls}>
                       {link.label}
@@ -180,13 +186,23 @@ export default function Navbar({
               return (
                 <li key={link.href}>
                   {link.anchor ? (
-                    <a
-                      href={isHome ? link.href : `/${locale}/${link.href}`}
-                      onClick={() => setMobileOpen(false)}
-                      className={`${linkCls} ${delayClass} ${stateClass}`}
-                    >
-                      {link.label}
-                    </a>
+                    isHome ? (
+                      <a
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`${linkCls} ${delayClass} ${stateClass}`}
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={{ pathname: "/", hash: "contact" }}
+                        onClick={() => setMobileOpen(false)}
+                        className={`${linkCls} ${delayClass} ${stateClass}`}
+                      >
+                        {link.label}
+                      </Link>
+                    )
                   ) : (
                     <Link
                       href={link.href}

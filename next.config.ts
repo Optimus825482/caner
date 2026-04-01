@@ -5,6 +5,22 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.arvestafrance.com" }],
+        destination: "https://arvestafrance.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "arvesta-france.com" }],
+        destination: "https://arvestafrance.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },

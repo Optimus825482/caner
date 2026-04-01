@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { ChevronDown } from "lucide-react";
 import {
@@ -176,7 +176,7 @@ export default async function ServicesPage({
             {t("ctaDesc")}
           </p>
           <Link
-            href={`/${locale}#contact`}
+            href={{ pathname: "/", hash: "contact" }}
             className="inline-flex rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-8 py-3 font-ui text-sm font-bold text-[#2b160a] shadow-[0_14px_34px_rgba(232,98,44,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110"
           >
             {t("ctaBtn")}

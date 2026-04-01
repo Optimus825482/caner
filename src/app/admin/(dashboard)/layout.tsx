@@ -6,7 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
-const SUPPORTED_LOCALES = ["fr", "tr"] as const;
+const SUPPORTED_LOCALES = ["fr", "en", "tr"] as const;
 type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 function isSupportedLocale(v: string): v is SupportedLocale {

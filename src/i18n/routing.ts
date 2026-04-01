@@ -6,4 +6,6 @@ export const CONTENT_LOCALE = "fr" as const;
 export const routing = defineRouting({
   locales: ["fr", "en", "tr"],
   defaultLocale: CONTENT_LOCALE,
+  /** FR varsayılan dil: URL'de /fr öneki yok (SEO: kök sayfa indekslenebilir). */
+  localePrefix: "as-needed",
 });

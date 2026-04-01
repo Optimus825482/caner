@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -103,7 +103,7 @@ export default async function CollectionPage({ params }: Props) {
         <div className="absolute inset-0 bg-linear-to-t from-(--arvesta-bg) via-black/50 to-black/30" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-12">
           <Link
-            href={`/${locale}#savoir-faire`}
+            href={{ pathname: "/", hash: "savoir-faire" }}
             className="mb-4 inline-flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold) transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" /> {t("allCollections")}
@@ -133,7 +133,7 @@ export default async function CollectionPage({ params }: Props) {
               return (
                 <Link
                   key={product.id}
-                  href={`/${locale}/products/${product.slug}`}
+                  href={`/products/${product.slug}`}
                   className="group overflow-hidden rounded-2xl border border-(--arvesta-gold)/20 bg-(--arvesta-bg-card) transition-all duration-500 hover:-translate-y-1 hover:border-(--arvesta-gold)/50 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
                 >
                   <div className="relative aspect-4/3 overflow-hidden">

@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 
 const fallback: Record<string, { title: string; desc: string; btn: string }> = {
   fr: {
@@ -41,7 +41,7 @@ export default async function NotFound() {
         {t.desc}
       </p>
       <Link
-        href={`/${locale}`}
+        href="/"
         className="rounded-full border border-(--arvesta-gold)/40 bg-(--arvesta-gold)/10 px-6 py-2.5 font-ui text-sm font-semibold text-(--arvesta-gold) transition-colors hover:bg-(--arvesta-gold)/20"
       >
         {t.btn}

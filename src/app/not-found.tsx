@@ -13,7 +13,7 @@ export default function RootNotFound() {
         La page que vous recherchez n&apos;existe pas.
       </p>
       <Link
-        href="/fr"
+        href="/"
         className="rounded-full border border-[#f1d8a4]/40 bg-[#f1d8a4]/10 px-6 py-2.5 text-sm font-semibold text-[#f1d8a4] transition-colors hover:bg-[#f1d8a4]/20"
       >
         Accueil

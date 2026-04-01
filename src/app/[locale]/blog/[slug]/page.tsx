@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -89,8 +89,9 @@ export default async function BlogPostPage({
     datePublished: post.createdAt.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     author: {
-      "@type": "Organization",
-      name: "Arvesta Menuiserie France",
+      "@type": "Person",
+      name: "Caner Doğan",
+      url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
@@ -115,7 +116,7 @@ export default async function BlogPostPage({
 
       <article className="mx-auto max-w-[720px]">
         <Link
-          href={`/${locale}/blog`}
+          href="/blog"
           className="mb-8 inline-flex items-center gap-2 text-sm text-(--arvesta-text-secondary) transition-colors hover:text-(--arvesta-gold)"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -165,7 +166,7 @@ export default async function BlogPostPage({
             {t("ctaDesc")}
           </p>
           <Link
-            href={`/${locale}#contact`}
+            href={{ pathname: "/", hash: "contact" }}
             className="inline-flex rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-8 py-3 font-ui text-sm font-bold text-[#2b160a] shadow-[0_14px_34px_rgba(232,98,44,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110"
           >
             {t("ctaBtn")}

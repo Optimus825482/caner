@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { Instagram } from "lucide-react";
 import FooterReveal from "./FooterReveal";
@@ -43,7 +43,7 @@ export default async function Footer({ locale }: { locale: string }) {
                 return (
                   <Link
                     key={cat.id}
-                    href={`/${locale}/collections/${cat.slug}`}
+                    href={`/collections/${cat.slug}`}
                     className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
                   >
                     {name}
@@ -56,43 +56,43 @@ export default async function Footer({ locale }: { locale: string }) {
                 {t("company")}
               </span>
               <Link
-                href={`/${locale}/services`}
+                href="/services"
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("services")}
               </Link>
               <Link
-                href={`/${locale}/products`}
+                href="/products"
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("products")}
               </Link>
               <Link
-                href={`/${locale}/about`}
+                href="/about"
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("about")}
               </Link>
               <Link
-                href={`/${locale}#contact`}
+                href={{ pathname: "/", hash: "contact" }}
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("contact")}
               </Link>
               <Link
-                href={`/${locale}/privacy`}
+                href="/privacy"
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("privacy")}
               </Link>
               <Link
-                href={`/${locale}/services#faq`}
+                href={{ pathname: "/services", hash: "faq" }}
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("faq")}
               </Link>
               <Link
-                href={`/${locale}/blog`}
+                href="/blog"
                 className="block rounded-md py-1 text-sm text-(--arvesta-text-secondary) underline-offset-4 transition-colors hover:text-(--arvesta-gold) focus-visible:text-(--arvesta-gold) focus-visible:underline focus-visible:outline-none"
               >
                 {t("blog")}

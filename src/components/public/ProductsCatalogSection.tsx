@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { CatalogFullscreenModal } from "./CatalogFullscreenModal";
 
 function normalizeImageUrl(url: string | null | undefined): string {
@@ -46,7 +46,7 @@ export function ProductsCatalogSection({
     if (isDesktop) {
       setFullscreenSlug(slug);
     } else {
-      router.push(`/${locale}/catalog/${slug}`);
+      router.push(`/catalog/${slug}`);
     }
   }
 

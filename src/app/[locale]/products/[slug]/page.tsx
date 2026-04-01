@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -118,14 +118,14 @@ export default async function ProductPage({ params }: Props) {
       <div className="mx-auto max-w-7xl px-4 pb-4 pt-28">
         <div className="flex items-center gap-2 font-ui text-xs text-(--arvesta-text-muted)">
           <Link
-            href={`/${locale}`}
+            href="/"
             className="transition-colors hover:text-(--arvesta-gold)"
           >
             {t("backToHome")}
           </Link>
           <span>/</span>
           <Link
-            href={`/${locale}/collections/${category.slug}`}
+            href={`/collections/${category.slug}`}
             className="transition-colors hover:text-(--arvesta-gold)"
           >
             {catName}
@@ -140,7 +140,7 @@ export default async function ProductPage({ params }: Props) {
         {/* Info */}
         <div className="flex flex-col justify-center">
           <Link
-            href={`/${locale}/collections/${category.slug}`}
+            href={`/collections/${category.slug}`}
             className="mb-4 inline-flex w-fit items-center gap-2 font-ui text-xs font-semibold uppercase tracking-[0.16em] text-(--arvesta-gold) transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" /> {t("backToCollection")}
@@ -159,12 +159,12 @@ export default async function ProductPage({ params }: Props) {
             </p>
           )}
 
-          <a
-            href={`/${locale}#contact`}
+          <Link
+            href={{ pathname: "/", hash: "contact" }}
             className="inline-flex w-fit rounded-full border border-[#ffd8a6]/40 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-10 py-4 font-ui text-base font-bold text-[#2b160a] shadow-[0_14px_34px_rgba(232,98,44,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110"
           >
             {t("requestQuote")}
-          </a>
+          </Link>
         </div>
 
         {/* Gallery */}
@@ -184,7 +184,7 @@ export default async function ProductPage({ params }: Props) {
                 return (
                   <Link
                     key={item.id}
-                    href={`/${locale}/products/${item.slug}`}
+                    href={`/products/${item.slug}`}
                     className="group overflow-hidden rounded-2xl border border-(--arvesta-gold)/20 bg-(--arvesta-bg-card) transition-all duration-500 hover:-translate-y-1 hover:border-(--arvesta-gold)/50"
                   >
                     <div className="relative aspect-4/3 overflow-hidden">

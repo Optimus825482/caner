@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import {
-  SITE_URL,
+  absolutePublicUrl,
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
@@ -74,7 +74,7 @@ export default async function BlogPage({
         post.translations[0];
       return {
         title: tr?.title || post.slug,
-        url: `${SITE_URL}/${locale}/blog/${post.slug}`,
+        url: absolutePublicUrl(locale, `/blog/${post.slug}`),
         date: post.createdAt.toISOString(),
         excerpt: tr?.excerpt || undefined,
       };
@@ -94,7 +94,7 @@ export default async function BlogPage({
 
       <div className="mx-auto max-w-[960px]">
         <Link
-          href={`/${locale}`}
+          href="/"
           className="mb-8 inline-flex items-center gap-2 text-sm text-(--arvesta-text-secondary) transition-colors hover:text-(--arvesta-gold)"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -123,7 +123,7 @@ export default async function BlogPage({
               return (
                 <Link
                   key={post.id}
-                  href={`/${locale}/blog/${post.slug}`}
+                  href={`/blog/${post.slug}`}
                   className="group overflow-hidden rounded-2xl border border-(--arvesta-gold)/15 bg-[rgba(255,255,255,0.015)] transition-all hover:border-(--arvesta-gold)/30 hover:-translate-y-1"
                 >
                   {post.image ? (
