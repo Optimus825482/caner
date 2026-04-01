@@ -18,20 +18,6 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-export async function generateStaticParams() {
-  if (!process.env.DATABASE_URL) return [];
-  try {
-    const { prisma: db } = await import("@/lib/prisma");
-    const { routing } = await import("@/i18n/routing");
-    const products = await db.product.findMany({ select: { slug: true } });
-    return products.flatMap((p) =>
-      routing.locales.map((locale) => ({ locale, slug: p.slug })),
-    );
-  } catch {
-    return [];
-  }
-}
-
 const getProductBySlug = cache(async (slug: string, locale: string) => {
   return prisma.product.findUnique({
     where: { slug },
