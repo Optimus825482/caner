@@ -557,7 +557,7 @@ async function main() {
     { key: "site_name", value: "Arvesta Menuiserie France" },
     { key: "logo", value: "/uploads/products/logo.png" },
     { key: "phone", value: "+33 (0) 1 43 67 88" },
-    { key: "email", value: "contact@arvesta-france.com" },
+    { key: "email", value: "contact@arvestafrance.com" },
     { key: "address", value: "75001 Paris, France" },
     { key: "instagram", value: "https://www.instagram.com/arvestamenuiserie" },
     { key: "whatsapp", value: "https://wa.me/33143678800" },

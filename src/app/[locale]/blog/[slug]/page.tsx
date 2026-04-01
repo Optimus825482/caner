@@ -8,6 +8,7 @@ import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import MarkdownContent from "@/components/public/MarkdownContent";
 import {
+  SITE_URL,
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
@@ -96,7 +97,7 @@ export default async function BlogPostPage({
       name: "Arvesta Menuiserie France",
       logo: {
         "@type": "ImageObject",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com"}/logo.png`,
+        url: `${SITE_URL}/logo.png`,
       },
     },
   };

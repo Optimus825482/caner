@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import {
+  SITE_URL,
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
@@ -64,8 +65,6 @@ export default async function BlogPage({
     { name: t("title") },
   ]);
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
   const blogSchema = blogListJsonLd(
     locale,
     posts.map((post) => {
@@ -75,7 +74,7 @@ export default async function BlogPage({
         post.translations[0];
       return {
         title: tr?.title || post.slug,
-        url: `${BASE_URL}/${locale}/blog/${post.slug}`,
+        url: `${SITE_URL}/${locale}/blog/${post.slug}`,
         date: post.createdAt.toISOString(),
         excerpt: tr?.excerpt || undefined,
       };

@@ -62,7 +62,7 @@ const generalSettingKeys: SettingField[] = [
     key: "email",
     label: "email",
     icon: Mail,
-    placeholder: "contact@arvesta-france.com",
+    placeholder: "contact@arvestafrance.com",
     type: "email",
   },
   {

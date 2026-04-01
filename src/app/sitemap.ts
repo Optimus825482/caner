@@ -1,16 +1,14 @@
 import type { MetadataRoute } from "next";
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
+import { SITE_URL } from "@/lib/seo";
 
 const LOCALES = ["fr", "en", "tr"];
 
 function alternates(path: string) {
   const languages: Record<string, string> = {};
   for (const loc of LOCALES) {
-    languages[loc] = `${BASE_URL}/${loc}${path}`;
+    languages[loc] = `${SITE_URL}/${loc}${path}`;
   }
-  languages["x-default"] = `${BASE_URL}/fr${path}`;
+  languages["x-default"] = `${SITE_URL}/fr${path}`;
   return { languages };
 }
 
@@ -73,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   const pages: MetadataRoute.Sitemap = staticPages.flatMap((path) =>
     LOCALES.map((locale) => ({
-      url: `${BASE_URL}/${locale}${path}`,
+      url: `${SITE_URL}/${locale}${path}`,
       lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: path === "" ? ("weekly" as const) : ("monthly" as const),
       priority: path === "" ? 1 : 0.6,
@@ -84,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Product pages
   const productPages: MetadataRoute.Sitemap = products.flatMap((product) =>
     LOCALES.map((locale) => ({
-      url: `${BASE_URL}/${locale}/products/${product.slug}`,
+      url: `${SITE_URL}/${locale}/products/${product.slug}`,
       lastModified: product.updatedAt ?? product.createdAt,
       changeFrequency: "weekly" as const,
       priority: 0.8,
@@ -96,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const collectionPages: MetadataRoute.Sitemap = categories.flatMap(
     (category) =>
       LOCALES.map((locale) => ({
-        url: `${BASE_URL}/${locale}/collections/${category.slug}`,
+        url: `${SITE_URL}/${locale}/collections/${category.slug}`,
         lastModified: category.updatedAt ?? category.createdAt,
         changeFrequency: "weekly" as const,
         priority: 0.8,
@@ -107,7 +105,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Blog post pages
   const blogPages: MetadataRoute.Sitemap = blogPosts.flatMap((post) =>
     LOCALES.map((locale) => ({
-      url: `${BASE_URL}/${locale}/blog/${post.slug}`,
+      url: `${SITE_URL}/${locale}/blog/${post.slug}`,
       lastModified: post.updatedAt ?? post.createdAt,
       changeFrequency: "weekly" as const,
       priority: 0.7,
@@ -118,7 +116,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Digital catalog pages
   const catalogPages: MetadataRoute.Sitemap = catalogs.flatMap((catalog) =>
     LOCALES.map((locale) => ({
-      url: `${BASE_URL}/${locale}/catalog/${catalog.slug}`,
+      url: `${SITE_URL}/${locale}/catalog/${catalog.slug}`,
       lastModified: catalog.updatedAt ?? catalog.createdAt,
       changeFrequency: "monthly" as const,
       priority: 0.5,

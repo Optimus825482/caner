@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import {
+  SITE_URL,
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
@@ -126,13 +127,11 @@ export default async function ProductsPage({
     });
   });
 
-  const BASE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
   const itemListSchema = productListJsonLd(
     locale,
     allProducts.map((p) => ({
       name: p.title,
-      url: `${BASE_URL}/${locale}/products/${p.slug}`,
+      url: `${SITE_URL}/${locale}/products/${p.slug}`,
       image: p.image || undefined,
     })),
   );

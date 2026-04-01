@@ -244,7 +244,7 @@ export default function ContactForm({
                   Email
                 </strong>
                 <span className="text-sm text-(--arvesta-text-secondary)">
-                  {settings?.email || "contact@arvesta-france.com"}
+                  {settings?.email || "contact@arvestafrance.com"}
                 </span>
               </div>
             </div>

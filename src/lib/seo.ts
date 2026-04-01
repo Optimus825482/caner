@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { routing } from "@/i18n/routing";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com";
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://arvestafrance.com";
 
 const LOCALES = routing.locales;
 type Locale = (typeof LOCALES)[number];
@@ -21,12 +21,12 @@ export function generateAlternates(
   locale: string,
   path: string = "",
 ): Metadata["alternates"] {
-  const canonical = `${BASE_URL}/${locale}${path}`;
+  const canonical = `${SITE_URL}/${locale}${path}`;
   const languages: Record<string, string> = {};
   for (const loc of LOCALES) {
-    languages[loc] = `${BASE_URL}/${loc}${path}`;
+    languages[loc] = `${SITE_URL}/${loc}${path}`;
   }
-  languages["x-default"] = `${BASE_URL}/fr${path}`;
+  languages["x-default"] = `${SITE_URL}/fr${path}`;
   return { canonical, languages };
 }
 
@@ -51,7 +51,7 @@ export function generateOgMeta(
     locale: ogLocale,
     alternateLocale: alternateLocales,
     siteName: "Arvesta Menuiserie France",
-    url: `${BASE_URL}/${locale}${path}`,
+    url: `${SITE_URL}/${locale}${path}`,
     ...(images && images.length > 0 ? { images } : {}),
   };
 }
@@ -64,7 +64,7 @@ export function websiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Arvesta Menuiserie France",
-    url: BASE_URL,
+    url: SITE_URL,
     inLanguage: ["fr", "en", "tr"],
   };
 }
@@ -77,13 +77,13 @@ export function organizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Arvesta Menuiserie France",
-    url: BASE_URL,
-    logo: `${BASE_URL}/logo.png`,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
     sameAs: ["https://www.instagram.com/arvestamenuiserie"],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
-      email: "contact@arvesta-france.com",
+      email: "contact@arvestafrance.com",
       availableLanguage: ["French", "English", "Turkish"],
     },
   };
@@ -109,11 +109,11 @@ export function breadcrumbJsonLd(
       if (item.url !== undefined) {
         itemUrl =
           item.url === ""
-            ? `${BASE_URL}/${locale}`
-            : `${BASE_URL}/${locale}${item.url}`;
+            ? `${SITE_URL}/${locale}`
+            : `${SITE_URL}/${locale}${item.url}`;
       } else if (!isLast) {
         // Non-last items MUST have a URL per Google spec — fallback to homepage
-        itemUrl = `${BASE_URL}/${locale}`;
+        itemUrl = `${SITE_URL}/${locale}`;
       }
 
       return {
@@ -146,7 +146,7 @@ export function productJsonLd(
     "@type": "Product",
     name: product.name,
     description: product.description,
-    url: `${BASE_URL}/${locale}/products/${product.slug}`,
+    url: `${SITE_URL}/${locale}/products/${product.slug}`,
     ...(product.image ? { image: product.image } : {}),
     ...(product.category ? { category: product.category } : {}),
     brand: {
@@ -178,12 +178,12 @@ export function collectionJsonLd(
     "@type": "CollectionPage",
     name: collection.name,
     description: collection.description,
-    url: `${BASE_URL}/${locale}/collections/${collection.slug}`,
+    url: `${SITE_URL}/${locale}/collections/${collection.slug}`,
     ...(collection.image ? { image: collection.image } : {}),
     isPartOf: {
       "@type": "WebSite",
       name: "Arvesta Menuiserie France",
-      url: BASE_URL,
+      url: SITE_URL,
     },
     numberOfItems: collection.productCount,
   };
@@ -198,9 +198,9 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     "@type": "FurnitureStore",
     name: "Arvesta Menuiserie France",
     description,
-    url: `${BASE_URL}/${locale}`,
-    logo: `${BASE_URL}/logo.png`,
-    image: `${BASE_URL}/image.png`,
+    url: `${SITE_URL}/${locale}`,
+    logo: `${SITE_URL}/logo.png`,
+    image: `${SITE_URL}/image.png`,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Paris",
@@ -220,7 +220,7 @@ export function furnitureStoreJsonLd(locale: string, description: string) {
     ],
     priceRange: "€€€",
     knowsLanguage: ["fr", "en", "tr"],
-    email: "contact@arvesta-france.com",
+    email: "contact@arvestafrance.com",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -272,7 +272,7 @@ export function serviceJsonLd(
     "@context": "https://schema.org",
     "@type": "FurnitureStore",
     name: "Arvesta Menuiserie France",
-    url: BASE_URL,
+    url: SITE_URL,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Services",
@@ -306,11 +306,11 @@ export function aboutPageJsonLd(locale: string) {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     name: "À Propos — Arvesta Menuiserie France",
-    url: `${BASE_URL}/${locale}/about`,
+    url: `${SITE_URL}/${locale}/about`,
     mainEntity: {
       "@type": "Organization",
       name: "Arvesta Menuiserie France",
-      url: BASE_URL,
+      url: SITE_URL,
       foundingLocation: {
         "@type": "Place",
         name: "Aksaray, Türkiye",
@@ -347,7 +347,7 @@ export function blogListJsonLd(
     "@context": "https://schema.org",
     "@type": "Blog",
     name: "Blog & Inspirations — Arvesta",
-    url: `${BASE_URL}/${locale}/blog`,
+    url: `${SITE_URL}/${locale}/blog`,
     publisher: {
       "@type": "Organization",
       name: "Arvesta Menuiserie France",
@@ -377,7 +377,7 @@ export function productListJsonLd(
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Nos Produits — Arvesta",
-    url: `${BASE_URL}/${locale}/products`,
+    url: `${SITE_URL}/${locale}/products`,
     numberOfItems: products.length,
     itemListElement: products.slice(0, 20).map((p, i) => ({
       "@type": "ListItem",

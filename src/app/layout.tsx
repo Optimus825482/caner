@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { getLocale } from "next-intl/server";
 import BuildVersionChecker from "@/components/public/BuildVersionChecker";
+import { SITE_URL } from "@/lib/seo";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -36,9 +37,7 @@ const exotc = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://arvesta-france.com",
-  ),
+  metadataBase: new URL(SITE_URL),
   title: "Arvesta Menuiserie France — Premium Interior Design",
   description:
     "Mobilier sur mesure de haute qualité. Cuisines, salles de bains, dressings et projets personnalisés. Fabriqué en Turquie, livré en Europe.",
