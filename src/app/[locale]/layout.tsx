@@ -1,4 +1,4 @@
-import { NextIntlClientProvider, hasLocale, getTranslations } from "next-intl";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/public/Navbar";
@@ -20,12 +20,14 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const [messages, settings, t] = await Promise.all([
+  const [messages, settings] = await Promise.all([
     import(`@/i18n/messages/${locale}.json`).then((m) => m.default),
     getPublicSettings(),
-    getTranslations({ locale, namespace: "nav" }),
   ]);
   const logoUrl = settings.site_logo || "/uploads/products/logo.png";
+  const skipLabel =
+    (messages as { nav?: { skipToContent?: string } })?.nav?.skipToContent ??
+    "Skip to content";
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -33,7 +35,7 @@ export default async function LocaleLayout({
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-99999 focus:rounded-md focus:bg-(--arvesta-gold) focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[#2b160a]"
       >
-        {t("skipToContent")}
+        {skipLabel}
       </a>
       <Preloader logoUrl={logoUrl} />
       <CustomCursor />
