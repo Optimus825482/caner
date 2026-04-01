@@ -309,31 +309,30 @@ export function serviceJsonLd(
 ) {
   return {
     "@context": "https://schema.org",
-    "@type": "FurnitureStore",
-    name: "Arvesta Menuiserie France",
-    url: SITE_URL,
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "Services",
-      itemListElement: services.map((svc) => ({
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: svc.name,
-          description: svc.description,
-          provider: {
-            "@type": "Organization",
-            name: "Arvesta Menuiserie France",
-          },
-          areaServed: [
-            { "@type": "Country", name: "France" },
-            { "@type": "Country", name: "Belgium" },
-            { "@type": "Country", name: "Germany" },
-            { "@type": "Country", name: "Netherlands" },
-          ],
+    "@type": "ItemList",
+    name: "Services — Arvesta Menuiserie France",
+    url: `${SITE_URL}/services`,
+    numberOfItems: services.length,
+    itemListElement: services.map((svc, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Service",
+        name: svc.name,
+        description: svc.description,
+        provider: {
+          "@type": "Organization",
+          name: "Arvesta Menuiserie France",
+          url: SITE_URL,
         },
-      })),
-    },
+        areaServed: [
+          { "@type": "Country", name: "France" },
+          { "@type": "Country", name: "Belgium" },
+          { "@type": "Country", name: "Germany" },
+          { "@type": "Country", name: "Netherlands" },
+        ],
+      },
+    })),
   };
 }
 

@@ -11,6 +11,26 @@
   "lang": "fr",
   "dir": "ltr",
   "categories": ["business", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Nos Produits",
+      "short_name": "Produits",
+      "url": "/products",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Nous Contacter",
+      "short_name": "Contact",
+      "url": "/#contact",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Blog & Inspirations",
+      "short_name": "Blog",
+      "url": "/blog",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icon-48.png",

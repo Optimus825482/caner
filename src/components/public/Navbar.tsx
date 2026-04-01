@@ -36,6 +36,15 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
   const isHome = pathname === "/" || pathname === "";
 
   const navLinks = useMemo(
@@ -56,7 +65,7 @@ export default function Navbar({
 
   return (
     <>
-      <nav className="fixed left-0 right-0 top-0 z-50 px-4 py-4 md:px-10">
+      <nav className="fixed left-0 right-0 top-0 z-50 px-4 py-4 md:px-10" aria-label="Main navigation">
         <div
           className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border border-white/20 bg-linear-to-r from-[#0b0b0b]/72 via-[#121212]/66 to-[#0b0b0b]/72 backdrop-blur-2xl transition-all duration-300 ${
             scrolled
@@ -147,7 +156,9 @@ export default function Navbar({
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="z-1001 rounded-full border border-white/20 bg-black/20 p-2.5 transition-colors hover:border-[#f3c98b]/50 hover:bg-black/35 lg:hidden"
-              aria-label="Menu"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
             >
               {mobileOpen ? (
                 <X className="h-6 w-6 text-white" />
@@ -160,6 +171,10 @@ export default function Navbar({
       </nav>
 
       <div
+        id="mobile-menu"
+        role="dialog"
+        aria-label="Navigation menu"
+        aria-modal="true"
         className={`fixed inset-0 z-999 flex items-center justify-center bg-[#080808]/96 backdrop-blur-2xl transition-all duration-500 ${
           mobileOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
