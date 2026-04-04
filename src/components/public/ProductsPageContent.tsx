@@ -64,12 +64,12 @@ export function ProductsPageContent({
   >(null);
 
   const filteredProducts = products.filter((p) => {
+    if (selectedCategoryId && p.categoryId !== selectedCategoryId) return false;
     // Cross-category mode: when a subcategory name is selected, show products
-    // from ALL categories that have that same subcategory name
-    if (crossCategoryMode && selectedSubCategoryName) {
+    // across categories only if no category is selected.
+    if (crossCategoryMode && !selectedCategoryId && selectedSubCategoryName) {
       return p.subCategoryName === selectedSubCategoryName;
     }
-    if (selectedCategoryId && p.categoryId !== selectedCategoryId) return false;
     if (selectedSubCategoryId) {
       return p.subCategoryId === selectedSubCategoryId;
     }
