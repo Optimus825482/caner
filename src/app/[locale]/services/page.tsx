@@ -11,6 +11,38 @@ import {
 import { prisma } from "@/lib/prisma";
 import ServiceDetailDialog from "@/components/public/ServiceDetailDialog";
 
+type ServiceTranslationRecord = {
+  locale: string;
+  title: string;
+  summary: string;
+  detail: string;
+};
+
+type ServiceItemRecord = {
+  id: string;
+  icon: string | null;
+  order: number;
+  translations: ServiceTranslationRecord[];
+};
+
+type FaqRecord = {
+  id: string;
+  translations: Array<{
+    locale: string;
+    question: string;
+    answer: string;
+  }>;
+};
+
+const servicesPrisma = prisma as typeof prisma & {
+  serviceItem: {
+    findMany: (args: unknown) => Promise<ServiceItemRecord[]>;
+  };
+  faqItem: {
+    findMany: (args: unknown) => Promise<FaqRecord[]>;
+  };
+};
+
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
     title: "Nos Services — Arvesta Menuiserie France",
@@ -60,37 +92,16 @@ export default async function ServicesPage({
 
   // Fetch services and FAQ items in parallel
   const [dbServices, dbFaqs] = await Promise.all([
-    (prisma as any).serviceItem.findMany({
+    servicesPrisma.serviceItem.findMany({
       where: { published: true },
       include: { translations: true },
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-    }) as Promise<
-      Array<{
-        id: string;
-        icon: string | null;
-        order: number;
-        translations: Array<{
-          locale: string;
-          title: string;
-          summary: string;
-          detail: string;
-        }>;
-      }>
-    >,
-    (prisma as any).faqItem.findMany({
+    }),
+    servicesPrisma.faqItem.findMany({
       where: { published: true },
       include: { translations: true },
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-    }) as Promise<
-      Array<{
-        id: string;
-        translations: Array<{
-          locale: string;
-          question: string;
-          answer: string;
-        }>;
-      }>
-    >,
+    }),
   ]);
 
   const services = dbServices.map((item) => {

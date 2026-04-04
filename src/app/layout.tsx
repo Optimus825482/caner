@@ -82,7 +82,7 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale();
 
-  let verificationMeta: Record<string, string> = {};
+  const verificationMeta: Record<string, string> = {};
   if (process.env.DATABASE_URL) {
     try {
       const { prisma } = await import("@/lib/prisma");

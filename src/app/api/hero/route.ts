@@ -27,7 +27,7 @@ const updateHeroSlideSchema = z.object({
   translations: z.array(heroTranslationSchema).optional(),
 });
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth();
   const isAdmin = session?.user?.role === "admin";
 

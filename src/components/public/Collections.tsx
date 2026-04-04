@@ -19,7 +19,6 @@ export default async function Collections({ locale }: { locale: string }) {
   return (
     <CollectionsClient
       categories={data}
-      locale={locale}
       tag={t("tag")}
       title={t("title")}
       desc={t("desc")}

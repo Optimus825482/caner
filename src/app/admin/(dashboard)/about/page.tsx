@@ -85,6 +85,7 @@ const ABOUT_I18N_KEYS = [
 ] as const;
 
 const LOCALES_LIST = ["fr", "en", "tr"] as const;
+type AboutMessages = { about?: Record<string, string> };
 
 export default function AdminAbout() {
   const t = useTranslations("adminAbout");
@@ -96,7 +97,7 @@ export default function AdminAbout() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [teamLoading, setTeamLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [aiTranslating, setAiTranslating] = useState<string | null>(null);
+  const [, setAiTranslating] = useState<string | null>(null);
   const [bulkTranslating, setBulkTranslating] = useState(false);
   const [translateProgress, setTranslateProgress] = useState({
     done: 0,
@@ -197,10 +198,9 @@ export default function AdminAbout() {
     ]).then(
       ([dbValues, trMsgs, frMsgs, enMsgs]: [
         Record<string, string>,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        any,
-        any,
-        any,
+        AboutMessages,
+        AboutMessages,
+        AboutMessages,
       ]) => {
         const merged = { ...dbValues };
         const i18nMap: Record<string, Record<string, string>> = {

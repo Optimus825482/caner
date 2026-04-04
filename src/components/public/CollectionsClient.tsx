@@ -14,14 +14,12 @@ interface CategoryItem {
 
 export default function CollectionsClient({
   categories,
-  locale,
   tag,
   title,
   desc,
   explore,
 }: {
   categories: CategoryItem[];
-  locale: string;
   tag: string;
   title: string;
   desc: string;

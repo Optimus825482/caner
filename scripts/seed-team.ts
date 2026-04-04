@@ -1,6 +1,29 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+type TeamMemberTranslationInput = {
+  locale: string;
+  fullName: string;
+  title: string;
+};
+type TeamMemberSeedInput = {
+  photo: string;
+  email: string | null;
+  phone: string | null;
+  order: number;
+  published: boolean;
+  translations: { create: TeamMemberTranslationInput[] };
+};
+type TeamSeedPrisma = PrismaClient & {
+  teamMemberTranslation: {
+    deleteMany: () => Promise<unknown>;
+  };
+  teamMember: {
+    deleteMany: () => Promise<unknown>;
+    create: (args: { data: TeamMemberSeedInput }) => Promise<unknown>;
+  };
+};
+const teamPrisma = prisma as unknown as TeamSeedPrisma;
 
 function placeholderPhoto(name: string): string {
   const encoded = encodeURIComponent(name);
@@ -75,13 +98,13 @@ const teamMembers = [
 ];
 
 async function main() {
-  await (prisma as any).teamMemberTranslation.deleteMany();
-  await (prisma as any).teamMember.deleteMany();
+  await teamPrisma.teamMemberTranslation.deleteMany();
+  await teamPrisma.teamMember.deleteMany();
   console.log("Cleared existing team members.");
 
   for (const member of teamMembers) {
     const { translations, ...data } = member;
-    await (prisma as any).teamMember.create({
+    await teamPrisma.teamMember.create({
       data: { ...data, translations: { create: translations } },
     });
     console.log(`  ✓ ${translations[2].fullName} — ${translations[2].title}`);

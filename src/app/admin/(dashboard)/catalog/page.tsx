@@ -14,7 +14,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Eye, EyeOff, BookOpen, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import { Plus, Pencil, Trash2, Eye, BookOpen, ExternalLink } from "lucide-react";
 
 function normalizeImageUrl(url: string | null | undefined): string {
   if (!url?.trim()) return "";
@@ -65,8 +66,6 @@ export default function AdminCatalog() {
     setCatalogs((prev) => prev.filter((c) => c.id !== deleteId));
     setDeleteId(null);
   }
-
-  const deleteCatalog = catalogs.find((c) => c.id === deleteId);
 
   return (
     <div>
@@ -127,10 +126,13 @@ export default function AdminCatalog() {
               <Link href={`/admin/catalog/${catalog.id}`} className="block">
                 <div className="relative aspect-[4/3] bg-white/5 overflow-hidden">
                   {coverUrl ? (
-                    <img
+                    <Image
                       src={coverUrl}
                       alt={getTitle(catalog)}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      fill
+                      unoptimized
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-(--arvesta-text-muted) text-xs">

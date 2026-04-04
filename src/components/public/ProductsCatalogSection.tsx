@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { CatalogFullscreenModal } from "./CatalogFullscreenModal";
@@ -31,12 +32,15 @@ export function ProductsCatalogSection({
   title,
 }: Props) {
   const [fullscreenSlug, setFullscreenSlug] = useState<string | null>(null);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : false,
+  );
   const router = useRouter();
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
-    setIsDesktop(mq.matches);
     const h = () => setIsDesktop(mq.matches);
     mq.addEventListener("change", h);
     return () => mq.removeEventListener("change", h);
@@ -73,10 +77,13 @@ export function ProductsCatalogSection({
                 <div className="group overflow-hidden rounded-2xl border border-(--arvesta-gold)/15 bg-(--arvesta-bg-card) transition-all duration-500 hover:-translate-y-1 hover:border-(--arvesta-gold)/40 cursor-pointer">
                   <div className="relative aspect-[3/4] overflow-hidden">
                     {coverUrl ? (
-                      <img
+                      <Image
                         src={coverUrl}
                         alt={catTitle}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-white/5">

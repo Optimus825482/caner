@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useRef, useState, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -24,11 +25,13 @@ const Page = React.forwardRef<
       style={{ minWidth: 200 }}
     >
       {src ? (
-        <img
+        <Image
           src={src}
           alt={`Sayfa ${number}`}
-          className="absolute inset-0 w-full h-full object-contain"
-          loading="lazy"
+          fill
+          unoptimized
+          className="object-contain"
+          sizes="400px"
         />
       ) : (
         <div className="flex h-full items-center justify-center text-(--arvesta-text-muted) text-sm">

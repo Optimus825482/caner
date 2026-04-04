@@ -5,6 +5,29 @@ import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 
+type TeamMemberRecord = {
+  id: string;
+  photo: string | null;
+  email: string | null;
+  phone: string | null;
+  order: number;
+  published: boolean;
+  role?: "lead" | "member";
+  translations: Array<{
+    locale: string;
+    fullName: string;
+    title: string;
+  }>;
+};
+
+const teamPrisma = prisma as typeof prisma & {
+  teamMember: {
+    findUnique: (args: unknown) => Promise<TeamMemberRecord | null>;
+    update: (args: unknown) => Promise<TeamMemberRecord>;
+    delete: (args: unknown) => Promise<unknown>;
+  };
+};
+
 const translationSchema = z.object({
   locale: z.string().trim().min(1),
   fullName: z.string().trim().min(1),
@@ -22,14 +45,14 @@ const updateSchema = z.object({
 });
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const authResult = await requireAdminAuth();
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const item = await (prisma as any).teamMember.findUnique({
+  const item = await teamPrisma.teamMember.findUnique({
     where: { id },
     include: { translations: true },
   });
@@ -64,7 +87,7 @@ export async function PUT(
     parsed.data;
 
   try {
-    const item = await (prisma as any).teamMember.update({
+    const item = await teamPrisma.teamMember.update({
       where: { id },
       data: {
         photo: photo !== undefined ? photo : undefined,
@@ -105,7 +128,7 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await (prisma as any).teamMember.delete({ where: { id } });
+    await teamPrisma.teamMember.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);

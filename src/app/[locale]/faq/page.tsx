@@ -10,6 +10,25 @@ import {
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 
+type FaqTranslationRecord = {
+  locale: string;
+  question: string;
+  answer: string;
+};
+
+type FaqItemRecord = {
+  id: string;
+  order: number;
+  published: boolean;
+  translations: FaqTranslationRecord[];
+};
+
+const faqPrisma = prisma as typeof prisma & {
+  faqItem: {
+    findMany: (args: unknown) => Promise<FaqItemRecord[]>;
+  };
+};
+
 const meta: Record<string, { title: string; description: string }> = {
   fr: {
     title: "Questions Fréquentes — Arvesta Menuiserie France",
@@ -52,16 +71,11 @@ export default async function FaqPage({
   const t = await getTranslations({ locale, namespace: "faq" });
 
   // Fetch FAQ items from database
-  const dbItems = (await (prisma as any).faqItem.findMany({
+  const dbItems = await faqPrisma.faqItem.findMany({
     where: { published: true },
     include: { translations: true },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  })) as Array<{
-    id: string;
-    order: number;
-    published: boolean;
-    translations: Array<{ locale: string; question: string; answer: string }>;
-  }>;
+  });
 
   // Build FAQ list: DB items first, then fallback to static i18n keys if DB is empty
   let faqs: { question: string; answer: string }[];

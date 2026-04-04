@@ -5,6 +5,27 @@ import { requireAdminAuth } from "@/lib/auth";
 import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 
+type ServiceItemRecord = {
+  id: string;
+  icon: string | null;
+  order: number;
+  published: boolean;
+  translations: Array<{
+    locale: string;
+    title: string;
+    summary: string;
+    detail: string;
+  }>;
+};
+
+const servicePrisma = prisma as typeof prisma & {
+  serviceItem: {
+    findUnique: (args: unknown) => Promise<ServiceItemRecord | null>;
+    update: (args: unknown) => Promise<ServiceItemRecord>;
+    delete: (args: unknown) => Promise<unknown>;
+  };
+};
+
 const translationSchema = z.object({
   locale: z.string().trim().min(1),
   title: z.string().trim().min(1),
@@ -27,7 +48,7 @@ export async function GET(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const item = await (prisma as any).serviceItem.findUnique({
+  const item = await servicePrisma.serviceItem.findUnique({
     where: { id },
     include: { translations: true },
   });
@@ -61,7 +82,7 @@ export async function PUT(
   const { icon, order, published, translations } = parsed.data;
 
   try {
-    const item = await (prisma as any).serviceItem.update({
+    const item = await servicePrisma.serviceItem.update({
       where: { id },
       data: {
         icon: icon !== undefined ? icon : undefined,
@@ -99,7 +120,7 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await (prisma as any).serviceItem.delete({ where: { id } });
+    await servicePrisma.serviceItem.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);

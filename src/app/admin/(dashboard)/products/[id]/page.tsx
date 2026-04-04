@@ -144,45 +144,6 @@ export default function ProductFormPage({
     }
   }
 
-  async function handleAiTranslate(targetLocale: string) {
-    const sourceLocale = locales.find(
-      (l) => l !== targetLocale && translations[l]?.title?.trim(),
-    );
-    if (!sourceLocale) {
-      alert(t("aiNoSource"));
-      return;
-    }
-    setAiTranslating(true);
-    try {
-      const fields = ["title", "description"] as const;
-      for (const field of fields) {
-        const text = translations[sourceLocale]?.[field]?.trim();
-        if (!text) continue;
-        const res = await fetch("/api/ai/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text,
-            fromLocale: sourceLocale,
-            toLocale: targetLocale,
-          }),
-        });
-        if (!res.ok) continue;
-        const data = await res.json();
-        if (data.translated) {
-          setTranslations((prev) => ({
-            ...prev,
-            [targetLocale]: { ...prev[targetLocale], [field]: data.translated },
-          }));
-        }
-      }
-    } catch {
-      alert(t("aiError"));
-    } finally {
-      setAiTranslating(false);
-    }
-  }
-
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [subCategoryId, setSubCategoryId] = useState("");
   const [featured, setFeatured] = useState(false);

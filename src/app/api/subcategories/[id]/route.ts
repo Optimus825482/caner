@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -6,6 +7,26 @@ import { enforceSameOrigin } from "@/lib/request-guards";
 import { prismaWriteErrorResponse } from "@/lib/api-helpers";
 import { resolveSlug } from "@/lib/slugify";
 import { revalidateCatalogPages } from "@/lib/revalidate";
+
+type SubCategoryRecord = {
+  id: string;
+  slug: string;
+  categoryId: string;
+  order: number;
+  image?: string | null;
+  translations: Array<{ locale: string; name: string; description?: string }>;
+};
+
+const subCategoryPrisma = prisma as typeof prisma & {
+  subCategory: {
+    findUnique: (args: unknown) => Promise<SubCategoryRecord | null>;
+    update: (args: unknown) => Prisma.PrismaPromise<unknown>;
+    delete: (args: unknown) => Promise<unknown>;
+  };
+  subCategoryTranslation: {
+    upsert: (args: unknown) => Prisma.PrismaPromise<unknown>;
+  };
+};
 
 const translationSchema = z.object({
   locale: z.string().trim().min(1),
@@ -29,7 +50,7 @@ export async function GET(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const sub = await (prisma as any).subCategory.findUnique({
+  const sub = await subCategoryPrisma.subCategory.findUnique({
     where: { id },
     include: {
       translations: true,
@@ -68,13 +89,13 @@ export async function PUT(
   const { categoryId, order, image, translations } = parsed.data;
   const slug = resolveSlug(parsed.data.slug, translations ?? []);
 
-  const txOps = [
-    (prisma as any).subCategory.update({
+  const txOps: Prisma.PrismaPromise<unknown>[] = [
+    subCategoryPrisma.subCategory.update({
       where: { id },
       data: { slug, categoryId, order, image },
     }),
     ...(translations?.map((t) =>
-      (prisma as any).subCategoryTranslation.upsert({
+      subCategoryPrisma.subCategoryTranslation.upsert({
         where: {
           subCategoryId_locale: { subCategoryId: id, locale: t.locale },
         },
@@ -91,7 +112,7 @@ export async function PUT(
 
   try {
     await prisma.$transaction(txOps);
-    const updated = await (prisma as any).subCategory.findUnique({
+    const updated = await subCategoryPrisma.subCategory.findUnique({
       where: { id },
       include: { translations: true },
     });
@@ -127,7 +148,7 @@ export async function DELETE(
       );
     }
 
-    await (prisma as any).subCategory.delete({ where: { id } });
+    await subCategoryPrisma.subCategory.delete({ where: { id } });
     revalidateCatalogPages();
     return NextResponse.json({ success: true });
   } catch (error) {

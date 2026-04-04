@@ -24,14 +24,13 @@ interface FilterOption {
 interface Props {
   products: ProductItem[];
   categories: FilterOption[];
-  locale: string;
   labels: {
     all: string;
     allSubCategories: string;
   };
 }
 
-export function ProductsGrid({ products, categories, locale, labels }: Props) {
+export function ProductsGrid({ products, categories, labels }: Props) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );

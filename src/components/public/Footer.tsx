@@ -7,9 +7,8 @@ import { getPublicSettings } from "@/lib/get-public-settings";
 import { getCategories } from "@/lib/get-categories";
 
 export default async function Footer({ locale }: { locale: string }) {
-  const [t, tf, settings, categories] = await Promise.all([
+  const [t, settings, categories] = await Promise.all([
     getTranslations({ locale, namespace: "footer" }),
-    getTranslations({ locale, namespace: "filter" }),
     getPublicSettings(),
     getCategories(locale),
   ]);

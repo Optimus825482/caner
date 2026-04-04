@@ -1,6 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+type ServiceSeedCreateInput = {
+  icon: string | null;
+  order: number;
+  published: boolean;
+  translations: {
+    create: Array<{
+      locale: string;
+      title: string;
+      summary: string;
+      detail: string;
+    }>;
+  };
+};
+type ServiceSeedPrisma = PrismaClient & {
+  serviceItem: {
+    count: () => Promise<number>;
+    create: (args: { data: ServiceSeedCreateInput }) => Promise<unknown>;
+  };
+};
+const servicePrisma = prisma as unknown as ServiceSeedPrisma;
 
 const servicesData = [
   {
@@ -140,14 +160,14 @@ const servicesData = [
 async function main() {
   console.log("Seeding service items...");
 
-  const existing = await (prisma as any).serviceItem.count();
+  const existing = await servicePrisma.serviceItem.count();
   if (existing > 0) {
     console.log(`Already ${existing} service items in DB. Skipping seed.`);
     return;
   }
 
   for (const item of servicesData) {
-    await (prisma as any).serviceItem.create({
+    await servicePrisma.serviceItem.create({
       data: {
         icon: item.icon || null,
         order: item.order,

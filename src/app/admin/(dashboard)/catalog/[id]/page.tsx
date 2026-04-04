@@ -52,7 +52,6 @@ export default function CatalogFormPage({
   const [pages, setPages] = useState<CatalogPage[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [preparing, setPreparing] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [pendingTempId, setPendingTempId] = useState<string | null>(null);
   const [pendingPreviewUrl, setPendingPreviewUrl] = useState<string | null>(null);

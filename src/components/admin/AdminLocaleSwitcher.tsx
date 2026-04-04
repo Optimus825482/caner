@@ -14,8 +14,12 @@ export default function AdminLocaleSwitcher() {
   const currentLocale = useLocale();
   const router = useRouter();
 
-  function switchLocale(locale: string) {
-    document.cookie = `admin-locale=${locale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+  async function switchLocale(locale: string) {
+    await fetch("/api/admin-locale", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ locale }),
+    });
     router.refresh();
   }
 

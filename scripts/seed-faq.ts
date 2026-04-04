@@ -1,6 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+type FaqSeedCreateInput = {
+  order: number;
+  published: boolean;
+  translations: {
+    create: Array<{ locale: string; question: string; answer: string }>;
+  };
+};
+type FaqSeedPrisma = PrismaClient & {
+  faqItem: {
+    count: () => Promise<number>;
+    create: (args: { data: FaqSeedCreateInput }) => Promise<unknown>;
+  };
+};
+const faqPrisma = prisma as unknown as FaqSeedPrisma;
 
 const faqData = [
   {
@@ -188,14 +202,14 @@ const faqData = [
 async function main() {
   console.log("Seeding FAQ items...");
 
-  const existing = await (prisma as any).faqItem.count();
+  const existing = await faqPrisma.faqItem.count();
   if (existing > 0) {
     console.log(`Already ${existing} FAQ items in DB. Skipping seed.`);
     return;
   }
 
   for (const item of faqData) {
-    await (prisma as any).faqItem.create({
+    await faqPrisma.faqItem.create({
       data: {
         order: item.order,
         published: true,
