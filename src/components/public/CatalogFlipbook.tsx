@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, memo } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -54,35 +54,89 @@ interface Props {
   title?: string;
 }
 
+interface FlipBookAPI {
+  pageFlip: () => {
+    flip: (p: number, c?: string) => void;
+    flipNext: () => void;
+    flipPrev: () => void;
+  };
+}
+
+// Memoized so HTMLFlipBook never re-renders on parent state changes.
+// That prevents the setState->re-render->library-reset->rAF storm that breaks flips.
+const FlipBookInner = memo(function FlipBookInner({
+  pages,
+  bookRef,
+  width,
+  height,
+}: {
+  pages: CatalogPage[];
+  bookRef: React.RefObject<FlipBookAPI | null>;
+  width: number;
+  height: number;
+}) {
+  const t = useTranslations("catalog");
+  return (
+    <HTMLFlipBook
+      ref={bookRef as React.RefObject<unknown>}
+      width={width}
+      height={height}
+      size="fixed"
+      minWidth={200}
+      maxWidth={500}
+      minHeight={300}
+      maxHeight={700}
+      showCover={true}
+      mobileScrollSupport={false}
+      usePortrait={true}
+      startPage={0}
+      drawShadow={true}
+      flippingTime={600}
+      useMouseEvents={true}
+      swipeDistance={30}
+      showPageCorners={true}
+      startZIndex={0}
+      autoSize={false}
+      maxShadowOpacity={0.5}
+      clickEventForward={true}
+      disableFlipByClick={false}
+      className=""
+      style={{}}
+    >
+      {pages.map((p, i) => (
+        <Page key={p.id ?? `${p.imageUrl}-${i}`} imageUrl={p.imageUrl} number={i + 1} t={t} />
+      ))}
+    </HTMLFlipBook>
+  );
+});
+
 export function CatalogFlipbook({ pages, title }: Props) {
   const t = useTranslations("catalog");
-  const bookRef = useRef<{
-    pageFlip: () => { flip: (p: number, c?: string) => void };
-  } | null>(null);
+  const bookRef = useRef<FlipBookAPI | null>(null);
   const pageRef = useRef(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [displayPage, setDisplayPage] = useState(0);
 
   const totalPages = pages.length;
   const lastPage = Math.max(0, totalPages - 1);
 
-  const onFlip = useCallback((e: { data?: number }) => {
-    if (typeof e?.data === "number") {
-      pageRef.current = e.data;
-      setCurrentPage(e.data);
-    }
-  }, []);
-
   const goNext = () => {
     const pf = bookRef.current?.pageFlip();
     if (!pf) return;
-    if (pageRef.current >= lastPage) return;
-    pf.flip(pageRef.current + 1, "top");
+    const next = pageRef.current + 1;
+    if (next > lastPage) return;
+    pageRef.current = next;
+    setDisplayPage(next);
+    pf.flipNext();
   };
+
   const goPrev = () => {
     const pf = bookRef.current?.pageFlip();
     if (!pf) return;
-    if (pageRef.current <= 0) return;
-    pf.flip(pageRef.current - 1, "top");
+    const prev = pageRef.current - 1;
+    if (prev < 0) return;
+    pageRef.current = prev;
+    setDisplayPage(prev);
+    pf.flipPrev();
   };
 
   if (pages.length === 0) {
@@ -106,7 +160,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
         <button
           type="button"
           onClick={goPrev}
-          disabled={currentPage <= 0}
+          disabled={displayPage <= 0}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-(--arvesta-gold)/30 bg-(--arvesta-bg-card) text-(--arvesta-gold) transition-all hover:bg-(--arvesta-gold)/10 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label={t("prev")}
         >
@@ -121,43 +175,13 @@ export function CatalogFlipbook({ pages, title }: Props) {
             boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
           }}
         >
-          <HTMLFlipBook
-            ref={bookRef}
-            width={bookWidth}
-            height={bookHeight}
-            size="fixed"
-            minWidth={200}
-            maxWidth={500}
-            minHeight={300}
-            maxHeight={700}
-            showCover={true}
-            mobileScrollSupport={false}
-            usePortrait={true}
-            startPage={0}
-            drawShadow={true}
-            flippingTime={600}
-            useMouseEvents={true}
-            swipeDistance={30}
-            showPageCorners={true}
-            startZIndex={0}
-            autoSize={false}
-            maxShadowOpacity={0.5}
-            clickEventForward={true}
-            disableFlipByClick={false}
-            className=""
-            style={{}}
-            onFlip={onFlip}
-          >
-            {pages.map((p, i) => (
-              <Page key={p.id ?? `${p.imageUrl}-${i}`} imageUrl={p.imageUrl} number={i + 1} t={t} />
-            ))}
-          </HTMLFlipBook>
+          <FlipBookInner pages={pages} bookRef={bookRef} width={bookWidth} height={bookHeight} />
         </div>
 
         <button
           type="button"
           onClick={goNext}
-          disabled={currentPage >= pages.length - 1}
+          disabled={displayPage >= pages.length - 1}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-(--arvesta-gold)/30 bg-(--arvesta-bg-card) text-(--arvesta-gold) transition-all hover:bg-(--arvesta-gold)/10 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label={t("next")}
         >
@@ -166,7 +190,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
       </div>
 
       <p className="text-sm text-(--arvesta-text-muted)">
-        {t("pageOf", { n: currentPage + 1, total: pages.length })}
+        {t("pageOf", { n: displayPage + 1, total: pages.length })}
       </p>
     </div>
   );
