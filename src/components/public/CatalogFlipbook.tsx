@@ -59,26 +59,30 @@ export function CatalogFlipbook({ pages, title }: Props) {
   const bookRef = useRef<{
     pageFlip: () => { flip: (p: number, c?: string) => void };
   } | null>(null);
+  const pageRef = useRef(0);
   const [currentPage, setCurrentPage] = useState(0);
 
   const totalPages = pages.length;
   const lastPage = Math.max(0, totalPages - 1);
 
   const onFlip = useCallback((e: { data?: number }) => {
-    if (typeof e?.data === "number") setCurrentPage(e.data);
+    if (typeof e?.data === "number") {
+      pageRef.current = e.data;
+      setCurrentPage(e.data);
+    }
   }, []);
 
   const goNext = () => {
     const pf = bookRef.current?.pageFlip();
     if (!pf) return;
-    if (currentPage >= lastPage) return;
-    pf.flip(currentPage + 1, "top");
+    if (pageRef.current >= lastPage) return;
+    pf.flip(pageRef.current + 1, "top");
   };
   const goPrev = () => {
     const pf = bookRef.current?.pageFlip();
     if (!pf) return;
-    if (currentPage <= 0) return;
-    pf.flip(currentPage - 1, "top");
+    if (pageRef.current <= 0) return;
+    pf.flip(pageRef.current - 1, "top");
   };
 
   if (pages.length === 0) {
@@ -145,7 +149,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
             onFlip={onFlip}
           >
             {pages.map((p, i) => (
-              <Page key={p.imageUrl} imageUrl={p.imageUrl} number={i + 1} t={t} />
+              <Page key={p.id ?? `${p.imageUrl}-${i}`} imageUrl={p.imageUrl} number={i + 1} t={t} />
             ))}
           </HTMLFlipBook>
         </div>
