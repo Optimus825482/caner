@@ -25,8 +25,7 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - arvesta-net
+    # Coolify manages networking
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-arvesta_db}"]
       interval: 10s
@@ -88,8 +87,7 @@ services:
       UPLOAD_FORCE_REENCODE: ${UPLOAD_FORCE_REENCODE:-true}
     volumes:
       - uploads:/app/public/uploads
-    networks:
-      - arvesta-net
+    # Coolify manages networking
     # No host port: Coolify injects its own Traefik proxy and routes
     # the public domain to this container via labels. If you run this
     # compose outside Coolify, uncomment the ports line below and set
@@ -115,11 +113,6 @@ services:
     # If the app container dies 3 times in 60s, leave it down so the
     # operator notices (no infinite restart loop on a bad deploy).
     stop_grace_period: 30s
-
-networks:
-  arvesta-net:
-    driver: bridge
-    name: arvesta-net
 
 volumes:
   postgres_data:
