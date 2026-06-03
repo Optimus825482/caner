@@ -20,6 +20,7 @@ import {
   Wrench,
   ChevronDown,
   BookOpen,
+  BookPlus,
   Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,8 @@ const menuKeys = [
 const catalogChildren = [
   { href: "/admin/categories", icon: Grid3X3, key: "categories" },
   { href: "/admin/products", icon: Package, key: "products" },
-  { href: "/admin/catalog", icon: BookOpen, key: "digitalCatalog" },
+  { href: "/admin/catalog", icon: BookOpen, key: "manualCatalog" },
+  { href: "/admin/digital-catalog", icon: BookPlus, key: "digitalCatalog" },
 ] as const;
 
 export default function AdminSidebar() {
