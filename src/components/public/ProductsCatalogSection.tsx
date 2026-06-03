@@ -22,13 +22,11 @@ interface Catalog {
 interface Props {
   catalogs: Catalog[];
   locale: string;
-  title: string;
 }
 
 export function ProductsCatalogSection({
   catalogs,
   locale,
-  title,
 }: Props) {
   const [fullscreenSlug, setFullscreenSlug] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -56,9 +54,6 @@ export function ProductsCatalogSection({
   return (
     <>
       <div className="mb-12">
-        <h2 className="mb-4 font-display text-xl font-semibold text-white">
-          {title}
-        </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {catalogs.map((cat) => {
             const catTitle = cat.translations[0]?.title || cat.slug;

@@ -183,6 +183,16 @@ export default async function ProductsPage({
           </p>
         </div>
 
+        {/* Dijital Katalog butonu */}
+        <div className="mb-8 text-center">
+          <a
+            href="#dijital-katalog"
+            className="inline-flex items-center gap-2 rounded-full border border-(--arvesta-gold)/30 bg-linear-to-b from-[#f6c583] to-(--arvesta-accent) px-6 py-2.5 font-ui text-sm font-bold text-[#2b160a] shadow-[0_4px_16px_rgba(232,98,44,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110"
+          >
+            {t("digitalCatalog")}
+          </a>
+        </div>
+
         <ProductsPageContent
           products={allProducts}
           categories={filterCategories}
@@ -193,7 +203,6 @@ export default async function ProductsPage({
             all: t("filterAll"),
             allSubCategories: t("filterAllSub"),
             categories: t("filterCategories"),
-            digitalCatalog: t("digitalCatalog"),
             collectionSuffix: t("collectionSuffix"),
           }}
         />

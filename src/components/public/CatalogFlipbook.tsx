@@ -1,7 +1,8 @@
 "use client";
 
-import React, { memo } from "react";
-import { MagazineBook, Page, useFlipBook } from "react-magazine";
+import { memo, useRef, useState, useCallback } from "react";
+import { MagazineBook, Page } from "react-magazine";
+import type { PageFlipInstance } from "react-magazine";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -51,8 +52,31 @@ const PageContent = memo(function PageContent({
 
 export function CatalogFlipbook({ pages, title }: Props) {
   const t = useTranslations("catalog");
-  const { bookRef, state, flipNext, flipPrev, canFlipNext, canFlipPrev } =
-    useFlipBook();
+  const bookRef = useRef<PageFlipInstance>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+
+  const onFlip = useCallback((e: { data: number }) => {
+    setCurrentPage(e.data);
+  }, []);
+
+  const onInit = useCallback((e: { data: number }) => {
+    // react-magazine init event has wrong type — runtime data is {page, mode}
+    const data = e.data as unknown as { page?: number };
+    if (typeof data?.page === "number") {
+      setCurrentPage(data.page);
+    }
+    const count = bookRef.current?.getPageCount() ?? 0;
+    setPageCount(count);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    bookRef.current?.flipPrev();
+  }, []);
+
+  const handleNext = useCallback(() => {
+    bookRef.current?.flipNext();
+  }, []);
 
   if (pages.length === 0) {
     return (
@@ -64,6 +88,9 @@ export function CatalogFlipbook({ pages, title }: Props) {
 
   const bookWidth = 400;
   const bookHeight = 550;
+  const progress = pageCount > 1 ? currentPage + 1 : 0;
+  const showPrev = currentPage > 0;
+  const showNext = currentPage < pageCount - 1;
 
   return (
     <div className="flex flex-col items-center gap-6 py-8">
@@ -74,8 +101,8 @@ export function CatalogFlipbook({ pages, title }: Props) {
       <div className="relative flex items-center gap-4">
         <button
           type="button"
-          onClick={() => flipPrev()}
-          disabled={!canFlipPrev()}
+          onClick={handlePrev}
+          disabled={!showPrev}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-(--arvesta-gold)/30 bg-(--arvesta-bg-card) text-(--arvesta-gold) transition-all hover:bg-(--arvesta-gold)/10 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label={t("prev")}
         >
@@ -97,6 +124,8 @@ export function CatalogFlipbook({ pages, title }: Props) {
             showCover={true}
             usePortrait={true}
             flippingTime={600}
+            onFlip={onFlip}
+            onInit={onInit}
           >
             {pages.map((p, i) => (
               <Page key={p.id ?? `${p.imageUrl}-${i}`} number={i + 1}>
@@ -108,8 +137,8 @@ export function CatalogFlipbook({ pages, title }: Props) {
 
         <button
           type="button"
-          onClick={() => flipNext()}
-          disabled={!canFlipNext()}
+          onClick={handleNext}
+          disabled={!showNext}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-(--arvesta-gold)/30 bg-(--arvesta-bg-card) text-(--arvesta-gold) transition-all hover:bg-(--arvesta-gold)/10 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label={t("next")}
         >
@@ -117,9 +146,11 @@ export function CatalogFlipbook({ pages, title }: Props) {
         </button>
       </div>
 
-      <p className="text-sm text-(--arvesta-text-muted)">
-        {t("pageOf", { n: state.currentPage + 1, total: pages.length })}
-      </p>
+      {progress > 0 && (
+        <p className="text-sm text-(--arvesta-text-muted)">
+          {t("pageOf", { n: progress, total: pageCount })}
+        </p>
+      )}
     </div>
   );
 }

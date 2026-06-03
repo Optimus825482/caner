@@ -19,7 +19,6 @@ import {
   HelpCircle,
   Wrench,
   ChevronDown,
-  BookOpen,
   BookPlus,
   Building2,
 } from "lucide-react";
@@ -41,8 +40,7 @@ const menuKeys = [
 const catalogChildren = [
   { href: "/admin/categories", icon: Grid3X3, key: "categories" },
   { href: "/admin/products", icon: Package, key: "products" },
-  { href: "/admin/catalog", icon: BookOpen, key: "manualCatalog" },
-  { href: "/admin/digital-catalog", icon: BookPlus, key: "digitalCatalog" },
+  { href: "/admin/catalog", icon: BookPlus, key: "digitalProductCatalog" },
 ] as const;
 
 export default function AdminSidebar() {

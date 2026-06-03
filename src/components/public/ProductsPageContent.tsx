@@ -40,7 +40,6 @@ interface Props {
     all: string;
     allSubCategories: string;
     categories: string;
-    digitalCatalog: string;
     collectionSuffix: string;
   };
 }
@@ -215,11 +214,12 @@ export function ProductsPageContent({
       )}
 
       {/* 4. Dijital Katalog */}
-      <ProductsCatalogSection
-        catalogs={catalogs}
-        locale={locale}
-        title={labels.digitalCatalog}
-      />
+      <div id="dijital-katalog">
+        <ProductsCatalogSection
+          catalogs={catalogs}
+          locale={locale}
+        />
+      </div>
     </div>
   );
 }
