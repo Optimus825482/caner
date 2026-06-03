@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
   const authResult = await requireAdminAuth();
   if (!authResult.ok) return authResult.response;
 
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = translateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(

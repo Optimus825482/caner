@@ -6,6 +6,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 import { CatalogFlipbook } from "@/components/public/CatalogFlipbook";
 
@@ -67,7 +68,7 @@ export default async function CatalogViewPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
 
       <div className="mx-auto max-w-4xl">

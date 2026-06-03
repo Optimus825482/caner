@@ -81,6 +81,7 @@ export default function AdminCategories() {
   >(Object.fromEntries(locales.map((l) => [l, { name: "", description: "" }])));
   const [catLocale, setCatLocale] = useState("fr");
   const [autoTranslating, setAutoTranslating] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const lastTranslatedRef = useRef<Record<string, string>>({});
 
   const autoTranslateFromTr = useCallback(
@@ -124,15 +125,22 @@ export default function AdminCategories() {
   );
 
   const load = async () => {
-    const [catRes, subRes] = await Promise.all([
-      fetch("/api/categories"),
-      fetch("/api/subcategories"),
-    ]);
-    const catData = await catRes.json();
-    const subData = await subRes.json();
-    setCategories(catData);
-    setSubCategories(subData);
-    setLoading(false);
+    try {
+      const [catRes, subRes] = await Promise.all([
+        fetch("/api/categories"),
+        fetch("/api/subcategories"),
+      ]);
+      const catData = await catRes.json();
+      const subData = await subRes.json();
+      setCategories(catData);
+      setSubCategories(subData);
+    } catch (e) {
+      setLoadError(
+        e instanceof Error ? e.message : "Veriler yüklenemedi.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -322,6 +330,11 @@ export default function AdminCategories() {
 
   return (
     <div>
+      {loadError && (
+        <div className="mb-4 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+          {loadError}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">

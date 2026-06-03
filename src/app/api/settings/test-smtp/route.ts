@@ -29,15 +29,22 @@ export async function POST(req: NextRequest) {
   });
   if (rateLimited) return rateLimited;
 
-  const verify = await testSmtpConnection();
-  if (!verify.ok) {
-    return NextResponse.json({ ok: false, error: verify.error }, { status: 400 });
-  }
+  try {
+    const verify = await testSmtpConnection();
+    if (!verify.ok) {
+      return NextResponse.json({ ok: false, error: verify.error }, { status: 400 });
+    }
 
-  const sent = await sendSmtpTestMail();
-  if (!sent.ok) {
-    return NextResponse.json({ ok: false, error: sent.error }, { status: 400 });
-  }
+    const sent = await sendSmtpTestMail();
+    if (!sent.ok) {
+      return NextResponse.json({ ok: false, error: sent.error }, { status: 400 });
+    }
 
-  return NextResponse.json({ ok: true, message: "SMTP test mail sent successfully." });
+    return NextResponse.json({ ok: true, message: "SMTP test mail sent successfully." });
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "SMTP test failed unexpectedly" },
+      { status: 500 },
+    );
+  }
 }

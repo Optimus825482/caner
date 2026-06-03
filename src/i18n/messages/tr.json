@@ -258,7 +258,8 @@
     "teamTitle": "Ekibimiz",
     "leadBadge": "Yönetici",
     "translateAll": "Tümünü Çevir (TR → FR, EN)",
-    "translating": "Çevriliyor..."
+    "translating": "Çevriliyor...",
+    "saveError": "Kaydetme başarısız oldu. Lütfen tekrar deneyin."
   },
   "adminSidebar": {
     "dashboard": "Kontrol Paneli",
@@ -857,5 +858,18 @@
     "tag": "EKİBİMİZ",
     "title": "Arkamızdaki Güç",
     "subtitle": "Deneyimli ekibimizle projelerinizi hayata geçiriyoruz."
+  },
+  "error": {
+    "title": "Bir hata oluştu",
+    "description": "Beklenmeyen bir sorun oluştu. Lütfen tekrar deneyin.",
+    "retry": "Tekrar Dene"
+  },
+  "catalog": {
+    "noPages": "Bu katalogda henüz sayfa yok.",
+    "pageAlt": "Sayfa {{n}}",
+    "noImage": "Görsel yok",
+    "pageOf": "Sayfa {{n}} / {{total}}",
+    "prev": "Önceki sayfa",
+    "next": "Sonraki sayfa"
   }
 }

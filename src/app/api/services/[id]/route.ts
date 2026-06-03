@@ -27,7 +27,7 @@ export async function GET(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const item = await (prisma as any).serviceItem.findUnique({
+  const item = await prisma.serviceItem.findUnique({
     where: { id },
     include: { translations: true },
   });
@@ -49,7 +49,12 @@ export async function PUT(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -61,25 +66,28 @@ export async function PUT(
   const { icon, order, published, translations } = parsed.data;
 
   try {
-    const item = await (prisma as any).serviceItem.update({
-      where: { id },
-      data: {
-        icon: icon !== undefined ? icon : undefined,
-        order,
-        published,
-        ...(translations && {
-          translations: {
-            upsert: translations.map((t) => ({
-              where: {
-                serviceItemId_locale: { serviceItemId: id, locale: t.locale },
-              },
-              create: t,
-              update: t,
-            })),
-          },
-        }),
-      },
-      include: { translations: true },
+    const item = await prisma.$transaction(async (tx) => {
+      const updated = await tx.serviceItem.update({
+        where: { id },
+        data: {
+          icon: icon !== undefined ? icon : undefined,
+          order,
+          published,
+        },
+        include: { translations: true },
+      });
+      if (translations) {
+        for (const t of translations) {
+          await tx.serviceItemTranslation.upsert({
+            where: {
+              serviceItemId_locale: { serviceItemId: id, locale: t.locale },
+            },
+            create: { ...t, serviceItemId: id },
+            update: t,
+          });
+        }
+      }
+      return updated;
     });
     return NextResponse.json(item);
   } catch (error) {
@@ -99,7 +107,7 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await (prisma as any).serviceItem.delete({ where: { id } });
+    await prisma.serviceItem.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);

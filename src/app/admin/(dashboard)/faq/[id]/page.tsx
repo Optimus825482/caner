@@ -138,6 +138,9 @@ export default function FaqFormPage({
             };
           }
           setTranslations(tMap);
+        })
+        .catch((e) => {
+          setErrorMessage(e instanceof Error ? e.message : "SSS yüklenemedi.");
         });
     }
   }, [isNew, itemId]);

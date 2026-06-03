@@ -270,6 +270,9 @@ export default function BlogFormPage({
             };
           }
           setTranslations(tMap);
+        })
+        .catch((e) => {
+          setErrorMessage(e instanceof Error ? e.message : "Yazı yüklenemedi.");
         });
     }
   }, [isNew, postId]);
@@ -530,6 +533,7 @@ export default function BlogFormPage({
                   className="hidden"
                   onChange={handleUpload}
                   disabled={uploading}
+                  aria-label={t("uploadImage")}
                 />
               </label>
             </CardContent>
@@ -544,16 +548,18 @@ export default function BlogFormPage({
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>{t("slug")}</Label>
+                <Label htmlFor="blog-slug">{t("slug")}</Label>
                 <Input
+                  id="blog-slug"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder={t("slugPlaceholder")}
                 />
               </div>
               <div>
-                <Label>{t("order")}</Label>
+                <Label htmlFor="blog-order">{t("order")}</Label>
                 <Input
+                  id="blog-order"
                   type="number"
                   value={order}
                   onChange={(e) => setOrder(Number(e.target.value))}

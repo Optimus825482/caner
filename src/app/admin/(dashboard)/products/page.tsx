@@ -49,14 +49,18 @@ export default function AdminProducts() {
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<
     string | null
   >(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/products")
       .then((r) => r.json())
       .then((data) => {
         setProducts(data);
-        setLoading(false);
-      });
+      })
+      .catch((e) => {
+        setLoadError(e instanceof Error ? e.message : "Ürünler yüklenemedi.");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   async function handleDelete(id: string) {
@@ -105,6 +109,11 @@ export default function AdminProducts() {
 
   return (
     <div>
+      {loadError && (
+        <div className="mb-4 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+          {loadError}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">

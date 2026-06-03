@@ -36,6 +36,7 @@ export function ProductsCatalogSection({
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- matchMedia requires sync read for initial value
     setIsDesktop(mq.matches);
     const h = () => setIsDesktop(mq.matches);
     mq.addEventListener("change", h);

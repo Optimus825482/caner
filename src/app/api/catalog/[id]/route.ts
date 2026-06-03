@@ -92,30 +92,33 @@ export async function PUT(
   if (resolvedSlug) updateData.slug = resolvedSlug;
 
   try {
-    const catalog = await prisma.digitalCatalog.update({
-      where: { id },
-      data: {
-        ...updateData,
-        ...(translations && {
-          translations: {
-            deleteMany: {},
-            create: translations.map((t) => ({
-              locale: t.locale,
-              title: t.title,
-            })),
-          },
-        }),
-        ...(pages && {
-          pages: {
-            deleteMany: {},
-            create: pages.map((p) => ({
-              imageUrl: p.imageUrl,
-              order: p.order,
-            })),
-          },
-        }),
-      },
-      include: { translations: true, pages: { orderBy: { order: "asc" } } },
+    // Wrap parent update + nested deleteMany/create in a transaction so a
+    // crash between them doesn't leave a half-updated record.
+    const catalog = await prisma.$transaction(async (tx) => {
+      const baseData: Record<string, unknown> = { ...updateData };
+      if (translations) {
+        baseData.translations = {
+          deleteMany: {},
+          create: translations.map((t) => ({
+            locale: t.locale,
+            title: t.title,
+          })),
+        };
+      }
+      if (pages) {
+        baseData.pages = {
+          deleteMany: {},
+          create: pages.map((p) => ({
+            imageUrl: p.imageUrl,
+            order: p.order,
+          })),
+        };
+      }
+      return tx.digitalCatalog.update({
+        where: { id },
+        data: baseData,
+        include: { translations: true, pages: { orderBy: { order: "asc" } } },
+      });
     });
 
     return NextResponse.json(catalog);

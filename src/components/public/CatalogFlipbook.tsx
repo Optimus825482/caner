@@ -3,6 +3,7 @@
 import React, { useRef, useState, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function normalizeImageUrl(url: string): string {
   if (!url?.trim()) return "";
@@ -14,8 +15,8 @@ function normalizeImageUrl(url: string): string {
 
 const Page = React.forwardRef<
   HTMLDivElement,
-  { imageUrl: string; number: number }
->(({ imageUrl, number }, ref) => {
+  { imageUrl: string; number: number; t: (key: string, values?: Record<string, string | number>) => string }
+>(({ imageUrl, number, t }, ref) => {
   const src = normalizeImageUrl(imageUrl);
   return (
     <div
@@ -26,13 +27,13 @@ const Page = React.forwardRef<
       {src ? (
         <img
           src={src}
-          alt={`Sayfa ${number}`}
+          alt={t("pageAlt", { n: number })}
           className="absolute inset-0 w-full h-full object-contain"
           loading="lazy"
         />
       ) : (
         <div className="flex h-full items-center justify-center text-(--arvesta-text-muted) text-sm">
-          Görsel yok
+          {t("noImage")}
         </div>
       )}
     </div>
@@ -54,10 +55,14 @@ interface Props {
 }
 
 export function CatalogFlipbook({ pages, title }: Props) {
+  const t = useTranslations("catalog");
   const bookRef = useRef<{
     pageFlip: () => { flip: (p: number, c?: string) => void };
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const totalPages = pages.length;
+  const lastPage = Math.max(0, totalPages - 1);
 
   const onFlip = useCallback((e: { data?: number }) => {
     if (typeof e?.data === "number") setCurrentPage(e.data);
@@ -65,17 +70,21 @@ export function CatalogFlipbook({ pages, title }: Props) {
 
   const goNext = () => {
     const pf = bookRef.current?.pageFlip();
-    if (pf && currentPage < pages.length - 1) pf.flip(currentPage + 1, "top");
+    if (!pf) return;
+    if (currentPage >= lastPage) return;
+    pf.flip(currentPage + 1, "top");
   };
   const goPrev = () => {
     const pf = bookRef.current?.pageFlip();
-    if (pf && currentPage > 0) pf.flip(currentPage - 1, "top");
+    if (!pf) return;
+    if (currentPage <= 0) return;
+    pf.flip(currentPage - 1, "top");
   };
 
   if (pages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-(--arvesta-text-muted)">
-        <p>Bu katalogda henüz sayfa yok.</p>
+        <p>{t("noPages")}</p>
       </div>
     );
   }
@@ -95,7 +104,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
           onClick={goPrev}
           disabled={currentPage <= 0}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-(--arvesta-gold)/30 bg-(--arvesta-bg-card) text-(--arvesta-gold) transition-all hover:bg-(--arvesta-gold)/10 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Önceki sayfa"
+          aria-label={t("prev")}
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
@@ -119,7 +128,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
             maxHeight={700}
             showCover={true}
             mobileScrollSupport={false}
-            usePortrait={false}
+            usePortrait={true}
             startPage={0}
             drawShadow={true}
             flippingTime={600}
@@ -127,7 +136,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
             swipeDistance={30}
             showPageCorners={true}
             startZIndex={0}
-            autoSize={true}
+            autoSize={false}
             maxShadowOpacity={0.5}
             clickEventForward={true}
             disableFlipByClick={false}
@@ -136,7 +145,7 @@ export function CatalogFlipbook({ pages, title }: Props) {
             onFlip={onFlip}
           >
             {pages.map((p, i) => (
-              <Page key={p.imageUrl} imageUrl={p.imageUrl} number={i + 1} />
+              <Page key={p.imageUrl} imageUrl={p.imageUrl} number={i + 1} t={t} />
             ))}
           </HTMLFlipBook>
         </div>
@@ -146,14 +155,14 @@ export function CatalogFlipbook({ pages, title }: Props) {
           onClick={goNext}
           disabled={currentPage >= pages.length - 1}
           className="flex h-12 w-12 items-center justify-center rounded-full border border-(--arvesta-gold)/30 bg-(--arvesta-bg-card) text-(--arvesta-gold) transition-all hover:bg-(--arvesta-gold)/10 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Sonraki sayfa"
+          aria-label={t("next")}
         >
           <ChevronRight className="h-6 w-6" />
         </button>
       </div>
 
       <p className="text-sm text-(--arvesta-text-muted)">
-        Sayfa {currentPage + 1} / {pages.length}
+        {t("pageOf", { n: currentPage + 1, total: pages.length })}
       </p>
     </div>
   );

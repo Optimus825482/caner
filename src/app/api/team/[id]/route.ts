@@ -29,7 +29,7 @@ export async function GET(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const item = await (prisma as any).teamMember.findUnique({
+  const item = await prisma.teamMember.findUnique({
     where: { id },
     include: { translations: true },
   });
@@ -51,7 +51,12 @@ export async function PUT(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -64,28 +69,31 @@ export async function PUT(
     parsed.data;
 
   try {
-    const item = await (prisma as any).teamMember.update({
-      where: { id },
-      data: {
-        photo: photo !== undefined ? photo : undefined,
-        email: email !== undefined ? email : undefined,
-        phone: phone !== undefined ? phone : undefined,
-        order,
-        published,
-        ...(role !== undefined && { role }),
-        ...(translations && {
-          translations: {
-            upsert: translations.map((t) => ({
-              where: {
-                teamMemberId_locale: { teamMemberId: id, locale: t.locale },
-              },
-              create: t,
-              update: t,
-            })),
-          },
-        }),
-      },
-      include: { translations: true },
+    const item = await prisma.$transaction(async (tx) => {
+      const updated = await tx.teamMember.update({
+        where: { id },
+        data: {
+          photo: photo !== undefined ? photo : undefined,
+          email: email !== undefined ? email : undefined,
+          phone: phone !== undefined ? phone : undefined,
+          order,
+          published,
+          ...(role !== undefined && { role }),
+        },
+        include: { translations: true },
+      });
+      if (translations) {
+        for (const t of translations) {
+          await tx.teamMemberTranslation.upsert({
+            where: {
+              teamMemberId_locale: { teamMemberId: id, locale: t.locale },
+            },
+            create: { ...t, teamMemberId: id },
+            update: t,
+          });
+        }
+      }
+      return updated;
     });
     return NextResponse.json(item);
   } catch (error) {
@@ -105,7 +113,7 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await (prisma as any).teamMember.delete({ where: { id } });
+    await prisma.teamMember.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     return prismaWriteErrorResponse(error);

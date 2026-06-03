@@ -6,6 +6,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
@@ -56,7 +57,7 @@ export default async function PrivacyPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       <div className="mx-auto max-w-[720px]">
         <Link

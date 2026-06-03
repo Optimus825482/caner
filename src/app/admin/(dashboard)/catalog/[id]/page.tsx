@@ -97,27 +97,35 @@ export default function CatalogFormPage({
     let active = true;
 
     async function load() {
-      const res = await fetch(`/api/catalog/${catalogId}`);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !active) return;
+      try {
+        const res = await fetch(`/api/catalog/${catalogId}`);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !active) return;
 
-      const tr: Record<string, { title: string }> = {};
-      for (const t of data.translations || []) {
-        tr[t.locale] = { title: t.title || "" };
+        const tr: Record<string, { title: string }> = {};
+        for (const t of data.translations || []) {
+          tr[t.locale] = { title: t.title || "" };
+        }
+        setTranslations({
+          fr: tr.fr || { title: "" },
+          en: tr.en || { title: "" },
+          tr: tr.tr || { title: "" },
+        });
+        setPublished(data.published ?? false);
+        setCoverImage(data.coverImage || null);
+        setPages(
+          (data.pages || []).map((p: { imageUrl: string; order: number }) => ({
+            imageUrl: p.imageUrl,
+            order: p.order,
+          })),
+        );
+      } catch (e) {
+        if (active) {
+          setErrorMessage(
+            e instanceof Error ? e.message : "Katalog yüklenemedi.",
+          );
+        }
       }
-      setTranslations({
-        fr: tr.fr || { title: "" },
-        en: tr.en || { title: "" },
-        tr: tr.tr || { title: "" },
-      });
-      setPublished(data.published ?? false);
-      setCoverImage(data.coverImage || null);
-      setPages(
-        (data.pages || []).map((p: { imageUrl: string; order: number }) => ({
-          imageUrl: p.imageUrl,
-          order: p.order,
-        })),
-      );
     }
 
     load();

@@ -15,20 +15,28 @@ export async function GET(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const temp = await resolveTempFileById(id);
 
-  if (!temp) {
-    return NextResponse.json({ error: "Temp media not found" }, { status: 404 });
+  try {
+    const temp = await resolveTempFileById(id);
+
+    if (!temp) {
+      return NextResponse.json({ error: "Temp media not found" }, { status: 404 });
+    }
+
+    const buffer = await readFile(temp.filePath);
+
+    const mime = temp.ext === ".jpg" ? "image/jpeg" : temp.ext === ".png" ? "image/png" : "image/webp";
+
+    return new NextResponse(buffer, {
+      headers: {
+        "Content-Type": mime,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to read temp media" },
+      { status: 500 },
+    );
   }
-
-  const buffer = await readFile(temp.filePath);
-
-  const mime = temp.ext === ".jpg" ? "image/jpeg" : temp.ext === ".png" ? "image/png" : "image/webp";
-
-  return new NextResponse(buffer, {
-    headers: {
-      "Content-Type": mime,
-      "Cache-Control": "no-store",
-    },
-  });
 }

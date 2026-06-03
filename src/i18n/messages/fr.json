@@ -258,7 +258,8 @@
     "teamTitle": "Notre Équipe",
     "leadBadge": "Dirigeant",
     "translateAll": "Tout traduire (TR → FR, EN)",
-    "translating": "Traduction..."
+    "translating": "Traduction...",
+    "saveError": "L'enregistrement a échoué. Veuillez réessayer."
   },
   "adminSidebar": {
     "dashboard": "Tableau de bord",
@@ -853,5 +854,18 @@
     "tag": "NOTRE ÉQUIPE",
     "title": "La force derrière nous",
     "subtitle": "Notre équipe expérimentée donne vie à vos projets."
+  },
+  "error": {
+    "title": "Une erreur s'est produite",
+    "description": "Une erreur inattendue est survenue. Veuillez réessayer.",
+    "retry": "Réessayer"
+  },
+  "catalog": {
+    "noPages": "Ce catalogue ne contient aucune page pour le moment.",
+    "pageAlt": "Page {{n}}",
+    "noImage": "Aucune image",
+    "pageOf": "Page {{n}} / {{total}}",
+    "prev": "Page précédente",
+    "next": "Page suivante"
   }
 }

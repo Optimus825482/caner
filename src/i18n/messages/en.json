@@ -256,7 +256,8 @@
     "teamTitle": "Our Team",
     "leadBadge": "Lead",
     "translateAll": "Translate All (TR → FR, EN)",
-    "translating": "Translating..."
+    "translating": "Translating...",
+    "saveError": "Save failed. Please try again."
   },
   "adminSidebar": {
     "dashboard": "Dashboard",
@@ -851,5 +852,18 @@
     "tag": "OUR TEAM",
     "title": "The Force Behind Us",
     "subtitle": "Our experienced team brings your projects to life."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "retry": "Try Again"
+  },
+  "catalog": {
+    "noPages": "This catalog has no pages yet.",
+    "pageAlt": "Page {{n}}",
+    "noImage": "No image",
+    "pageOf": "Page {{n}} / {{total}}",
+    "prev": "Previous page",
+    "next": "Next page"
   }
 }

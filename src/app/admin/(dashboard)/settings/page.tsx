@@ -213,7 +213,10 @@ export default function AdminSettings() {
   useEffect(() => {
     fetch("/api/settings")
       .then((r) => r.json())
-      .then(setValues);
+      .then(setValues)
+      .catch((e) => {
+        console.error("Failed to load settings", e);
+      });
   }, []);
 
   async function handleSave() {
@@ -289,7 +292,10 @@ export default function AdminSettings() {
         key={s.key}
         className="space-y-2 rounded-xl border border-(--arvesta-gold)/10 bg-[rgba(255,255,255,0.015)] p-4"
       >
-        <Label className="flex items-center gap-2 text-sm text-(--arvesta-text-secondary)">
+        <Label
+          htmlFor={`setting-${s.key}`}
+          className="flex items-center gap-2 text-sm text-(--arvesta-text-secondary)"
+        >
           <s.icon className="h-3.5 w-3.5 text-(--arvesta-gold)/90" />{" "}
           {fieldLabel}
         </Label>
@@ -310,11 +316,13 @@ export default function AdminSettings() {
           </Select>
         ) : (
           <Input
+            id={`setting-${s.key}`}
             type={s.type}
             value={values[s.key] || ""}
             onChange={(e) => setValues({ ...values, [s.key]: e.target.value })}
             className="h-10 border-(--arvesta-gold)/20 bg-(--arvesta-bg-elevated) text-white focus-visible:ring-(--arvesta-accent-glow)"
             placeholder={s.placeholder}
+            aria-label={fieldLabel}
           />
         )}
         {s.help ? (

@@ -6,6 +6,7 @@ import {
   generateOgMeta,
   breadcrumbJsonLd,
   aboutPageJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { ABOUT_SETTINGS_TAG } from "@/lib/revalidate";
@@ -75,7 +76,7 @@ export default async function AboutPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       <script
         type="application/ld+json"

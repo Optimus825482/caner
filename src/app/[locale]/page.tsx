@@ -13,6 +13,7 @@ import {
   furnitureStoreJsonLd,
   organizationJsonLd,
   websiteJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string; h1: string }> =
@@ -63,15 +64,15 @@ function JsonLd({ locale }: { locale: string }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(store) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(store) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(org) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(org) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(site) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(site) }}
       />
     </>
   );

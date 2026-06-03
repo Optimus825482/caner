@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,13 @@ export default function AdminLocaleSwitcher() {
   const currentLocale = useLocale();
   const router = useRouter();
 
-  function switchLocale(locale: string) {
-    document.cookie = `admin-locale=${locale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
-    router.refresh();
-  }
+  const switchLocale = useCallback(
+    (locale: string) => {
+      document.cookie = `admin-locale=${locale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+      router.refresh();
+    },
+    [router],
+  );
 
   return (
     <div className="flex items-center gap-1 px-3 py-2">

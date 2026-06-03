@@ -9,6 +9,7 @@ import {
   generateOgMeta,
   breadcrumbJsonLd,
   blogListJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 
 const meta: Record<string, { title: string; description: string }> = {
@@ -86,11 +87,11 @@ export default async function BlogPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(blogSchema) }}
       />
 
       <div className="mx-auto max-w-[960px]">

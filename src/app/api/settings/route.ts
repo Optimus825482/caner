@@ -85,15 +85,21 @@ export async function PUT(req: NextRequest) {
   ]) as [string, string][];
 
   try {
-    await prisma.$transaction(
-      entries.map(([key, value]) =>
-        prisma.siteSetting.upsert({
-          where: { key },
-          update: { value },
-          create: { key, value },
-        }),
-      ),
-    );
+    // Chunk to avoid long-running transactions that can hit
+    // statement_timeout or max_prepared_transactions on busy Postgres.
+    const CHUNK_SIZE = 50;
+    for (let i = 0; i < entries.length; i += CHUNK_SIZE) {
+      const chunk = entries.slice(i, i + CHUNK_SIZE);
+      await prisma.$transaction(
+        chunk.map(([key, value]) =>
+          prisma.siteSetting.upsert({
+            where: { key },
+            update: { value },
+            create: { key, value },
+          }),
+        ),
+      );
+    }
 
     invalidateSmtpCache();
     revalidateAboutPages();

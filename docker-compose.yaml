@@ -1,35 +1,135 @@
+name: arvesta
+
+# Production docker-compose for the Arvesta Next.js app + Postgres.
+# All secrets are pulled from the host environment (see .env.example).
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "10"
+
+x-restart: &default-restart
+  restart: unless-stopped
+
 services:
   db:
     image: postgres:16-alpine
-    restart: unless-stopped
+    <<: *default-restart
+    container_name: arvesta-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-arvesta_db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      # Performance knobs sized for a 1-2 GB host. Tune for your box.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - arvesta-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-arvesta_db}"]
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
+    logging: *default-logging
+    # No host port — only the app talks to the DB on the internal network.
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
 
   app:
-    build: .
-    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    <<: *default-restart
+    container_name: arvesta-app
     depends_on:
       db:
         condition: service_healthy
     environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      NEXT_TELEMETRY_DISABLED: "1"
+
+      # Database
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${DB_PASSWORD}@db:5432/${POSTGRES_DB:-arvesta_db}
-      AUTH_SECRET: ${AUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://arvestafrance.com}
+
+      # Auth
+      AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET is required}
       AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://arvestafrance.com}
+
+      # Public site URL (used for SEO/OG/JSON-LD)
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://arvesta-france.com}
+
+      # Analytics (optional)
+      NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+
+      # Turnstile (optional but recommended in prod)
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+
+      # AI providers (optional but used by /api/ai/*)
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+
+      # Demo mode (must be empty / "false" in production)
+      NEXT_PUBLIC_DEMO_MODE: ${NEXT_PUBLIC_DEMO_MODE:-}
+      DEMO_USERNAME: ${DEMO_USERNAME:-}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+
+      # Uploads (sharp / image preprocessing)
+      UPLOAD_FORCE_REENCODE: ${UPLOAD_FORCE_REENCODE:-true}
     volumes:
       - uploads:/app/public/uploads
-    ports:
-      - "3000:3000"
+    networks:
+      - arvesta-net
+    # No host port: Coolify injects its own Traefik proxy and routes
+    # the public domain to this container via labels. If you run this
+    # compose outside Coolify, uncomment the ports line below and set
+    # APP_PORT.
+    # ports:
+    #   - "${APP_PORT:-3000}:3000"
+    expose:
+      - "3000"
+    healthcheck:
+      # Next.js exposes /<locale> but the root / returns 200 once DB is reachable.
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+        reservations:
+          memory: 512M
+    # If the app container dies 3 times in 60s, leave it down so the
+    # operator notices (no infinite restart loop on a bad deploy).
+    stop_grace_period: 30s
+
+networks:
+  arvesta-net:
+    driver: bridge
+    name: arvesta-net
 
 volumes:
   postgres_data:
+    name: arvesta_postgres_data
+    # Label helps backup tools discover the right volume.
+    labels:
+      - "arvesta.role=database"
+      - "arvesta.backup=required"
   uploads:
+    name: arvesta_uploads
+    labels:
+      - "arvesta.role=uploads"
+      - "arvesta.backup=required"

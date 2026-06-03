@@ -49,7 +49,12 @@ export async function PUT(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = updateFaqSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -61,22 +66,22 @@ export async function PUT(
   const { order, published, translations } = parsed.data;
 
   try {
-    const item = await prisma.faqItem.update({
-      where: { id },
-      data: {
-        order,
-        published,
-        ...(translations && {
-          translations: {
-            upsert: translations.map((t) => ({
-              where: { faqItemId_locale: { faqItemId: id, locale: t.locale } },
-              create: t,
-              update: t,
-            })),
-          },
-        }),
-      },
-      include: { translations: true },
+    const item = await prisma.$transaction(async (tx) => {
+      const updated = await tx.faqItem.update({
+        where: { id },
+        data: { order, published },
+        include: { translations: true },
+      });
+      if (translations) {
+        for (const t of translations) {
+          await tx.faqItemTranslation.upsert({
+            where: { faqItemId_locale: { faqItemId: id, locale: t.locale } },
+            create: { ...t, faqItemId: id },
+            update: t,
+          });
+        }
+      }
+      return updated;
     });
 
     return NextResponse.json(item);

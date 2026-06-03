@@ -388,3 +388,20 @@ export function productListJsonLd(
     })),
   };
 }
+
+/**
+ * Safely serialize a JSON-LD object for inline <script> insertion.
+ * Escapes characters that would let an attacker break out of the script tag:
+ *   `<` -> <
+ *   `>` -> >
+ *   `&` -> &
+ *   U+2028 / U+2029 -> escaped (legal line terminators in JS source)
+ */
+export function safeJsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .split("")
+    .map((c) => (c === " " ? "\\u2028" : c === " " ? "\\u2029" : c))
+    .join("");}

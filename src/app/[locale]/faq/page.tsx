@@ -7,6 +7,7 @@ import {
   generateOgMeta,
   breadcrumbJsonLd,
   faqJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 
@@ -52,7 +53,7 @@ export default async function FaqPage({
   const t = await getTranslations({ locale, namespace: "faq" });
 
   // Fetch FAQ items from database
-  const dbItems = (await (prisma as any).faqItem.findMany({
+  const dbItems = (await prisma.faqItem.findMany({
     where: { published: true },
     include: { translations: true },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
@@ -109,11 +110,11 @@ export default async function FaqPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
       />
 
       <div className="mx-auto max-w-[720px]">

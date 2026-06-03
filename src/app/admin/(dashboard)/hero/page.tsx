@@ -56,14 +56,18 @@ export default function AdminHero() {
     ),
   );
   const [heroLocale, setHeroLocale] = useState("fr");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = () =>
     fetch("/api/hero")
       .then((r) => r.json())
       .then((data) => {
         setSlides(data);
-        setLoading(false);
-      });
+      })
+      .catch((e) => {
+        setLoadError(e instanceof Error ? e.message : "Slaytlar yüklenemedi.");
+      })
+      .finally(() => setLoading(false));
   useEffect(() => {
     load();
   }, []);
@@ -173,6 +177,11 @@ export default function AdminHero() {
 
   return (
     <div>
+      {loadError && (
+        <div className="mb-4 rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+          {loadError}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-2xl font-semibold text-white">

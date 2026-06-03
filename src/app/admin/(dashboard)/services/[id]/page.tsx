@@ -222,6 +222,11 @@ export default function ServiceFormPage({
             };
           }
           setTranslations(tMap);
+        })
+        .catch((e) => {
+          setErrorMessage(
+            e instanceof Error ? e.message : "Hizmet yüklenemedi.",
+          );
         });
     }
   }, [isNew, itemId]);

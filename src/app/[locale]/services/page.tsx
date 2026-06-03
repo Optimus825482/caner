@@ -7,6 +7,7 @@ import {
   generateOgMeta,
   breadcrumbJsonLd,
   serviceJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import ServiceDetailDialog from "@/components/public/ServiceDetailDialog";
@@ -59,7 +60,7 @@ export default async function ServicesPage({
   ]);
 
   // Fetch services from DB
-  const dbServices = (await (prisma as any).serviceItem.findMany({
+  const dbServices = (await prisma.serviceItem.findMany({
     where: { published: true },
     include: { translations: true },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
@@ -94,7 +95,7 @@ export default async function ServicesPage({
   );
 
   // Fetch FAQ items from DB
-  const dbFaqs = (await (prisma as any).faqItem.findMany({
+  const dbFaqs = (await prisma.faqItem.findMany({
     where: { published: true },
     include: { translations: true },
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
@@ -118,12 +119,12 @@ export default async function ServicesPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       {services.length > 0 && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(svcSchema) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(svcSchema) }}
         />
       )}
 

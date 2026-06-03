@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { categoryId, order, image, translations } = parsed.data;
-  let slug = resolveSlug(parsed.data.slug, translations);
+  const slug = resolveSlug(parsed.data.slug, translations);
 
   if (!slug) {
     return NextResponse.json(
@@ -94,36 +94,59 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Compound unique: same slug allowed across different categories
-  const existing = await prisma.subCategory.findUnique({
-    where: { categoryId_slug: { categoryId, slug } },
-  });
-  if (existing) {
-    // Same category already has this slug — append timestamp suffix
-    slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+  // Compound unique: same slug allowed across different categories.
+  // Race: two concurrent creates with the same (categoryId, slug) both pass the
+  // findUnique check, then both append a unique-looking suffix from the same
+  // millisecond and one of them hits P2002. Retry inside a transaction with a
+  // fresh suffix on conflict.
+  const baseSlug = slug;
+  const maxAttempts = 5;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const candidate =
+      attempt === 0
+        ? baseSlug
+        : `${baseSlug}-${Date.now().toString(36).slice(-4)}-${attempt}`;
+    try {
+      const subCategory = await prisma.$transaction(async (tx) => {
+        const existing = await tx.subCategory.findUnique({
+          where: { categoryId_slug: { categoryId, slug: candidate } },
+        });
+        if (existing && candidate === baseSlug) {
+          // First attempt, base slug taken — bail and retry with suffix
+          return null;
+        }
+        return tx.subCategory.create({
+          data: {
+            slug: candidate,
+            categoryId,
+            order,
+            image,
+            translations: {
+              create: translations.map((t) => ({
+                locale: t.locale,
+                name: t.name,
+                description: t.description,
+              })),
+            },
+          },
+          include: { translations: true },
+        });
+      });
+
+      if (subCategory) {
+        revalidateCatalogPages();
+        return NextResponse.json(subCategory, { status: 201 });
+      }
+    } catch (error) {
+      // P2002 = unique constraint. If we still have attempts left, retry.
+      const code = (error as { code?: string }).code;
+      if (code === "P2002" && attempt < maxAttempts - 1) continue;
+      return prismaWriteErrorResponse(error);
+    }
   }
 
-  try {
-    const subCategory = await prisma.subCategory.create({
-      data: {
-        slug,
-        categoryId,
-        order,
-        image,
-        translations: {
-          create: translations.map((t) => ({
-            locale: t.locale,
-            name: t.name,
-            description: t.description,
-          })),
-        },
-      },
-      include: { translations: true },
-    });
-
-    revalidateCatalogPages();
-    return NextResponse.json(subCategory, { status: 201 });
-  } catch (error) {
-    return prismaWriteErrorResponse(error);
-  }
+  return NextResponse.json(
+    { error: "Could not allocate unique slug after retries" },
+    { status: 409 },
+  );
 }

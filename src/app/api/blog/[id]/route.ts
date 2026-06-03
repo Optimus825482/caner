@@ -52,7 +52,12 @@ export async function PUT(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = updateBlogPostSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -64,24 +69,27 @@ export async function PUT(
   const { slug, image, published, order, translations } = parsed.data;
 
   try {
-    const post = await prisma.blogPost.update({
-      where: { id },
-      data: {
-        slug,
-        image: image ?? undefined,
-        published,
-        order,
-        ...(translations && {
-          translations: {
-            upsert: translations.map((t) => ({
-              where: { postId_locale: { postId: id, locale: t.locale } },
-              create: t,
-              update: t,
-            })),
-          },
-        }),
-      },
-      include: { translations: true },
+    const post = await prisma.$transaction(async (tx) => {
+      const updated = await tx.blogPost.update({
+        where: { id },
+        data: {
+          slug,
+          image: image ?? undefined,
+          published,
+          order,
+        },
+        include: { translations: true },
+      });
+      if (translations) {
+        for (const t of translations) {
+          await tx.blogPostTranslation.upsert({
+            where: { postId_locale: { postId: id, locale: t.locale } },
+            create: { ...t, postId: id },
+            update: t,
+          });
+        }
+      }
+      return updated;
     });
 
     return NextResponse.json(post);

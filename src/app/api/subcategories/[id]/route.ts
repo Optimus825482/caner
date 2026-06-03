@@ -29,7 +29,7 @@ export async function GET(
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
-  const sub = await (prisma as any).subCategory.findUnique({
+  const sub = await prisma.subCategory.findUnique({
     where: { id },
     include: {
       translations: true,
@@ -69,12 +69,12 @@ export async function PUT(
   const slug = resolveSlug(parsed.data.slug, translations ?? []);
 
   const txOps = [
-    (prisma as any).subCategory.update({
+    prisma.subCategory.update({
       where: { id },
       data: { slug, categoryId, order, image },
     }),
     ...(translations?.map((t) =>
-      (prisma as any).subCategoryTranslation.upsert({
+      prisma.subCategoryTranslation.upsert({
         where: {
           subCategoryId_locale: { subCategoryId: id, locale: t.locale },
         },
@@ -91,7 +91,7 @@ export async function PUT(
 
   try {
     await prisma.$transaction(txOps);
-    const updated = await (prisma as any).subCategory.findUnique({
+    const updated = await prisma.subCategory.findUnique({
       where: { id },
       include: { translations: true },
     });
@@ -127,7 +127,7 @@ export async function DELETE(
       );
     }
 
-    await (prisma as any).subCategory.delete({ where: { id } });
+    await prisma.subCategory.delete({ where: { id } });
     revalidateCatalogPages();
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -66,6 +66,11 @@ export default function TeamMemberFormPage({
             tMap[l] = { fullName: tr?.fullName || "", title: tr?.title || "" };
           }
           setTranslations(tMap);
+        })
+        .catch((e) => {
+          setErrorMessage(
+            e instanceof Error ? e.message : "Ekip üyesi yüklenemedi.",
+          );
         });
     }
   }, [isNew, itemId]);

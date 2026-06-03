@@ -93,6 +93,7 @@ export default function AdminAbout() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [teamLoading, setTeamLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -194,31 +195,35 @@ export default function AdminAbout() {
       import("@/i18n/messages/tr.json").then((m) => m.default),
       import("@/i18n/messages/fr.json").then((m) => m.default),
       import("@/i18n/messages/en.json").then((m) => m.default),
-    ]).then(
-      ([dbValues, trMsgs, frMsgs, enMsgs]: [
-        Record<string, string>,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        any,
-        any,
-        any,
-      ]) => {
-        const merged = { ...dbValues };
-        const i18nMap: Record<string, Record<string, string>> = {
-          tr: trMsgs.about || {},
-          fr: frMsgs.about || {},
-          en: enMsgs.about || {},
-        };
-        for (const key of ABOUT_I18N_KEYS) {
-          for (const loc of LOCALES_LIST) {
-            const settingKey = `about_${key}_${loc}`;
-            if (!merged[settingKey]?.trim() && i18nMap[loc]?.[key]) {
-              merged[settingKey] = i18nMap[loc][key];
+    ])
+      .then(
+        ([dbValues, trMsgs, frMsgs, enMsgs]: [
+          Record<string, string>,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any,
+          any,
+          any,
+        ]) => {
+          const merged = { ...dbValues };
+          const i18nMap: Record<string, Record<string, string>> = {
+            tr: trMsgs.about || {},
+            fr: frMsgs.about || {},
+            en: enMsgs.about || {},
+          };
+          for (const key of ABOUT_I18N_KEYS) {
+            for (const loc of LOCALES_LIST) {
+              const settingKey = `about_${key}_${loc}`;
+              if (!merged[settingKey]?.trim() && i18nMap[loc]?.[key]) {
+                merged[settingKey] = i18nMap[loc][key];
+              }
             }
           }
-        }
-        setValues(merged);
-      },
-    );
+          setValues(merged);
+        },
+      )
+      .catch((e) => {
+        console.error("Failed to load about settings", e);
+      });
   }, []);
 
   useEffect(() => {
@@ -256,9 +261,10 @@ export default function AdminAbout() {
     });
     setSaving(false);
     if (!res.ok) {
-      alert("Kaydetme başarısız oldu. Lütfen tekrar deneyin.");
+      setErrorMessage(t("saveError"));
       return;
     }
+    setErrorMessage(null);
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   }

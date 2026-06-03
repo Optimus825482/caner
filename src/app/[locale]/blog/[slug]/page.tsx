@@ -10,6 +10,7 @@ import {
   generateAlternates,
   generateOgMeta,
   breadcrumbJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -97,11 +98,11 @@ export default async function BlogPostPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(articleJsonLd) }}
       />
 
       <article className="mx-auto max-w-[720px]">

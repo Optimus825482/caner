@@ -44,7 +44,7 @@ export default function ProductGallery({
         <div className="flex gap-3 overflow-x-auto pb-1">
           {images.map((img, i) => (
             <button
-              key={i}
+              key={img.url}
               onClick={() => setSelected(i)}
               className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
                 i === selected

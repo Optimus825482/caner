@@ -7,6 +7,7 @@ import {
   generateOgMeta,
   breadcrumbJsonLd,
   productListJsonLd,
+  safeJsonLd,
 } from "@/lib/seo";
 import { ProductsPageContent } from "@/components/public/ProductsPageContent";
 
@@ -157,11 +158,11 @@ export default async function ProductsPage({
     <main className="min-h-screen bg-[linear-gradient(180deg,#050c19_0%,#040916_100%)] px-6 pb-24 pt-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bc) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(bc) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListSchema) }}
       />
 
       <div className="mx-auto max-w-7xl">
